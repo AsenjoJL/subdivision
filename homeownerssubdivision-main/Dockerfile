@@ -9,12 +9,11 @@ WORKDIR /src
 
 # Copy .csproj file and restore
 COPY ["HOMEOWNER.csproj", "./"]
-RUN dotnet restore "HOMEOWNER/HOMEOWNER.csproj"
+RUN dotnet restore "HOMEOWNER.csproj"
 
 # Copy everything else
 COPY . .
 
-WORKDIR "/src/HOMEOWNER"
 RUN dotnet publish "HOMEOWNER.csproj" -c Release -o /app/publish
 
 # Final runtime image
