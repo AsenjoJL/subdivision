@@ -1,0 +1,125 @@
+@model HOMEOWNER.Models.ViewModels.DocumentLibraryViewModel
+
+@{
+    ViewData["Title"] = "Documents";
+
+    string GetFileIcon(string? fileType)
+    {
+        return (fileType ?? string.Empty).ToLowerInvariant() switch
+        {
+            "pdf" => "fa-file-pdf",
+            "doc" or "docx" => "fa-file-word",
+            "xls" or "xlsx" => "fa-file-excel",
+            "ppt" or "pptx" => "fa-file-powerpoint",
+            _ => "fa-file-lines"
+        };
+    }
+
+    string FormatFileSize(long bytes)
+    {
+        if (bytes >= 1024 * 1024)
+        {
+            return $"{bytes / 1024d / 1024d:N1} MB";
+        }
+
+        return $"{bytes / 1024d:N0} KB";
+    }
+}
+
+<section class="document-library-module" data-homeowner-module="documents" data-page-title="Document Library" data-selected-category="@Model.SelectedCategory">
+    <div class="document-library-shell">
+        <header class="document-library-hero">
+            <div>
+                <h2>Document library</h2>
+                <p>Find subdivision forms, policies, reports, and meeting references in one clean place.</p>
+            </div>
+            <div class="document-library-hero-meta">
+                <span class="document-library-chip">
+                    <i class="fas fa-file-alt"></i>
+                    <span><strong data-doc-visible-count>@Model.Documents.Count</strong> documents</span>
+                </span>
+                <span class="document-library-chip">
+                    <i class="fas fa-download"></i>
+                    <span><strong>@Model.TotalDownloads</strong> downloads</span>
+                </span>
+            </div>
+        </header>
+
+        <section class="document-library-toolbar">
+            <label class="document-library-search">
+                <i class="fas fa-search"></i>
+                <input type="search" placeholder="Search documents, categories, or descriptions" data-doc-search />
+            </label>
+
+            <div class="document-library-filters" role="tablist" aria-label="Document categories">
+                @foreach (var category in Model.Categories)
+                {
+                    <button type="button"
+                            class="document-library-filter@(category == Model.SelectedCategory ? " is-active" : string.Empty)"
+                            data-doc-category="@category">
+                        @category
+                    </button>
+                }
+            </div>
+        </section>
+
+        <div class="document-library-grid" data-doc-grid>
+            @if (Model.Documents.Count > 0)
+            {
+                @foreach (var document in Model.Documents)
+                {
+                    var searchIndex = $"{document.Title} {document.Description} {document.Category} {document.FileType}".ToLowerInvariant();
+
+                    <article class="document-library-card"
+                             data-document-card
+                             data-category="@document.Category"
+                             data-search="@searchIndex">
+                        <div class="document-library-card-top">
+                            <div class="document-library-icon">
+                                <i class="fas @GetFileIcon(document.FileType)"></i>
+                            </div>
+                            <div class="document-library-badges">
+                                <span class="document-library-badge">@document.Category</span>
+                                <span class="document-library-badge is-file">@((document.FileType ?? "file").ToUpperInvariant())</span>
+                            </div>
+                        </div>
+
+                        <div class="document-library-card-body">
+                            <h3>@document.Title</h3>
+                            <p>@(string.IsNullOrWhiteSpace(document.Description) ? "Subdivision reference document." : document.Description)</p>
+                        </div>
+
+                        <dl class="document-library-meta">
+                            <div>
+                                <dt>Uploaded</dt>
+                                <dd>@document.UploadedAt.ToString("MMM dd, yyyy")</dd>
+                            </div>
+                            <div>
+                                <dt>Size</dt>
+                                <dd>@FormatFileSize(document.FileSize)</dd>
+                            </div>
+                            <div>
+                                <dt>Downloads</dt>
+                                <dd>@document.DownloadCount</dd>
+                            </div>
+                        </dl>
+
+                        <div class="document-library-actions">
+                            <a class="document-library-download"
+                               href="@Url.Action("Download", "Document", new { id = document.DocumentID })">
+                                <i class="fas fa-download"></i>
+                                <span>Download</span>
+                            </a>
+                        </div>
+                    </article>
+                }
+            }
+        </div>
+
+        <div class="document-library-empty@(Model.Documents.Count > 0 ? " document-library-hidden" : string.Empty)" data-doc-empty>
+            <i class="fas fa-folder-open"></i>
+            <h3>No documents found</h3>
+            <p>Try a different category or search term.</p>
+        </div>
+    </div>
+</section>

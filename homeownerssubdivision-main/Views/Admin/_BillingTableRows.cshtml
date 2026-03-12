@@ -1,0 +1,87 @@
+@model IEnumerable<HOMEOWNER.Models.ViewModels.BillingListItemViewModel>
+
+@if (Model.Any())
+{
+    @foreach (var billing in Model)
+    {
+        var statusClass = billing.Status switch
+        {
+            "Paid" => "is-paid",
+            "Overdue" => "is-overdue",
+            _ => "is-pending"
+        };
+
+        var submissionClass = billing.PaymentSubmissionStatus switch
+        {
+            "Approved" => "is-paid",
+            "Rejected" => "is-overdue",
+            "Submitted" => "is-pending",
+            _ => string.Empty
+        };
+
+        <tr data-billing-row="true">
+            <td>#@billing.BillingID</td>
+            <td>
+                <div class="billing-cell-primary">@billing.HomeownerName</div>
+                <div class="billing-cell-secondary">@billing.HomeownerEmail</div>
+            </td>
+            <td>@billing.Description</td>
+            <td>@billing.BillType</td>
+            <td><strong>Php @billing.Amount.ToString("N2")</strong></td>
+            <td>@billing.DueDate.ToLocalTime().ToString("MMM dd, yyyy")</td>
+            <td><span class="billing-status-chip @statusClass">@billing.Status</span></td>
+            <td>
+                @if (!string.Equals(billing.PaymentSubmissionStatus, "None", StringComparison.OrdinalIgnoreCase))
+                {
+                    <span class="billing-status-chip @submissionClass">@billing.PaymentSubmissionStatus</span>
+                    @if (billing.PaymentSubmittedAt.HasValue)
+                    {
+                        <div class="billing-cell-secondary">@billing.PaymentSubmittedAt.Value.ToLocalTime().ToString("MMM dd, yyyy hh:mm tt")</div>
+                    }
+                }
+                else
+                {
+                    <span class="billing-cell-secondary">No submission</span>
+                }
+            </td>
+            <td>
+                <div class="billing-action-row">
+                    @if (string.Equals(billing.PaymentSubmissionStatus, "Submitted", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <button type="button"
+                                class="billing-icon-button"
+                                title="Review submission"
+                                data-billing-action="review"
+                                data-billing-id="@billing.BillingID">
+                            <i class="fas fa-file-invoice"></i>
+                        </button>
+                    }
+                    else if (!string.Equals(billing.Status, "Paid", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <button type="button"
+                                class="billing-icon-button is-success"
+                                title="Mark as paid"
+                                data-billing-action="mark-paid"
+                                data-billing-id="@billing.BillingID">
+                            <i class="fas fa-check"></i>
+                        </button>
+                    }
+                    <button type="button"
+                            class="billing-icon-button is-danger"
+                            title="Delete bill"
+                            data-billing-action="delete"
+                            data-billing-id="@billing.BillingID"
+                            data-billing-label="#@billing.BillingID">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    }
+}
+else
+{
+    <tr>
+        <td colspan="9" class="billing-empty-cell">No billing records found.</td>
+    </tr>
+}

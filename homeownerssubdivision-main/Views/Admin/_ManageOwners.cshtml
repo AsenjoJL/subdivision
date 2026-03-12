@@ -1,0 +1,203 @@
+@model List<HOMEOWNER.Models.ViewModels.AdminHomeownerListItemViewModel>
+
+<div class="card management-card people-management-card people-management-card--owners">
+    <div class="header-section">
+        <div class="people-management-topbar">
+            <div class="people-title-block">
+                <h2 class="page-title people-title"><span class="people-title-icon"><i class="fas fa-house-user"></i></span><span>Homeowner Management</span></h2>
+                <p class="people-subtitle">Manage resident records, contact details, and block or lot assignments from one place.</p>
+            </div>
+            <div class="people-summary-pill">
+                <span class="people-summary-label">Residents</span>
+                <span class="people-summary-value">@Model.Count</span>
+                <span class="people-summary-meta">Active homeowner account@(Model.Count == 1 ? "" : "s")</span>
+            </div>
+        </div>
+        <div class="action-container people-controls">
+            <div class="search-container people-search-cluster">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="searchInput" class="form-control search-input" placeholder="Search homeowners...">
+            </div>
+            <button type="button" id="openAddOwnerModal" class="btn btn-primary-custom people-primary-btn"><i class="fas fa-user-plus"></i> Add New</button>
+        </div>
+    </div>
+    <div class="px-4 pt-3">
+        <div id="ownerPageSuccessAlert" class="alert alert-success alert-dismissible fade show owner-hidden" role="alert"><i class="fas fa-check-circle me-2"></i><span id="ownerPageSuccessMessage">Action completed successfully.</span><button type="button" class="btn-close owner-modal-close" data-owner-page-alert-close="true" aria-label="Close"></button></div>
+        <div id="ownerPageErrorAlert" class="alert alert-danger alert-dismissible fade show owner-hidden" role="alert"><i class="fas fa-exclamation-circle me-2"></i><span id="ownerPageErrorMessage">Something went wrong.</span><button type="button" class="btn-close owner-modal-close" data-owner-page-alert-close="true" aria-label="Close"></button></div>
+    </div>
+    <div class="table-container">
+        <div class="people-table-shell">
+            <table class="table data-table">
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-user"></i> Name</th>
+                        <th><i class="fas fa-envelope"></i> Email</th>
+                        <th><i class="fas fa-map-marker-alt"></i> Address</th>
+                        <th><i class="fas fa-phone"></i> Contact</th>
+                        <th><i class="fas fa-th"></i> Block/Lot</th>
+                        <th><i class="fas fa-user-tag"></i> Role</th>
+                        <th><i class="fas fa-ellipsis-h"></i> Actions</th>
+                    </tr>
+                </thead>
+                @await Html.PartialAsync("_homeownersTable", Model)
+            </table>
+        </div>
+    </div>
+    <div class="people-table-footer">
+        <span id="homeownerTableInfo">Showing <strong>@Model.Count</strong> homeowner account@(Model.Count == 1 ? "" : "s")</span>
+        <span class="people-footer-note">Use search to filter by name, email, address, or block and lot.</span>
+    </div>
+</div>
+
+<div class="owner-modal" id="addOwnerModal" tabindex="-1" aria-hidden="true" role="dialog">
+    <div class="owner-modal-dialog"><div class="owner-modal-panel">
+        <div class="owner-modal-header">
+            <h5 class="owner-modal-title"><i class="fas fa-user-plus"></i>Add New Homeowner</h5>
+            <button type="button" class="btn-close owner-modal-close" data-owner-modal-close="true" aria-label="Close"></button>
+        </div>
+        <div class="owner-modal-body">
+            <div id="ownerSuccessAlert" class="alert alert-success alert-dismissible fade show owner-hidden" role="alert"><i class="fas fa-check-circle me-2"></i><span id="ownerSuccessMessage">Homeowner added successfully!</span><button type="button" class="btn-close owner-modal-close" data-owner-alert-close="true" aria-label="Close"></button></div>
+            <div id="ownerErrorAlert" class="alert alert-danger alert-dismissible fade show owner-hidden" role="alert"><i class="fas fa-exclamation-circle me-2"></i><span id="ownerErrorMessage">Unable to add homeowner.</span><button type="button" class="btn-close owner-modal-close" data-owner-alert-close="true" aria-label="Close"></button></div>
+            <form id="addOwnerForm" asp-controller="Admin" asp-action="AddOwner" method="post" data-refresh-url="@Url.Action("LoadHomeownersList", "Admin")">
+                @Html.AntiForgeryToken()
+                <div class="mb-3"><label class="form-label"><i class="fas fa-user"></i> Full Name</label><input type="text" class="form-control" name="FullName" data-owner-input="FullName" required><div class="owner-field-error owner-hidden" data-owner-field-error="FullName"></div></div>
+                <div class="mb-3"><label class="form-label"><i class="fas fa-envelope"></i> Email</label><input type="email" class="form-control" name="Email" data-owner-input="Email" required><div class="owner-field-error owner-hidden" data-owner-field-error="Email"></div></div>
+                <div class="mb-3"><label class="form-label"><i class="fas fa-phone"></i> Contact Number</label><input type="text" class="form-control" name="ContactNumber" data-owner-input="ContactNumber"><div class="owner-field-error owner-hidden" data-owner-field-error="ContactNumber"></div></div>
+                <div class="mb-3"><label class="form-label"><i class="fas fa-map-marker-alt"></i> Address</label><input type="text" class="form-control" name="Address" data-owner-input="Address" required><div class="owner-field-error owner-hidden" data-owner-field-error="Address"></div></div>
+                <div class="mb-3"><label class="form-label"><i class="fas fa-th"></i> Block/Lot Number</label><input type="text" class="form-control" name="BlockLotNumber" data-owner-input="BlockLotNumber" required><div class="owner-field-error owner-hidden" data-owner-field-error="BlockLotNumber"></div></div>
+                <div class="mb-3"><label class="form-label"><i class="fas fa-lock"></i> Password</label><input type="password" class="form-control" name="Password" data-owner-input="Password" required minlength="6"><div class="owner-field-error owner-hidden" data-owner-field-error="Password"></div></div>
+            </form>
+        </div>
+        <div class="owner-modal-footer"><button type="button" class="btn btn-outline-secondary" data-owner-modal-close="true">Cancel</button><button type="button" class="btn btn-primary-custom" data-owner-submit="true"><i class="fas fa-save"></i> Save Owner</button></div>
+    </div></div>
+</div>
+
+<div class="owner-modal" id="editOwnerModal" tabindex="-1" aria-hidden="true" role="dialog">
+    <div class="owner-modal-dialog"><div class="owner-modal-panel">
+        <div class="owner-modal-header">
+            <h5 class="owner-modal-title"><i class="fas fa-user-pen"></i>Edit Homeowner</h5>
+            <button type="button" class="btn-close owner-modal-close" data-edit-owner-modal-close="true" aria-label="Close"></button>
+        </div>
+        <div class="owner-modal-body">
+            <div id="editOwnerSuccessAlert" class="alert alert-success alert-dismissible fade show owner-hidden" role="alert"><i class="fas fa-check-circle me-2"></i><span id="editOwnerSuccessMessage">Homeowner updated successfully!</span><button type="button" class="btn-close owner-modal-close" data-edit-owner-alert-close="true" aria-label="Close"></button></div>
+            <div id="editOwnerErrorAlert" class="alert alert-danger alert-dismissible fade show owner-hidden" role="alert"><i class="fas fa-exclamation-circle me-2"></i><span id="editOwnerErrorMessage">Unable to update homeowner.</span><button type="button" class="btn-close owner-modal-close" data-edit-owner-alert-close="true" aria-label="Close"></button></div>
+            <form id="editOwnerForm" asp-controller="Admin" asp-action="EditOwner" method="post" data-refresh-url="@Url.Action("LoadHomeownersList", "Admin")">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="HomeownerID" data-edit-owner-input="HomeownerID">
+                <div class="mb-3"><label class="form-label"><i class="fas fa-user"></i> Full Name</label><input type="text" class="form-control" name="FullName" data-edit-owner-input="FullName" required><div class="owner-field-error owner-hidden" data-edit-owner-field-error="FullName"></div></div>
+                <div class="mb-3"><label class="form-label"><i class="fas fa-envelope"></i> Email</label><input type="email" class="form-control" name="Email" data-edit-owner-input="Email" required><div class="owner-field-error owner-hidden" data-edit-owner-field-error="Email"></div></div>
+                <div class="mb-3"><label class="form-label"><i class="fas fa-phone"></i> Contact Number</label><input type="text" class="form-control" name="ContactNumber" data-edit-owner-input="ContactNumber"><div class="owner-field-error owner-hidden" data-edit-owner-field-error="ContactNumber"></div></div>
+                <div class="mb-3"><label class="form-label"><i class="fas fa-map-marker-alt"></i> Address</label><input type="text" class="form-control" name="Address" data-edit-owner-input="Address" required><div class="owner-field-error owner-hidden" data-edit-owner-field-error="Address"></div></div>
+                <div class="mb-3"><label class="form-label"><i class="fas fa-th"></i> Block/Lot Number</label><input type="text" class="form-control" name="BlockLotNumber" data-edit-owner-input="BlockLotNumber" required><div class="owner-field-error owner-hidden" data-edit-owner-field-error="BlockLotNumber"></div></div>
+            </form>
+        </div>
+        <div class="owner-modal-footer"><button type="button" class="btn btn-outline-secondary" data-edit-owner-modal-close="true">Cancel</button><button type="button" class="btn btn-primary-custom" data-edit-owner-submit="true"><i class="fas fa-save"></i> Update Owner</button></div>
+    </div></div>
+</div>
+
+<script>
+(() => {
+  if (window.__ownerModalCleanup) window.__ownerModalCleanup();
+  const addModal = document.getElementById('addOwnerModal'), editModal = document.getElementById('editOwnerModal'), openBtn = document.getElementById('openAddOwnerModal'), searchInput = document.getElementById('searchInput'), addForm = document.getElementById('addOwnerForm'), editForm = document.getElementById('editOwnerForm'), tableBody = document.getElementById('homeownerTableBody'), addSave = addModal?.querySelector('[data-owner-submit="true"]'), editSave = editModal?.querySelector('[data-edit-owner-submit="true"]');
+  if (!addModal || !editModal || !openBtn || !searchInput || !addForm || !editForm || !tableBody || !addSave || !editSave) return;
+  if (addModal.parentElement !== document.body) document.body.appendChild(addModal);
+  if (editModal.parentElement !== document.body) document.body.appendChild(editModal);
+  let addAlertTimer = null;
+  let editAlertTimer = null;
+  let pageAlertTimer = null;
+  const addAlerts = { success:'ownerSuccessAlert', error:'ownerErrorAlert', successMsg:'ownerSuccessMessage', errorMsg:'ownerErrorMessage' }, editAlerts = { success:'editOwnerSuccessAlert', error:'editOwnerErrorAlert', successMsg:'editOwnerSuccessMessage', errorMsg:'editOwnerErrorMessage' }, pageAlerts = { success:'ownerPageSuccessAlert', error:'ownerPageErrorAlert', successMsg:'ownerPageSuccessMessage', errorMsg:'ownerPageErrorMessage' };
+  const setAlertTimer = (set, timerId) => { if (set === addAlerts) addAlertTimer = timerId; else if (set === editAlerts) editAlertTimer = timerId; else if (set === pageAlerts) pageAlertTimer = timerId; };
+  const getAlertTimer = set => set === addAlerts ? addAlertTimer : set === editAlerts ? editAlertTimer : pageAlertTimer;
+  const showAlert = (set, type, message) => { const ok = document.getElementById(set.success), err = document.getElementById(set.error), okm = document.getElementById(set.successMsg), erm = document.getElementById(set.errorMsg); const existingTimer = getAlertTimer(set); if (existingTimer) { window.clearTimeout(existingTimer); setAlertTimer(set, null); } ok?.classList.add('owner-hidden'); err?.classList.add('owner-hidden'); if (type === 'success') { if (okm) okm.textContent = message; ok?.classList.remove('owner-hidden'); setAlertTimer(set, window.setTimeout(() => ok?.classList.add('owner-hidden'), 3600)); } else { if (erm) erm.textContent = message; err?.classList.remove('owner-hidden'); } };
+  const clearAlerts = set => { const existingTimer = getAlertTimer(set); if (existingTimer) { window.clearTimeout(existingTimer); setAlertTimer(set, null); } document.getElementById(set.success)?.classList.add('owner-hidden'); document.getElementById(set.error)?.classList.add('owner-hidden'); };
+  const clearFieldErrors = prefix => { document.querySelectorAll('[data-' + prefix + '-field-error]').forEach(e => { e.textContent = ''; e.classList.add('owner-hidden'); }); document.querySelectorAll('[data-' + prefix + '-input]').forEach(i => { i.classList.remove('owner-invalid'); i.removeAttribute('aria-invalid'); }); };
+  const applyErrors = (prefix, payload) => {
+    clearFieldErrors(prefix);
+    if (!payload) return;
+    if (payload.field && payload.message) {
+      const i = document.querySelector('[data-' + prefix + '-input=\"' + payload.field + '\"]');
+      const e = document.querySelector('[data-' + prefix + '-field-error=\"' + payload.field + '\"]');
+      i?.classList.add('owner-invalid');
+      i?.setAttribute('aria-invalid','true');
+      if (e) {
+        e.textContent = payload.message;
+        e.classList.remove('owner-hidden');
+      }
+      return;
+    }
+    if (payload.validationErrors) {
+      let surfacedVisibleError = false;
+      Object.keys(payload.validationErrors).forEach(field => {
+        const msg = payload.validationErrors[field]?.[0];
+        if (!msg) return;
+        const i = document.querySelector('[data-' + prefix + '-input=\"' + field + '\"]');
+        const e = document.querySelector('[data-' + prefix + '-field-error=\"' + field + '\"]');
+        i?.classList.add('owner-invalid');
+        i?.setAttribute('aria-invalid','true');
+        if (e) {
+          e.textContent = msg;
+          e.classList.remove('owner-hidden');
+          surfacedVisibleError = true;
+        }
+      });
+      if (!surfacedVisibleError && payload.validationErrors.HomeownerID?.[0]) {
+        showAlert(pageAlerts, 'error', 'Unable to update the selected homeowner. Please reopen the edit form and try again.');
+      }
+    }
+  };
+  const openModal = modal => { modal.classList.add('is-open'); modal.setAttribute('aria-hidden','false'); document.body.style.overflow = 'hidden'; };
+  const closeModal = modal => { modal.classList.remove('is-open'); modal.setAttribute('aria-hidden','true'); document.body.style.overflow = ''; };
+  const updateCount = () => { const rows = [...document.querySelectorAll('#homeownerTableBody tr')], visible = rows.filter(r => r.style.display !== 'none').length, total = rows.length, info = document.getElementById('homeownerTableInfo'); if (!info) return; if (!total) info.innerHTML = 'Showing <strong>0</strong> homeowner accounts'; else if (visible === total) info.innerHTML = 'Showing <strong>' + total + '</strong> homeowner account' + (total === 1 ? '' : 's'); else info.innerHTML = 'Showing <strong>' + visible + '</strong> of <strong>' + total + '</strong> homeowner accounts'; };
+  const refreshTable = async () => { const response = await fetch(addForm.dataset.refreshUrl, { headers:{'X-Requested-With':'XMLHttpRequest'}, credentials:'same-origin' }); if (!response.ok) throw new Error('Failed to refresh homeowners list.'); tableBody.innerHTML = await response.text(); updateCount(); };
+  const parseJsonResponse = async (response, fallbackMessage) => { const contentType = response.headers.get('content-type') || ''; if (!contentType.includes('application/json')) { const text = await response.text(); return { success: false, message: text && !text.trim().startsWith('<') ? text : fallbackMessage }; } return response.json(); };
+  const submitForm = async (form, button, alertSet, fieldPrefix, fallbackMessage, onSuccess) => { if (form.dataset.submitting === 'true') return; form.dataset.submitting = 'true'; const original = button.innerHTML; button.disabled = true; button.innerHTML = '<i class=\"fas fa-spinner fa-spin\"></i> Saving...'; clearAlerts(alertSet); clearFieldErrors(fieldPrefix); try { const body = new URLSearchParams(new FormData(form)).toString(); const response = await fetch(form.action, { method:'POST', headers:{ 'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8', 'X-Requested-With':'XMLHttpRequest' }, credentials:'same-origin', body }); const payload = await parseJsonResponse(response, fallbackMessage); if (!response.ok || !payload || payload.success === false) { applyErrors(fieldPrefix, payload); showAlert(alertSet, 'error', payload?.message || fallbackMessage); return; } await refreshTable(); onSuccess(payload); } catch (error) { console.error(error); showAlert(alertSet, 'error', error.message || fallbackMessage); } finally { delete form.dataset.submitting; button.disabled = false; button.innerHTML = original; } };
+  const populateEdit = owner => {
+    const homeownerId = owner.homeownerID ?? owner.HomeownerID ?? owner.id ?? '';
+    editForm.querySelector('[data-edit-owner-input=\"HomeownerID\"]').value = homeownerId;
+    editForm.querySelector('[data-edit-owner-input=\"FullName\"]').value = owner.fullName ?? owner.FullName ?? '';
+    editForm.querySelector('[data-edit-owner-input=\"Email\"]').value = owner.email ?? owner.Email ?? '';
+    editForm.querySelector('[data-edit-owner-input=\"ContactNumber\"]').value = owner.contactNumber ?? owner.ContactNumber ?? '';
+    editForm.querySelector('[data-edit-owner-input=\"Address\"]').value = owner.address ?? owner.Address ?? '';
+    editForm.querySelector('[data-edit-owner-input=\"BlockLotNumber\"]').value = owner.blockLotNumber ?? owner.BlockLotNumber ?? '';
+  };
+  const openAdd = () => { clearAlerts(addAlerts); clearFieldErrors('owner'); openModal(addModal); addModal.querySelector('input[name=\"FullName\"]')?.focus(); };
+  const openEdit = async trigger => {
+    const url = trigger.getAttribute('data-edit-url') || trigger.getAttribute('href');
+    if (!url) return showAlert(pageAlerts, 'error', 'Unable to load the selected homeowner.');
+    clearAlerts(editAlerts);
+    clearFieldErrors('edit-owner');
+    editSave.disabled = true;
+    editSave.innerHTML = '<i class=\"fas fa-spinner fa-spin\"></i> Loading...';
+    try {
+      const response = await fetch(url, { headers:{'X-Requested-With':'XMLHttpRequest'}, credentials:'same-origin' });
+      const payload = await parseJsonResponse(response, 'Unexpected server response while loading homeowner.');
+      if (!response.ok || !payload?.homeowner) throw new Error(payload?.message || 'Unable to load the selected homeowner.');
+      populateEdit(payload.homeowner);
+      if (!editForm.querySelector('[data-edit-owner-input=\"HomeownerID\"]').value) {
+        throw new Error('Unable to load the selected homeowner.');
+      }
+      openModal(editModal);
+    } catch (error) {
+      console.error(error);
+      showAlert(pageAlerts, 'error', error.message || 'Unable to load the selected homeowner.');
+    } finally {
+      editSave.disabled = false;
+      editSave.innerHTML = '<i class=\"fas fa-save\"></i> Update Owner';
+    }
+  };
+  const deleteOwner = async trigger => { const url = trigger.getAttribute('data-delete-url'), name = trigger.getAttribute('data-owner-name') || 'this homeowner', token = addForm.querySelector('input[name=\"__RequestVerificationToken\"]')?.value; if (!url || !token) return showAlert(pageAlerts, 'error', 'Unable to delete the selected homeowner.'); if (!window.confirm('Delete ' + name + '? This action cannot be undone.')) return; trigger.disabled = true; try { const response = await fetch(url, { method:'POST', headers:{ 'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8', 'X-Requested-With':'XMLHttpRequest' }, credentials:'same-origin', body:'__RequestVerificationToken=' + encodeURIComponent(token) }); const payload = await parseJsonResponse(response, 'Unexpected server response while deleting homeowner.'); if (!response.ok || payload?.success === false) throw new Error(payload?.message || 'Unable to delete the selected homeowner.'); await refreshTable(); showAlert(pageAlerts, 'success', payload.message || 'Homeowner deleted successfully.'); } catch (error) { console.error(error); showAlert(pageAlerts, 'error', error.message || 'Unable to delete the selected homeowner.'); } finally { trigger.disabled = false; } };
+  const onSearch = e => { const value = (e.target.value || '').toLowerCase(); document.querySelectorAll('#homeownerTableBody tr').forEach(row => row.style.display = row.textContent.toLowerCase().includes(value) ? '' : 'none'); updateCount(); };
+  const onKey = e => { if (e.key === 'Escape') { closeModal(addModal); closeModal(editModal); } };
+  const onTableClick = e => { const edit = e.target.closest('[data-edit-owner=\"true\"], a[href*=\"EditOwner\"]'); if (edit) { if (edit.tagName === 'A') e.preventDefault(); return openEdit(edit); } const del = e.target.closest('[data-delete-owner=\"true\"]'); if (del) return deleteOwner(del); };
+  const closeAdd = () => closeModal(addModal), closeEditBtn = () => closeModal(editModal), closeAlert = e => e.currentTarget.closest('.alert')?.classList.add('owner-hidden');
+  openBtn.addEventListener('click', openAdd); addModal.addEventListener('click', e => { if (e.target === addModal) closeAdd(); }); editModal.addEventListener('click', e => { if (e.target === editModal) closeEditBtn(); }); document.addEventListener('keydown', onKey); searchInput.addEventListener('keyup', onSearch); addSave.addEventListener('click', () => addForm.requestSubmit()); editSave.addEventListener('click', () => editForm.requestSubmit()); addForm.addEventListener('submit', e => { e.preventDefault(); submitForm(addForm, addSave, addAlerts, 'owner', 'Error saving homeowner. Please try again.', payload => { addForm.reset(); closeAdd(); showAlert(pageAlerts, 'success', payload.message || 'Homeowner added successfully!'); }); }); editForm.addEventListener('submit', e => { e.preventDefault(); submitForm(editForm, editSave, editAlerts, 'edit-owner', 'Error updating homeowner. Please try again.', payload => { closeEditBtn(); showAlert(pageAlerts, 'success', payload.message || 'Homeowner updated successfully!'); }); }); tableBody.addEventListener('click', onTableClick);
+  addModal.querySelectorAll('[data-owner-modal-close=\"true\"]').forEach(btn => btn.addEventListener('click', closeAdd));
+  addModal.querySelectorAll('[data-owner-alert-close=\"true\"]').forEach(btn => btn.addEventListener('click', closeAlert));
+  editModal.querySelectorAll('[data-edit-owner-modal-close=\"true\"]').forEach(btn => btn.addEventListener('click', closeEditBtn));
+  editModal.querySelectorAll('[data-edit-owner-alert-close=\"true\"]').forEach(btn => btn.addEventListener('click', closeAlert));
+  document.querySelectorAll('[data-owner-page-alert-close=\"true\"]').forEach(btn => btn.addEventListener('click', closeAlert));
+  updateCount();
+  window.__ownerModalCleanup = () => { openBtn.removeEventListener('click', openAdd); document.removeEventListener('keydown', onKey); searchInput.removeEventListener('keyup', onSearch); tableBody.removeEventListener('click', onTableClick); closeAdd(); closeEditBtn(); addModal.remove(); editModal.remove(); };
+  if (typeof window.__registerAdminEmbeddedCleanup === 'function') window.__registerAdminEmbeddedCleanup(window.__ownerModalCleanup);
+})();
+</script>

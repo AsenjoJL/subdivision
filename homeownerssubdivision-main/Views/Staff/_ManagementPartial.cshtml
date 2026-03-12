@@ -1,0 +1,105 @@
+@model HOMEOWNER.Models.ViewModels.StaffTaskManagementViewModel
+
+<section class="staff-management-module" data-page-title="Task Management" data-staff-view="management">
+    @Html.AntiForgeryToken()
+    <div class="staff-management-header">
+        <div>
+            <h2>@Model.Position task management</h2>
+            <p>Only requests assigned to the @Model.Position.ToLowerInvariant() team are shown here.</p>
+        </div>
+        <div class="staff-management-metrics">
+            <span class="staff-chip"><strong>@Model.PendingRequests.Count</strong> pending</span>
+            <span class="staff-chip"><strong>@Model.CompletedRequests.Count</strong> completed</span>
+        </div>
+    </div>
+
+    <div class="staff-task-section">
+        <h3>Pending requests</h3>
+        @if (!Model.PendingRequests.Any())
+        {
+            <div class="staff-empty-state">No pending @Model.Position.ToLowerInvariant() requests right now.</div>
+        }
+        else
+        {
+            <div class="staff-task-table-wrap">
+                <table class="staff-task-table">
+                    <thead>
+                        <tr>
+                            <th>Request ID</th>
+                            <th>Homeowner</th>
+                            <th>Priority</th>
+                            <th>Description</th>
+                            <th>Submitted</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var request in Model.PendingRequests)
+                        {
+                            <tr>
+                                <td>#@request.RequestID</td>
+                                <td>@(request.Homeowner?.FullName ?? "Homeowner")</td>
+                                <td>
+                                    <span class="staff-priority-badge staff-priority-@((request.Priority ?? "Low").ToLowerInvariant())">
+                                        @request.Priority
+                                    </span>
+                                </td>
+                                <td class="staff-task-description">@request.Description</td>
+                                <td>@request.CreatedAt.ToLocalTime().ToString("MMM dd, yyyy")</td>
+                                <td>
+                                    <button type="button"
+                                            class="staff-complete-btn"
+                                            data-complete-request
+                                            data-request-id="@request.RequestID"
+                                            data-update-url="@Url.Action("UpdateRequestStatus", "Staff")">
+                                        Mark completed
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+
+    <div class="staff-task-section">
+        <h3>Completed requests</h3>
+        @if (!Model.CompletedRequests.Any())
+        {
+            <div class="staff-empty-state">No completed @Model.Position.ToLowerInvariant() requests yet.</div>
+        }
+        else
+        {
+            <div class="staff-task-table-wrap">
+                <table class="staff-task-table">
+                    <thead>
+                        <tr>
+                            <th>Request ID</th>
+                            <th>Homeowner</th>
+                            <th>Priority</th>
+                            <th>Description</th>
+                            <th>Completed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var request in Model.CompletedRequests)
+                        {
+                            <tr>
+                                <td>#@request.RequestID</td>
+                                <td>@(request.Homeowner?.FullName ?? "Homeowner")</td>
+                                <td>
+                                    <span class="staff-priority-badge staff-priority-@((request.Priority ?? "Low").ToLowerInvariant())">
+                                        @request.Priority
+                                    </span>
+                                </td>
+                                <td class="staff-task-description">@request.Description</td>
+                                <td>@((request.CompletedAt ?? request.CreatedAt).ToLocalTime().ToString("MMM dd, yyyy"))</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</section>

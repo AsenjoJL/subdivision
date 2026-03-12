@@ -1,0 +1,79 @@
+@model HOMEOWNER.Models.ViewModels.StaffDashboardHomeViewModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Dashboard - @Model.Position</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/modern-dashboard.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/staff-dashboard.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/staff-profile.css" asp-append-version="true">
+</head>
+<body>
+    <div class="dashboard-container"
+         data-staff-dashboard
+         data-dashboard-url="@Url.Action("Dashboard", "Staff")"
+         data-management-url="@Url.Action("Management", "Staff")"
+         data-profile-url="@Url.Action("Profile", "Staff")">
+        <aside class="sidebar" id="sidebar">
+            <div class="profile-section">
+                <img src="@Model.ProfileImageUrl"
+                     alt="Staff profile image"
+                     class="profile-img staff-logo"
+                     data-staff-profile-image
+                     data-fallback-src="@Url.Content("~/restnesthome.png")" />
+                <p class="staff-profile-name" data-staff-display-name>@Model.StaffName</p>
+                <p class="staff-profile-role" data-staff-position-label>@Model.Position team</p>
+            </div>
+
+            <div class="sidebar-header">Navigation</div>
+            <nav class="menu">
+                <a href="#" class="active" data-staff-nav data-target="dashboard" data-target-title="@Model.Position Dashboard">
+                    <i class="fas fa-home"></i> <span>Dashboard</span>
+                </a>
+                <a href="#" data-staff-nav data-target="management" data-target-title="Task Management">
+                    <i class="fas fa-tasks"></i> <span>Management</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-header">Account</div>
+            <nav class="menu">
+                <a href="#" data-staff-nav data-target="profile" data-target-title="My Profile">
+                    <i class="fas fa-user"></i> <span>Profile</span>
+                </a>
+                <a asp-controller="Account" asp-action="Logout">
+                    <i class="fas fa-sign-out-alt"></i> <span>Log Out</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="top-nav">
+                <div class="page-title">
+                    <h1 id="staff-content-title">@Model.Position Dashboard</h1>
+                </div>
+                <div class="nav-actions">
+                    <button class="forum-btn staff-dashboard-badge" type="button">
+                        <i class="fas fa-shield-halved"></i> @Model.Position
+                    </button>
+                </div>
+            </div>
+
+            <div id="staff-dynamic-content">
+                @await Html.PartialAsync("~/Views/Staff/_DashboardHome.cshtml", Model)
+            </div>
+        </main>
+    </div>
+
+    <button class="mobile-menu-toggle" type="button" data-staff-mobile-toggle>
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <script src="~/js/staff-management.js" asp-append-version="true"></script>
+    <script src="~/js/staff-dashboard.js" asp-append-version="true"></script>
+    <script src="~/js/staff-profile.js" asp-append-version="true"></script>
+</body>
+</html>

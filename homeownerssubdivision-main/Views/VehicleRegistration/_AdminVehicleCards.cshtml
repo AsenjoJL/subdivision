@@ -1,0 +1,92 @@
+@model IReadOnlyList<HOMEOWNER.Models.VehicleRegistration>
+
+@if (Model != null && Model.Any())
+{
+    <div class="admin-vehicles-grid">
+        @foreach (var vehicle in Model)
+        {
+            var searchable = string.Join(" ",
+                vehicle.PlateNumber,
+                vehicle.VehicleType,
+                vehicle.Make,
+                vehicle.Model,
+                vehicle.Homeowner?.FullName,
+                vehicle.Status);
+            <article class="admin-vehicle-card"
+                     data-admin-vehicle-card
+                     data-search="@searchable"
+                     data-status="@vehicle.Status">
+                <div class="admin-vehicle-card-top">
+                    <div>
+                        <h3>@vehicle.PlateNumber</h3>
+                        <p>@(vehicle.Homeowner?.FullName ?? "Unknown homeowner") · @(vehicle.Homeowner?.BlockLotNumber ?? "No block/lot")</p>
+                    </div>
+                    <span class="admin-vehicle-status is-@vehicle.Status.ToLowerInvariant()">@vehicle.Status</span>
+                </div>
+                <dl class="admin-vehicle-meta">
+                    <div>
+                        <dt>Vehicle</dt>
+                        <dd>@vehicle.VehicleType · @($"{vehicle.Make} {vehicle.Model}".Trim())</dd>
+                    </div>
+                    <div>
+                        <dt>Color</dt>
+                        <dd>@(string.IsNullOrWhiteSpace(vehicle.Color) ? "-" : vehicle.Color)</dd>
+                    </div>
+                    <div>
+                        <dt>Submitted</dt>
+                        <dd>@vehicle.RegisteredAt.ToString("MMM dd, yyyy")</dd>
+                    </div>
+                    <div>
+                        <dt>Expiry</dt>
+                        <dd>@(vehicle.ExpiryDate?.ToString("MMM dd, yyyy") ?? "-")</dd>
+                    </div>
+                </dl>
+                <div class="admin-vehicle-actions">
+                    <button type="button"
+                            class="admin-vehicle-action"
+                            data-admin-vehicle-view
+                            data-vehicle-id="@vehicle.VehicleID">
+                        <i class="fas fa-eye"></i>
+                        <span>View</span>
+                    </button>
+                    @if (vehicle.Status == "Pending")
+                    {
+                        <button type="button"
+                                class="admin-vehicle-action is-primary"
+                                data-admin-vehicle-open-status
+                                data-vehicle-id="@vehicle.VehicleID"
+                                data-vehicle-status="Approved"
+                                data-vehicle-title="Approve vehicle registration">
+                            <i class="fas fa-check"></i>
+                            <span>Approve</span>
+                        </button>
+                        <button type="button"
+                                class="admin-vehicle-action is-danger"
+                                data-admin-vehicle-open-status
+                                data-vehicle-id="@vehicle.VehicleID"
+                                data-vehicle-status="Rejected"
+                                data-vehicle-title="Reject vehicle registration">
+                            <i class="fas fa-xmark"></i>
+                            <span>Reject</span>
+                        </button>
+                    }
+                    <button type="button"
+                            class="admin-vehicle-action is-danger"
+                            data-admin-vehicle-delete
+                            data-vehicle-id="@vehicle.VehicleID">
+                        <i class="fas fa-trash"></i>
+                        <span>Delete</span>
+                    </button>
+                </div>
+            </article>
+        }
+    </div>
+}
+else
+{
+    <div class="admin-vehicle-empty">
+        <i class="fas fa-car"></i>
+        <h3>No vehicle registrations yet</h3>
+        <p>Homeowner vehicle submissions will appear here once they are added.</p>
+    </div>
+}

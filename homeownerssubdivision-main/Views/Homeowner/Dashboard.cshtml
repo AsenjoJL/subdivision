@@ -1,0 +1,148 @@
+@model HOMEOWNER.Models.ViewModels.HomeownerDashboardHomeViewModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homeowner Dashboard - Modern & Professional</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/modern-dashboard.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/homeowner-service-requests.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/homeowner-documents.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/homeowner-contacts.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/homeowner-complaints.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/homeowner-events.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/homeowner-announcements.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/homeowner-polls.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/homeowner-billing.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/homeowner-settings.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/homeowner-visitor-passes.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/homeowner-vehicles.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/forum.css" asp-append-version="true">
+</head>
+<body>
+    <div class="dashboard-container" data-homeowner-dashboard data-home-url="@Url.Action("Dashboard", "Homeowner")" data-forum-url="/Forum/Embedded" data-profile-upload-url="@Url.Action("UpdateProfileImage", "Homeowner")">
+        <aside class="sidebar" id="sidebar">
+            <div class="profile-section">
+                <img src="@ViewData["ProfileImage"]" alt="Profile" class="profile-img" id="profile-img" data-homeowner-profile-image data-fallback-src="@Url.Content("~/restnesthome.png")" />
+                <input type="file" id="upload-input" accept="image/png,image/jpeg,image/webp,image/gif" style="display: none;">
+                <button class="upload-btn" type="button" data-profile-upload-trigger>
+                    <i class="fas fa-camera"></i>
+                    <span>Change Photo</span>
+                </button>
+                <p data-homeowner-display-name>@(User.Identity?.Name ?? "Guest")</p>
+            </div>
+
+            <div class="sidebar-header">Dashboard</div>
+            <nav class="menu">
+                <a href="#" class="active" data-ajax-nav data-target-title="Welcome to your dashboard" data-load-url="@Url.Action("Dashboard", "Homeowner")">
+                    <i class="fas fa-home"></i> <span>Home</span>
+                </a>
+                <a href="#" data-ajax-nav data-prefetch-nav="true" data-load-url="@Url.Action("Index", "Announcement")">
+                    <i class="fas fa-bullhorn"></i> <span>Announcements</span>
+                </a>
+                <a href="#" data-ajax-nav data-prefetch-nav="true" data-load-url="@Url.Action("Index", "Reservation")">
+                    <i class="fas fa-calendar-check"></i> <span>Reservations</span>
+                </a>
+                <a href="#" data-ajax-nav data-prefetch-nav="true" data-load-url="@Url.Action("Index", "Document")">
+                    <i class="fas fa-file-alt"></i> <span>Documents</span>
+                </a>
+                <a href="#" data-ajax-nav data-load-url="@Url.Action("Index", "Contact")">
+                    <i class="fas fa-address-book"></i> <span>Contact Directory</span>
+                </a>
+                <a href="#" data-ajax-nav data-load-url="@Url.Action("Index", "Poll")">
+                    <i class="fas fa-poll"></i> <span>Polls & Surveys</span>
+                </a>
+                <a href="#" data-ajax-nav data-prefetch-nav="true" data-load-url="@Url.Action("Calendar", "Homeowner")">
+                    <i class="fas fa-calendar-day"></i> <span>Events Calendar</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-header">Services</div>
+            <nav class="menu">
+                <a href="#" data-ajax-nav data-prefetch-nav="true" data-load-url="@Url.Action("SubmitRequest", "Homeowner")">
+                    <i class="fas fa-tools"></i> <span>Service Requests</span>
+                </a>
+                <a href="#" data-ajax-nav data-load-url="@Url.Action("Request", "VisitorPass")">
+                    <i class="fas fa-id-card"></i> <span>Visitor Pass</span>
+                </a>
+                <a href="#" data-ajax-nav data-load-url="@Url.Action("Register", "VehicleRegistration")">
+                    <i class="fas fa-car"></i> <span>Vehicle Registration</span>
+                </a>
+                <a href="#" data-ajax-nav data-load-url="@Url.Action("Submit", "Complaint")">
+                    <i class="fas fa-exclamation-triangle"></i> <span>Submit Complaint</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-header">Billing & Payments</div>
+            <nav class="menu">
+                <a href="#" data-ajax-nav data-load-url="@Url.Action("Index", "Payment")">
+                    <i class="fas fa-credit-card"></i> <span>My Bills</span>
+                </a>
+                <a href="#" data-ajax-nav data-load-url="@Url.Action("MyPasses", "VisitorPass")">
+                    <i class="fas fa-list-check"></i> <span>My Visitor Passes</span>
+                </a>
+                <a href="#" data-ajax-nav data-load-url="@Url.Action("MyVehicles", "VehicleRegistration")">
+                    <i class="fas fa-car-side"></i> <span>My Vehicles</span>
+                </a>
+                <a href="#" data-ajax-nav data-load-url="@Url.Action("MyComplaints", "Complaint")">
+                    <i class="fas fa-list-alt"></i> <span>My Complaints</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-header">Account</div>
+            <nav class="menu">
+                <a href="#" data-ajax-nav data-load-url="@Url.Action("Settings", "Homeowner")">
+                    <i class="fas fa-cog"></i> <span>Settings</span>
+                </a>
+                <a asp-controller="Account" asp-action="Logout">
+                    <i class="fas fa-sign-out-alt"></i> <span>Log Out</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="top-nav">
+                <div class="page-title">
+                    <h1 id="content-title">Welcome to your dashboard</h1>
+                </div>
+                <div class="nav-actions">
+                    <button id="forum-btn" class="forum-btn">
+                        <i class="fas fa-comments"></i> Community Forum
+                    </button>
+                    <button id="back-to-dashboard-btn" class="forum-btn" style="display: none;">
+                        <i class="fas fa-arrow-left"></i> Back to Dashboard
+                    </button>
+                </div>
+            </div>
+
+            <div id="dynamic-content">
+                @await Html.PartialAsync("~/Views/Homeowner/_DashboardHome.cshtml", Model)
+            </div>
+        </main>
+    </div>
+
+    <button class="mobile-menu-toggle" type="button" data-mobile-menu-toggle>
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/js/homeowner-service-requests.js" asp-append-version="true"></script>
+    <script src="~/js/homeowner-documents.js" asp-append-version="true"></script>
+    <script src="~/js/homeowner-contacts.js" asp-append-version="true"></script>
+    <script src="~/js/homeowner-complaints.js" asp-append-version="true"></script>
+    <script src="~/js/homeowner-events.js" asp-append-version="true"></script>
+    <script src="~/js/homeowner-announcements.js" asp-append-version="true"></script>
+    <script src="~/js/homeowner-polls.js" asp-append-version="true"></script>
+    <script src="~/js/homeowner-billing.js" asp-append-version="true"></script>
+    <script src="~/js/homeowner-settings.js" asp-append-version="true"></script>
+    <script src="~/js/homeowner-visitor-passes.js" asp-append-version="true"></script>
+    <script src="~/js/homeowner-vehicles.js" asp-append-version="true"></script>
+    <script src="~/js/forum.js" asp-append-version="true"></script>
+    <script src="~/js/reservation-bootstrap.js" asp-append-version="true"></script>
+    <script src="~/js/homeowner-dashboard.js" asp-append-version="true"></script>
+</body>
+</html>

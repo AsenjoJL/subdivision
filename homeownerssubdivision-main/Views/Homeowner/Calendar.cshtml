@@ -1,0 +1,109 @@
+@model HOMEOWNER.Models.ViewModels.HomeownerEventsViewModel
+
+<section class="homeowner-events-module" data-homeowner-module="events" data-page-title="Community events">
+    <div class="homeowner-events-shell">
+        <header class="homeowner-events-hero">
+            <div>
+                <h2>Community events</h2>
+                <p>Stay updated on meetings, trainings, and community gatherings from one homeowner calendar.</p>
+            </div>
+            <div class="homeowner-events-stats">
+                <span class="homeowner-events-chip">
+                    <strong data-home-event-total>@Model.TotalEvents</strong>
+                    <span>Total events</span>
+                </span>
+                <span class="homeowner-events-chip">
+                    <strong>@Model.UpcomingEvents</strong>
+                    <span>Upcoming</span>
+                </span>
+                <span class="homeowner-events-chip">
+                    <strong>@Model.ThisMonthEvents</strong>
+                    <span>This month</span>
+                </span>
+            </div>
+        </header>
+
+        <section class="homeowner-events-highlight">
+            <div>
+                <p class="homeowner-events-highlight-label">Next event</p>
+                @if (Model.NextEvent != null)
+                {
+                    <h3>@Model.NextEvent.Title</h3>
+                    <p>@Model.NextEvent.EventDate.ToString("dddd, MMMM dd · hh:mm tt") · @Model.NextEvent.Location</p>
+                }
+                else
+                {
+                    <h3>No upcoming event yet</h3>
+                    <p>New community activities will appear here as soon as they are scheduled.</p>
+                }
+            </div>
+        </section>
+
+        <section class="homeowner-events-toolbar">
+            <label class="homeowner-events-search">
+                <i class="fas fa-search"></i>
+                <input type="search" placeholder="Search event titles, locations, or descriptions" data-home-event-search />
+            </label>
+            <div class="homeowner-events-filters">
+                @foreach (var category in Model.Categories)
+                {
+                    <button type="button"
+                            class="homeowner-events-filter@(category == "All" ? " is-active" : string.Empty)"
+                            data-home-event-category="@category">
+                        @category
+                    </button>
+                }
+            </div>
+        </section>
+
+        @if (Model.Events.Count == 0)
+        {
+            <div class="homeowner-events-empty">
+                <i class="fas fa-calendar-xmark"></i>
+                <h3>No events available</h3>
+                <p>Check back later for upcoming community activities.</p>
+            </div>
+        }
+        else
+        {
+            <div class="homeowner-events-list" data-home-event-list>
+                @foreach (var eventItem in Model.Events)
+                {
+                    var searchIndex = $"{eventItem.Title} {eventItem.Description} {eventItem.Location} {eventItem.Category}".ToLowerInvariant();
+                    var isPast = eventItem.EventDate < DateTime.Now;
+                    <article class="homeowner-events-card@(isPast ? " is-past" : string.Empty)"
+                             data-home-event-card
+                             data-home-event-category="@eventItem.Category"
+                             data-search="@searchIndex">
+                        <div class="homeowner-events-date">
+                            <span>@eventItem.EventDate.ToString("MMM")</span>
+                            <strong>@eventItem.EventDate.ToString("dd")</strong>
+                        </div>
+                        <div class="homeowner-events-card-body">
+                            <div class="homeowner-events-card-top">
+                                <h3>@eventItem.Title</h3>
+                                <span class="homeowner-events-badge">@eventItem.Category</span>
+                            </div>
+                            <p>@eventItem.Description</p>
+                            <dl class="homeowner-events-meta">
+                                <div>
+                                    <dt>Date and time</dt>
+                                    <dd>@eventItem.EventDate.ToString("dddd, MMM dd, yyyy · hh:mm tt")</dd>
+                                </div>
+                                <div>
+                                    <dt>Location</dt>
+                                    <dd>@eventItem.Location</dd>
+                                </div>
+                            </dl>
+                        </div>
+                    </article>
+                }
+            </div>
+            <div class="homeowner-events-empty homeowner-events-hidden" data-home-event-empty>
+                <i class="fas fa-magnifying-glass"></i>
+                <h3>No matching events</h3>
+                <p>Try a different search term or filter.</p>
+            </div>
+        }
+    </div>
+</section>

@@ -1,0 +1,95 @@
+@model List<HOMEOWNER.Models.ViewModels.AdminHomeownerListItemViewModel>
+
+@if (Model == null || !Model.Any())
+{
+    <tr>
+        <td colspan="7" class="people-empty-state">No homeowners found.</td>
+    </tr>
+}
+else
+{
+    @foreach (var owner in Model)
+    {
+        var ownerName = string.IsNullOrWhiteSpace(owner.FullName) ? "Homeowner" : owner.FullName.Trim();
+        var profileImageUrl = string.IsNullOrWhiteSpace(owner.ProfileImageUrl) ? string.Empty : owner.ProfileImageUrl.Trim();
+        var initials = string.Concat(
+            ownerName
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Take(2)
+                .Select(part => char.ToUpperInvariant(part[0])));
+
+        if (string.IsNullOrWhiteSpace(initials))
+        {
+            initials = "HO";
+        }
+
+        <tr>
+            <td>
+                <div class="people-person">
+                    @if (!string.IsNullOrWhiteSpace(profileImageUrl))
+                    {
+                        <span class="people-avatar people-avatar--image">
+                            <img src="@profileImageUrl" alt="@ownerName" class="people-avatar-image" onerror="this.closest('.people-avatar--image')?.classList.add('is-broken'); this.remove();">
+                            <span class="people-avatar-fallback">@initials</span>
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="people-avatar">@initials</span>
+                    }
+                    <div class="people-person-copy">
+                        <span class="people-person-name">@ownerName</span>
+                        <span class="people-person-meta">Resident account</span>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="people-muted-cell">
+                    <strong>@owner.Email</strong>
+                    <span>@owner.Role</span>
+                </div>
+            </td>
+            <td>
+                <div class="people-muted-cell">
+                    <strong>@owner.Address</strong>
+                    <span>Block/Lot @owner.BlockLotNumber</span>
+                </div>
+            </td>
+            <td>
+                <div class="people-muted-cell">
+                    <strong>@owner.ContactNumber</strong>
+                    <span>Primary contact</span>
+                </div>
+            </td>
+            <td>
+                <span class="people-chip">@owner.BlockLotNumber</span>
+            </td>
+            <td>
+                <span class="people-chip people-chip--homeowner">@owner.Role</span>
+            </td>
+            <td>
+                <div class="people-actions">
+                    <button
+                        type="button"
+                        class="action-btn"
+                        data-edit-owner="true"
+                        data-owner-id="@owner.HomeownerID"
+                        data-edit-url="@Url.Action("EditOwner", "Admin", new { id = owner.HomeownerID })"
+                        aria-label="Edit homeowner">
+                        <i class="fas fa-pencil-alt"></i>
+                    </button>
+                    <button
+                        type="button"
+                        class="action-btn action-btn--danger"
+                        data-delete-owner="true"
+                        data-owner-id="@owner.HomeownerID"
+                        data-delete-url="@Url.Action("DeleteOwner", "Admin", new { id = owner.HomeownerID })"
+                        data-owner-name="@ownerName"
+                        aria-label="Delete homeowner">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    }
+}

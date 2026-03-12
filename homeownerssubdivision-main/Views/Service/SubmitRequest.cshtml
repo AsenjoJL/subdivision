@@ -1,0 +1,113 @@
+@model HOMEOWNER.Models.ViewModels.SubmitRequestViewModel
+
+@{
+    ViewData["Title"] = "Service Requests";
+}
+
+<section class="service-requests-module"
+         data-homeowner-module="service-requests"
+         data-page-title="Service requests"
+         data-cache-url="@Url.Action("SubmitRequest", "Homeowner")">
+    <div class="service-requests-shell">
+        <div class="service-requests-hero">
+            <div>
+                <h2>Service requests</h2>
+                <p>Submit maintenance or security concerns and keep track of progress without leaving your dashboard.</p>
+            </div>
+            <div class="service-requests-hero-meta">
+                <span class="service-chip">
+                    <i class="fas fa-user-circle"></i>
+                    @(Model.HomeownerName ?? "Homeowner")
+                </span>
+                <span class="service-chip">
+                    <i class="fas fa-clipboard-check"></i>
+                    @(Model.ServiceRequests?.Count ?? 0) active
+                </span>
+            </div>
+        </div>
+
+        <div class="service-request-alert service-request-alert-success @(string.IsNullOrWhiteSpace(Model.SuccessMessage) ? "service-request-hidden" : null)" data-service-request-success>
+            <i class="fas fa-check-circle"></i>
+            <span>@Model.SuccessMessage</span>
+        </div>
+
+        <div class="service-request-alert service-request-alert-error @(string.IsNullOrWhiteSpace(Model.ErrorMessage) ? "service-request-hidden" : null)" data-service-request-error>
+            <i class="fas fa-exclamation-circle"></i>
+            <span>@Model.ErrorMessage</span>
+        </div>
+
+        <div class="service-request-grid">
+            <div class="service-request-card service-request-form-card">
+                <div class="service-request-card-header">
+                    <h3>Submit a new request</h3>
+                    <p>Tell the subdivision team what you need help with.</p>
+                </div>
+
+                <form method="post"
+                      asp-action="SubmitRequest"
+                      asp-controller="Homeowner"
+                      class="service-request-form"
+                      data-service-request-form>
+                    @Html.AntiForgeryToken()
+                    <div class="service-request-field">
+                        <label asp-for="NewRequest.Category">Category</label>
+                        <select asp-for="NewRequest.Category" data-field="NewRequest.Category">
+                            <option value="">Select category</option>
+                            <option value="Security">Security</option>
+                            <option value="Maintenance">Maintenance</option>
+                        </select>
+                        <span class="service-request-field-error" data-validation-for="NewRequest.Category"></span>
+                    </div>
+
+                    <div class="service-request-field">
+                        <label asp-for="NewRequest.Priority">Priority</label>
+                        <div class="service-request-priority-group">
+                            <label class="service-request-priority">
+                                <input type="radio" asp-for="NewRequest.Priority" value="Low" data-field="NewRequest.Priority">
+                                <span>Low</span>
+                            </label>
+                            <label class="service-request-priority">
+                                <input type="radio" asp-for="NewRequest.Priority" value="Medium" data-field="NewRequest.Priority">
+                                <span>Medium</span>
+                            </label>
+                            <label class="service-request-priority">
+                                <input type="radio" asp-for="NewRequest.Priority" value="High" data-field="NewRequest.Priority">
+                                <span>High</span>
+                            </label>
+                        </div>
+                        <span class="service-request-field-error" data-validation-for="NewRequest.Priority"></span>
+                    </div>
+
+                    <div class="service-request-field">
+                        <label asp-for="NewRequest.Description">Description</label>
+                        <textarea asp-for="NewRequest.Description"
+                                  rows="5"
+                                  placeholder="Describe the issue, where it happened, and anything the staff should know."
+                                  data-field="NewRequest.Description"></textarea>
+                        <span class="service-request-field-error" data-validation-for="NewRequest.Description"></span>
+                    </div>
+
+                    <div class="service-request-form-actions">
+                        <button type="submit" class="service-request-submit" data-service-request-submit>
+                            <i class="fas fa-paper-plane"></i>
+                            <span>Submit request</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="service-request-card service-request-list-card">
+                <div class="service-request-card-header">
+                    <h3>My requests</h3>
+                    <p>Review active tickets and cancel pending items if needed.</p>
+                </div>
+
+                <div class="service-request-list-host"
+                     data-service-request-list
+                     data-load-url="@Url.Action("LoadServiceRequestList", "Homeowner")">
+                    @await Html.PartialAsync("~/Views/Service/_ServiceRequestList.cshtml", Model.ServiceRequests ?? new List<HOMEOWNER.Models.ServiceRequest>())
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

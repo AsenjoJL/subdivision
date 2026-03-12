@@ -1,0 +1,62 @@
+@model List<HOMEOWNER.Models.ServiceRequest>
+
+@if (Model == null || !Model.Any())
+{
+    <tr>
+        <td colspan="8" class="service-admin-empty-cell">No service requests found.</td>
+    </tr>
+}
+else
+{
+    @foreach (var request in Model)
+    {
+        var status = request.Status ?? "Pending";
+        var statusClass = status.ToLowerInvariant() switch
+        {
+            "pending" => "is-pending",
+            "in progress" => "is-progress",
+            "completed" => "is-completed",
+            "cancelled" or "canceled" => "is-cancelled",
+            _ => "is-pending"
+        };
+
+        <tr data-service-request-row="true">
+            <td>
+                <div class="service-admin-cell-primary">@request.Category</div>
+                <div class="service-admin-cell-secondary">#@request.RequestID</div>
+            </td>
+            <td>@(request.Homeowner?.FullName ?? "Unknown homeowner")</td>
+            <td>
+                <span class="service-admin-priority priority-@((request.Priority ?? "low").ToLowerInvariant())">
+                    @(request.Priority ?? "N/A")
+                </span>
+            </td>
+            <td>@(request.AssignedStaff?.FullName ?? "Unassigned")</td>
+            <td>
+                <span class="service-admin-status @statusClass">@status</span>
+            </td>
+            <td>@request.CreatedAt.ToString("MMM dd, yyyy")</td>
+            <td class="service-admin-description">@(request.Description ?? "No description provided")</td>
+            <td>
+                <div class="service-admin-action-row">
+                    <button type="button"
+                            class="service-admin-icon-button"
+                            data-service-details="true"
+                            data-request-id="@request.RequestID"
+                            data-details-url="@Url.Action("GetServiceRequestDetails", "Admin", new { requestId = request.RequestID })"
+                            aria-label="View service request">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button type="button"
+                            class="service-admin-icon-button"
+                            data-service-manage="true"
+                            data-request-id="@request.RequestID"
+                            data-details-url="@Url.Action("GetServiceRequestDetails", "Admin", new { requestId = request.RequestID })"
+                            aria-label="Manage service request">
+                        <i class="fas fa-pen-to-square"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    }
+}

@@ -1,0 +1,53 @@
+@model IReadOnlyList<HOMEOWNER.Models.VehicleRegistration>
+
+@if (Model != null && Model.Any())
+{
+    <div class="vehicle-cards">
+        @foreach (var vehicle in Model)
+        {
+            var statusClass = $"is-{vehicle.Status.ToLowerInvariant()}";
+            <article class="vehicle-card">
+                <div class="vehicle-card-top">
+                    <div>
+                        <h4>@vehicle.PlateNumber</h4>
+                        <p>@($"{vehicle.Make} {vehicle.Model}".Trim())</p>
+                    </div>
+                    <span class="vehicle-status @statusClass">@vehicle.Status</span>
+                </div>
+                <dl class="vehicle-meta">
+                    <div>
+                        <dt>Vehicle type</dt>
+                        <dd>@vehicle.VehicleType</dd>
+                    </div>
+                    <div>
+                        <dt>Color</dt>
+                        <dd>@(string.IsNullOrWhiteSpace(vehicle.Color) ? "-" : vehicle.Color)</dd>
+                    </div>
+                    <div>
+                        <dt>Submitted</dt>
+                        <dd>@vehicle.RegisteredAt.ToString("MMM dd, yyyy hh:mm tt")</dd>
+                    </div>
+                    <div>
+                        <dt>Expiry</dt>
+                        <dd>@(vehicle.ExpiryDate?.ToString("MMM dd, yyyy") ?? "-")</dd>
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(vehicle.AdminNotes))
+                    {
+                        <div class="is-wide">
+                            <dt>Admin notes</dt>
+                            <dd>@vehicle.AdminNotes</dd>
+                        </div>
+                    }
+                </dl>
+            </article>
+        }
+    </div>
+}
+else
+{
+    <div class="vehicle-empty">
+        <i class="fas fa-car-side"></i>
+        <h4>No vehicles yet</h4>
+        <p>Your submitted vehicle registrations will appear here once you add one.</p>
+    </div>
+}

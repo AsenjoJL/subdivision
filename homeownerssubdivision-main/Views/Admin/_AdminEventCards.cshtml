@@ -1,0 +1,64 @@
+@model List<HOMEOWNER.Models.EventModel>
+
+@if (Model.Count == 0)
+{
+    <div class="admin-events-empty" data-event-empty>
+        <i class="fas fa-calendar-xmark"></i>
+        <h3>No events scheduled yet</h3>
+        <p>Create the first subdivision event to start filling the calendar.</p>
+    </div>
+}
+else
+{
+    <div class="admin-events-list" data-event-list>
+        @foreach (var eventItem in Model)
+        {
+            var searchIndex = $"{eventItem.Title} {eventItem.Description} {eventItem.Location} {eventItem.Category}".ToLowerInvariant();
+            <article class="admin-events-card"
+                     data-event-card
+                     data-event-id="@eventItem.EventID"
+                     data-event-category="@eventItem.Category"
+                     data-event-date="@eventItem.EventDate.ToString("O")"
+                     data-search="@searchIndex">
+                <div class="admin-events-card-date">
+                    <span>@eventItem.EventDate.ToString("MMM")</span>
+                    <strong>@eventItem.EventDate.ToString("dd")</strong>
+                </div>
+                <div class="admin-events-card-body">
+                    <div class="admin-events-card-top">
+                        <div>
+                            <h3>@eventItem.Title</h3>
+                            <p>@eventItem.Description</p>
+                        </div>
+                        <span class="admin-events-badge">@eventItem.Category</span>
+                    </div>
+                    <dl class="admin-events-meta">
+                        <div>
+                            <dt>When</dt>
+                            <dd>@eventItem.EventDate.ToString("MMM dd, yyyy · hh:mm tt")</dd>
+                        </div>
+                        <div>
+                            <dt>Location</dt>
+                            <dd>@eventItem.Location</dd>
+                        </div>
+                    </dl>
+                </div>
+                <div class="admin-events-card-actions">
+                    <button type="button" class="admin-events-card-button is-edit" data-event-edit="@eventItem.EventID">
+                        <i class="fas fa-pen"></i>
+                        <span>Edit</span>
+                    </button>
+                    <button type="button" class="admin-events-card-button is-delete" data-event-delete="@eventItem.EventID">
+                        <i class="fas fa-trash"></i>
+                        <span>Delete</span>
+                    </button>
+                </div>
+            </article>
+        }
+    </div>
+    <div class="admin-events-empty admin-events-hidden" data-event-empty>
+        <i class="fas fa-magnifying-glass"></i>
+        <h3>No matching events</h3>
+        <p>Try a different search term or category.</p>
+    </div>
+}

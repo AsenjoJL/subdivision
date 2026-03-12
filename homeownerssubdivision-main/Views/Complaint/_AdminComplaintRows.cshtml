@@ -1,0 +1,80 @@
+@model IReadOnlyList<HOMEOWNER.Models.Complaint>
+
+@functions {
+    string GetPriorityLabel(int? priority)
+    {
+        return priority switch
+        {
+            4 => "Urgent",
+            3 => "High",
+            2 => "Medium",
+            _ => "Low"
+        };
+    }
+}
+
+<div class="admin-complaints-grid">
+    @if (Model == null || Model.Count == 0)
+    {
+        <div class="admin-complaints-empty">
+            <i class="fas fa-inbox"></i>
+            <h3>No complaints found</h3>
+            <p>New homeowner complaints will appear here automatically.</p>
+        </div>
+    }
+    else
+    {
+        @foreach (var complaint in Model)
+        {
+            var searchIndex = $"{complaint.Subject} {complaint.Category} {complaint.Status} {complaint.Homeowner?.FullName}".ToLowerInvariant();
+            <article class="admin-complaint-card"
+                     data-admin-complaint-card
+                     data-search="@searchIndex"
+                     data-status="@complaint.Status">
+                <div class="admin-complaint-card-top">
+                    <div>
+                        <h3>@complaint.Subject</h3>
+                        <p>@(complaint.IsAnonymous ? "Anonymous homeowner" : (complaint.Homeowner?.FullName ?? "Unknown homeowner"))</p>
+                    </div>
+                    <div class="admin-complaint-chip-stack">
+                        <span class="admin-complaint-chip status">@complaint.Status</span>
+                        <span class="admin-complaint-chip priority">@GetPriorityLabel(complaint.Priority)</span>
+                    </div>
+                </div>
+                <p class="admin-complaint-description">@complaint.Description</p>
+                <dl class="admin-complaint-meta">
+                    <div><dt>ID</dt><dd>#@complaint.ComplaintID</dd></div>
+                    <div><dt>Category</dt><dd>@(complaint.Category ?? "Other")</dd></div>
+                    <div><dt>Submitted</dt><dd>@complaint.SubmittedAt.ToLocalTime().ToString("MMM dd, yyyy")</dd></div>
+                </dl>
+                <div class="admin-complaint-actions">
+                    <button type="button"
+                            class="admin-complaints-button is-secondary"
+                            data-admin-complaint-view
+                            data-details-url="@Url.Action("AdminDetails", "Complaint", new { id = complaint.ComplaintID })">
+                        <i class="fas fa-eye"></i>
+                        <span>View</span>
+                    </button>
+                    <button type="button"
+                            class="admin-complaints-button"
+                            data-admin-complaint-edit
+                            data-complaint-id="@complaint.ComplaintID"
+                            data-complaint-status="@complaint.Status"
+                            data-complaint-response="@complaint.AdminResponse"
+                            data-complaint-resolution="@complaint.ResolutionNotes">
+                        <i class="fas fa-pen-to-square"></i>
+                        <span>Update</span>
+                    </button>
+                    <button type="button"
+                            class="admin-complaints-button is-danger"
+                            data-admin-complaint-delete
+                            data-delete-id="@complaint.ComplaintID"
+                            data-delete-url="@Url.Action("Delete", "Complaint")">
+                        <i class="fas fa-trash"></i>
+                        <span>Delete</span>
+                    </button>
+                </div>
+            </article>
+        }
+    }
+</div>

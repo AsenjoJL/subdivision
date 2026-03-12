@@ -1,0 +1,125 @@
+@model HOMEOWNER.Models.ViewModels.AdminComplaintsViewModel
+
+<section class="admin-complaints-module" data-admin-complaints-module>
+    <div class="admin-complaints-shell">
+        <header class="admin-complaints-hero">
+            <div>
+                <h2>Complaints management</h2>
+                <p>Review homeowner concerns, track progress, and close complaints with clear admin responses.</p>
+            </div>
+            <div class="admin-complaints-meta">
+                <span class="admin-complaints-chip">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span><strong data-admin-complaints-visible>@Model.TotalCount</strong> complaints</span>
+                </span>
+                <span class="admin-complaints-chip">
+                    <i class="fas fa-hourglass-half"></i>
+                    <span><strong>@Model.OpenCount</strong> open</span>
+                </span>
+                <span class="admin-complaints-chip">
+                    <i class="fas fa-flag"></i>
+                    <span><strong>@Model.HighPriorityCount</strong> high priority</span>
+                </span>
+            </div>
+        </header>
+
+        <section class="admin-complaints-toolbar">
+            <label class="admin-complaints-search">
+                <i class="fas fa-search"></i>
+                <input type="search" placeholder="Search complaints, homeowners, or categories" data-admin-complaint-search />
+            </label>
+            <select class="admin-complaints-filter" data-admin-complaint-status>
+                <option value="All">All statuses</option>
+                <option value="Submitted">Submitted</option>
+                <option value="Under Review">Under Review</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Resolved">Resolved</option>
+                <option value="Closed">Closed</option>
+            </select>
+        </section>
+
+        <div class="admin-complaints-alert is-success admin-complaints-hidden" data-admin-complaint-success>
+            <i class="fas fa-circle-check"></i>
+            <span>Complaint updated successfully.</span>
+        </div>
+        <div class="admin-complaints-alert is-error admin-complaints-hidden" data-admin-complaint-error>
+            <i class="fas fa-circle-exclamation"></i>
+            <span>Unable to update complaint.</span>
+        </div>
+
+        <div class="admin-complaints-list-host" data-admin-complaint-list data-load-url="@Url.Action("LoadComplaintRows", "Complaint")">
+            @await Html.PartialAsync("_AdminComplaintRows", Model.Complaints)
+        </div>
+    </div>
+
+    <div class="admin-complaints-modal" data-admin-complaint-details-modal hidden>
+        <div class="admin-complaints-modal-card">
+            <div class="admin-complaints-modal-header">
+                <h3>Complaint details</h3>
+                <button type="button" data-admin-complaint-close><i class="fas fa-times"></i></button>
+            </div>
+            <div class="admin-complaints-modal-body">
+                <dl class="admin-complaints-detail-grid">
+                    <div><dt>ID</dt><dd data-detail="complaintId">-</dd></div>
+                    <div><dt>Homeowner</dt><dd data-detail="homeowner">-</dd></div>
+                    <div><dt>Category</dt><dd data-detail="category">-</dd></div>
+                    <div><dt>Priority</dt><dd data-detail="priority">-</dd></div>
+                    <div><dt>Status</dt><dd data-detail="status">-</dd></div>
+                    <div><dt>Submitted</dt><dd data-detail="submittedAt">-</dd></div>
+                    <div class="is-wide"><dt>Subject</dt><dd data-detail="subject">-</dd></div>
+                    <div class="is-wide"><dt>Description</dt><dd data-detail="description">-</dd></div>
+                    <div class="is-wide"><dt>Admin response</dt><dd data-detail="adminResponse">-</dd></div>
+                    <div class="is-wide"><dt>Resolution notes</dt><dd data-detail="resolutionNotes">-</dd></div>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-complaints-modal" data-admin-complaint-update-modal hidden>
+        <div class="admin-complaints-modal-card">
+            <div class="admin-complaints-modal-header">
+                <h3>Update complaint</h3>
+                <button type="button" data-admin-complaint-close><i class="fas fa-times"></i></button>
+            </div>
+            <div class="admin-complaints-modal-body">
+                <form data-admin-complaint-update-form action="@Url.Action("UpdateStatus", "Complaint")">
+                    <input type="hidden" name="Id" data-update-field="Id" />
+                    <div class="admin-complaints-field">
+                        <label for="adminComplaintStatus">Status</label>
+                        <select id="adminComplaintStatus" name="Status" data-update-field="Status">
+                            <option value="Submitted">Submitted</option>
+                            <option value="Under Review">Under Review</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Resolved">Resolved</option>
+                            <option value="Closed">Closed</option>
+                        </select>
+                    </div>
+                    <div class="admin-complaints-field">
+                        <label for="adminComplaintResponse">Admin response</label>
+                        <textarea id="adminComplaintResponse" name="Response" rows="4" data-update-field="Response"></textarea>
+                    </div>
+                    <div class="admin-complaints-field">
+                        <label for="adminComplaintResolution">Resolution notes</label>
+                        <textarea id="adminComplaintResolution" name="ResolutionNotes" rows="3" data-update-field="ResolutionNotes"></textarea>
+                    </div>
+                    <div class="admin-complaints-actions">
+                        <button type="button" class="admin-complaints-button is-secondary" data-admin-complaint-close>Cancel</button>
+                        <button type="submit" class="admin-complaints-button" data-admin-complaint-submit>
+                            <i class="fas fa-floppy-disk"></i>
+                            <span>Save update</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const root = document.currentScript?.closest('[data-admin-complaints-module]');
+            if (root && typeof window.initializeAdminComplaintsModule === 'function') {
+                window.initializeAdminComplaintsModule(root);
+            }
+        })();
+    </script>
+</section>

@@ -1,0 +1,113 @@
+@model HOMEOWNER.Models.ViewModels.HomeownerComplaintsViewModel
+
+<section class="homeowner-complaints-module" data-homeowner-module="complaints" data-cache-url="@Url.Action("Submit", "Complaint")">
+    <div class="homeowner-complaints-shell">
+        <header class="homeowner-complaints-hero">
+            <div>
+                <h2>Complaints</h2>
+                <p>Raise neighborhood concerns, track updates, and keep a record of every complaint you submit.</p>
+            </div>
+            <div class="homeowner-complaints-meta">
+                <span class="homeowner-complaints-chip">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span><strong>@Model.Complaints.Count</strong> total complaints</span>
+                </span>
+                <span class="homeowner-complaints-chip">
+                    <i class="fas fa-hourglass-half"></i>
+                    <span><strong>@Model.OpenCount</strong> open cases</span>
+                </span>
+            </div>
+        </header>
+
+        <div class="homeowner-complaint-alert is-success homeowner-complaint-hidden" data-complaint-success>
+            <i class="fas fa-circle-check"></i>
+            <span>Complaint submitted successfully.</span>
+        </div>
+        <div class="homeowner-complaint-alert is-error homeowner-complaint-hidden" data-complaint-error>
+            <i class="fas fa-circle-exclamation"></i>
+            <span>Unable to submit complaint.</span>
+        </div>
+
+        <div class="homeowner-complaints-grid">
+            <section class="homeowner-complaints-card">
+                <div class="homeowner-complaints-card-header">
+                    <h3>Submit a complaint</h3>
+                    <p>Be specific so the admin team can review and act quickly.</p>
+                </div>
+
+                <form class="homeowner-complaints-form" data-complaint-form action="@Url.Action("Submit", "Complaint")">
+                    <div class="homeowner-complaints-field">
+                        <label for="complaintCategory">Category</label>
+                        <select id="complaintCategory" name="Category" data-field="Category" required>
+                            <option value="">Select category</option>
+                            <option value="Noise">Noise</option>
+                            <option value="Parking">Parking</option>
+                            <option value="Maintenance">Maintenance</option>
+                            <option value="Security">Security</option>
+                            <option value="Cleanliness">Cleanliness</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <div class="homeowner-complaint-field-error" data-validation-for="Category"></div>
+                    </div>
+
+                    <div class="homeowner-complaints-field">
+                        <label for="complaintSubject">Subject</label>
+                        <input id="complaintSubject" name="Subject" type="text" data-field="Subject" required />
+                        <div class="homeowner-complaint-field-error" data-validation-for="Subject"></div>
+                    </div>
+
+                    <div class="homeowner-complaints-field">
+                        <label for="complaintDescription">Description</label>
+                        <textarea id="complaintDescription" name="Description" rows="5" data-field="Description" required></textarea>
+                        <div class="homeowner-complaint-field-error" data-validation-for="Description"></div>
+                    </div>
+
+                    <div class="homeowner-complaints-field">
+                        <label>Priority</label>
+                        <div class="homeowner-complaint-priority-group">
+                            <label class="homeowner-complaint-priority">
+                                <input type="radio" name="Priority" value="1" checked />
+                                <span>Low</span>
+                            </label>
+                            <label class="homeowner-complaint-priority">
+                                <input type="radio" name="Priority" value="2" />
+                                <span>Medium</span>
+                            </label>
+                            <label class="homeowner-complaint-priority">
+                                <input type="radio" name="Priority" value="3" />
+                                <span>High</span>
+                            </label>
+                            <label class="homeowner-complaint-priority">
+                                <input type="radio" name="Priority" value="4" />
+                                <span>Urgent</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <label class="homeowner-complaint-checkbox">
+                        <input type="checkbox" name="IsAnonymous" value="true" />
+                        <span>Submit anonymously</span>
+                    </label>
+
+                    <div class="homeowner-complaints-actions">
+                        <button type="submit" class="homeowner-complaint-submit" data-complaint-submit>
+                            <i class="fas fa-paper-plane"></i>
+                            <span>Submit complaint</span>
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="homeowner-complaints-card">
+                <div class="homeowner-complaints-card-header">
+                    <h3>My complaints</h3>
+                    <p>Track your latest submissions and see admin responses in one place.</p>
+                </div>
+
+                <div class="homeowner-complaints-list-host" data-complaint-list data-load-url="@Url.Action("LoadHomeownerComplaints", "Complaint")">
+                    @await Html.PartialAsync("_HomeownerComplaintRows", Model.Complaints)
+                </div>
+            </section>
+        </div>
+    </div>
+</section>

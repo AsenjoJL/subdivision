@@ -1,0 +1,950 @@
+@model List<HOMEOWNER.Models.ViewModels.AdminStaffListItemViewModel>
+
+<div class="staff-management-card people-management-card people-management-card--staff">
+    <div class="staff-header-section">
+        <div class="people-management-topbar">
+            <div class="people-title-block">
+                <h2 class="staff-page-title people-title">
+                    <span class="people-title-icon"><i class="fas fa-user-shield"></i></span>
+                    <span>Staff Management</span>
+                </h2>
+                <p class="people-subtitle">Coordinate staff records, positions, and contact information without leaving the admin shell.</p>
+            </div>
+            <div class="people-summary-pill">
+                <span class="people-summary-label">Team members</span>
+                <span class="people-summary-value">@Model.Count</span>
+                <span class="people-summary-meta">Active staff account@(Model.Count == 1 ? "" : "s")</span>
+            </div>
+        </div>
+        <div class="staff-action-container people-controls">
+            <div class="staff-search-container people-search-cluster">
+                <i class="fas fa-search staff-search-icon"></i>
+                <input type="text" id="staffSearch" class="staff-search-input" placeholder="Search staff by name, email or position...">
+            </div>
+            <button type="button" id="openAddStaffModal" class="staff-btn-primary people-primary-btn">
+                <i class="fas fa-user-plus"></i>
+                <span>Add Staff</span>
+            </button>
+        </div>
+    </div>
+    <div class="px-4 pt-3">
+        <div id="staffPageSuccessAlert" class="staff-alert staff-alert-success staff-hidden" role="alert">
+            <span id="staffPageSuccessMessage">Action completed successfully.</span>
+            <button type="button" class="staff-alert-close" data-staff-page-alert-close="true" aria-label="Close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div id="staffPageErrorAlert" class="staff-alert staff-alert-danger staff-hidden" role="alert">
+            <span id="staffPageErrorMessage">Something went wrong.</span>
+            <button type="button" class="staff-alert-close" data-staff-page-alert-close="true" aria-label="Close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="staff-table-container">
+        <div class="people-table-shell">
+        <table class="staff-data-table" id="staffTable">
+            <thead>
+                <tr>
+                    <th>Full name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Position</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="staffTableBody">
+                @await Html.PartialAsync("_StaffList", Model)
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+    <div class="staff-table-footer people-table-footer">
+        <div id="staffPaginationInfo">Showing <span>@Model.Count</span> staff member@(Model.Count == 1 ? "" : "s")</div>
+        <span class="people-footer-note">Search staff by name, email, phone number, or assigned position.</span>
+    </div>
+</div>
+
+<div class="staff-modal" id="addStaffModal" tabindex="-1" aria-hidden="true" role="dialog">
+    <div class="staff-modal-dialog">
+        <div class="staff-modal-panel">
+            <div class="staff-modal-header">
+                <h5 class="staff-modal-title"><i class="fas fa-user-plus"></i>Add New Staff</h5>
+                <button type="button" class="staff-modal-close" data-staff-modal-close="true" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="staff-modal-body">
+                <div id="staffSuccessAlert" class="staff-alert staff-alert-success staff-hidden" role="alert">
+                    <span id="staffSuccessMessage">Staff added successfully!</span>
+                    <button type="button" class="staff-alert-close" data-staff-alert-close="true" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <div id="staffErrorAlert" class="staff-alert staff-alert-danger staff-hidden" role="alert">
+                    <span id="staffErrorMessage">Unable to add staff.</span>
+                    <button type="button" class="staff-alert-close" data-staff-alert-close="true" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <form id="addStaffForm" asp-controller="Admin" asp-action="AddStaff" method="post" data-refresh-url="@Url.Action("LoadStaffList", "Admin")">
+                    @Html.AntiForgeryToken()
+                    <div class="mb-3">
+                        <label class="staff-form-label"><i class="fas fa-user"></i> Full Name</label>
+                        <input type="text" class="staff-form-control" name="FullName" data-staff-input="FullName" required>
+                        <div class="staff-field-error staff-hidden" data-staff-field-error="FullName"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="staff-form-label"><i class="fas fa-envelope"></i> Email</label>
+                        <input type="email" class="staff-form-control" name="Email" data-staff-input="Email" required>
+                        <div class="staff-field-error staff-hidden" data-staff-field-error="Email"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="staff-form-label"><i class="fas fa-phone"></i> Phone Number</label>
+                        <input type="text" class="staff-form-control" name="PhoneNumber" data-staff-input="PhoneNumber" required>
+                        <div class="staff-field-error staff-hidden" data-staff-field-error="PhoneNumber"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="staff-form-label"><i class="fas fa-briefcase"></i> Position</label>
+                        <select class="staff-form-control" name="Position" data-staff-input="Position" required>
+                            <option value="">Select a position</option>
+                            <option value="Maintenance">Maintenance</option>
+                            <option value="Security">Security</option>
+                        </select>
+                        <div class="staff-field-error staff-hidden" data-staff-field-error="Position"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="staff-form-label"><i class="fas fa-key"></i> Password</label>
+                        <input type="password" class="staff-form-control" name="Password" data-staff-input="Password" required minlength="6">
+                        <div class="staff-field-error staff-hidden" data-staff-field-error="Password"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="staff-modal-footer">
+                <button type="button" class="staff-btn-secondary" data-staff-modal-close="true">Cancel</button>
+                <button type="button" class="staff-btn-primary" data-staff-submit="true">
+                    <i class="fas fa-save"></i>
+                    <span>Save Staff</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="staff-modal" id="editStaffModal" tabindex="-1" aria-hidden="true" role="dialog">
+    <div class="staff-modal-dialog">
+        <div class="staff-modal-panel">
+            <div class="staff-modal-header">
+                <h5 class="staff-modal-title"><i class="fas fa-user-pen"></i>Edit Staff</h5>
+                <button type="button" class="staff-modal-close" data-edit-staff-modal-close="true" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="staff-modal-body">
+                <div id="editStaffSuccessAlert" class="staff-alert staff-alert-success staff-hidden" role="alert">
+                    <span id="editStaffSuccessMessage">Staff updated successfully!</span>
+                    <button type="button" class="staff-alert-close" data-edit-staff-alert-close="true" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <div id="editStaffErrorAlert" class="staff-alert staff-alert-danger staff-hidden" role="alert">
+                    <span id="editStaffErrorMessage">Unable to update staff.</span>
+                    <button type="button" class="staff-alert-close" data-edit-staff-alert-close="true" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <form id="editStaffForm" asp-controller="Admin" asp-action="EditStaff" method="post" data-refresh-url="@Url.Action("LoadStaffList", "Admin")">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="StaffID" data-edit-staff-input="StaffID">
+                    <div class="mb-3">
+                        <label class="staff-form-label"><i class="fas fa-user"></i> Full Name</label>
+                        <input type="text" class="staff-form-control" name="FullName" data-edit-staff-input="FullName" required>
+                        <div class="staff-field-error staff-hidden" data-edit-staff-field-error="FullName"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="staff-form-label"><i class="fas fa-envelope"></i> Email</label>
+                        <input type="email" class="staff-form-control" name="Email" data-edit-staff-input="Email" required>
+                        <div class="staff-field-error staff-hidden" data-edit-staff-field-error="Email"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="staff-form-label"><i class="fas fa-phone"></i> Phone Number</label>
+                        <input type="text" class="staff-form-control" name="PhoneNumber" data-edit-staff-input="PhoneNumber" required>
+                        <div class="staff-field-error staff-hidden" data-edit-staff-field-error="PhoneNumber"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="staff-form-label"><i class="fas fa-briefcase"></i> Position</label>
+                        <select class="staff-form-control" name="Position" data-edit-staff-input="Position" required>
+                            <option value="">Select a position</option>
+                            <option value="Maintenance">Maintenance</option>
+                            <option value="Security">Security</option>
+                        </select>
+                        <div class="staff-field-error staff-hidden" data-edit-staff-field-error="Position"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="staff-modal-footer">
+                <button type="button" class="staff-btn-secondary" data-edit-staff-modal-close="true">Cancel</button>
+                <button type="button" class="staff-btn-primary" data-edit-staff-submit="true">
+                    <i class="fas fa-save"></i>
+                    <span>Update Staff</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        if (window.__staffManagementCleanup) {
+            window.__staffManagementCleanup();
+        }
+
+        let staffAlertTimer = null;
+        let editStaffAlertTimer = null;
+        let staffPageAlertTimer = null;
+
+        function showPageStaffAlert(type, message) {
+            const successAlert = document.getElementById('staffPageSuccessAlert');
+            const errorAlert = document.getElementById('staffPageErrorAlert');
+            const successMessage = document.getElementById('staffPageSuccessMessage');
+            const errorMessage = document.getElementById('staffPageErrorMessage');
+
+            if (staffPageAlertTimer) {
+                window.clearTimeout(staffPageAlertTimer);
+                staffPageAlertTimer = null;
+            }
+
+            if (!successAlert || !errorAlert || !successMessage || !errorMessage) {
+                return;
+            }
+
+            successAlert.classList.add('staff-hidden');
+            errorAlert.classList.add('staff-hidden');
+
+            if (type === 'success') {
+                successMessage.textContent = message;
+                successAlert.classList.remove('staff-hidden');
+                staffPageAlertTimer = window.setTimeout(function () {
+                    successAlert.classList.add('staff-hidden');
+                }, 3600);
+            } else {
+                errorMessage.textContent = message;
+                errorAlert.classList.remove('staff-hidden');
+            }
+        }
+
+        function clearPageStaffAlerts() {
+            if (staffPageAlertTimer) {
+                window.clearTimeout(staffPageAlertTimer);
+                staffPageAlertTimer = null;
+            }
+
+            document.getElementById('staffPageSuccessAlert')?.classList.add('staff-hidden');
+            document.getElementById('staffPageErrorAlert')?.classList.add('staff-hidden');
+        }
+
+        function showStaffAlert(type, message) {
+            const successAlert = document.getElementById('staffSuccessAlert');
+            const errorAlert = document.getElementById('staffErrorAlert');
+            const successMessage = document.getElementById('staffSuccessMessage');
+            const errorMessage = document.getElementById('staffErrorMessage');
+
+            if (staffAlertTimer) {
+                window.clearTimeout(staffAlertTimer);
+                staffAlertTimer = null;
+            }
+
+            if (!successAlert || !errorAlert || !successMessage || !errorMessage) {
+                return;
+            }
+
+            successAlert.classList.add('staff-hidden');
+            errorAlert.classList.add('staff-hidden');
+
+            if (type === 'success') {
+                successMessage.textContent = message;
+                successAlert.classList.remove('staff-hidden');
+                staffAlertTimer = window.setTimeout(function () {
+                    successAlert.classList.add('staff-hidden');
+                }, 3600);
+            } else {
+                errorMessage.textContent = message;
+                errorAlert.classList.remove('staff-hidden');
+            }
+        }
+
+        function clearStaffAlerts() {
+            if (staffAlertTimer) {
+                window.clearTimeout(staffAlertTimer);
+                staffAlertTimer = null;
+            }
+            document.getElementById('staffSuccessAlert')?.classList.add('staff-hidden');
+            document.getElementById('staffErrorAlert')?.classList.add('staff-hidden');
+        }
+
+        function clearStaffFieldErrors() {
+            document.querySelectorAll('[data-staff-field-error]').forEach(function (element) {
+                element.textContent = '';
+                element.classList.add('staff-hidden');
+            });
+
+            document.querySelectorAll('[data-staff-input]').forEach(function (input) {
+                input.classList.remove('staff-invalid');
+                input.removeAttribute('aria-invalid');
+            });
+        }
+
+        function showStaffFieldError(fieldName, message) {
+            if (!fieldName || !message) {
+                return;
+            }
+
+            const input = document.querySelector('[data-staff-input="' + fieldName + '"]');
+            const error = document.querySelector('[data-staff-field-error="' + fieldName + '"]');
+
+            if (input) {
+                input.classList.add('staff-invalid');
+                input.setAttribute('aria-invalid', 'true');
+            }
+
+            if (error) {
+                error.textContent = message;
+                error.classList.remove('staff-hidden');
+            }
+        }
+
+        function applyStaffServerErrors(payload) {
+            clearStaffFieldErrors();
+
+            if (!payload) {
+                return;
+            }
+
+            if (payload.field && payload.message) {
+                showStaffFieldError(payload.field, payload.message);
+                return;
+            }
+
+            if (payload.validationErrors && typeof payload.validationErrors === 'object') {
+                Object.keys(payload.validationErrors).forEach(function (fieldName) {
+                    const messages = payload.validationErrors[fieldName];
+                    if (Array.isArray(messages) && messages.length > 0) {
+                        showStaffFieldError(fieldName, messages[0]);
+                    }
+                });
+            }
+        }
+
+        function updateStaffCount() {
+            const rows = document.querySelectorAll('#staffTableBody tr');
+            const visibleRows = Array.from(rows).filter(function (row) {
+                return row.style.display !== 'none';
+            });
+            const paginationInfo = document.getElementById('staffPaginationInfo');
+
+            if (!paginationInfo) {
+                return;
+            }
+
+            const total = rows.length;
+            const visible = visibleRows.length;
+
+            if (total === 0) {
+                paginationInfo.textContent = 'Showing 0 staff members';
+                return;
+            }
+
+            paginationInfo.textContent = visible === total
+                ? 'Showing ' + total + ' staff member' + (total === 1 ? '' : 's')
+                : 'Showing ' + visible + ' of ' + total + ' staff members';
+        }
+
+        function populateEditStaffForm(staff) {
+            if (!staff) {
+                return;
+            }
+
+            editStaffForm.querySelector('[data-edit-staff-input="StaffID"]').value = staff.staffID || '';
+            editStaffForm.querySelector('[data-edit-staff-input="FullName"]').value = staff.fullName || '';
+            editStaffForm.querySelector('[data-edit-staff-input="Email"]').value = staff.email || '';
+            editStaffForm.querySelector('[data-edit-staff-input="PhoneNumber"]').value = staff.phoneNumber || '';
+            editStaffForm.querySelector('[data-edit-staff-input="Position"]').value = staff.position || '';
+        }
+
+        async function refreshStaffTable(refreshUrl) {
+            const response = await fetch(refreshUrl, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                credentials: 'same-origin'
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to refresh staff list.');
+            }
+
+            const markup = await response.text();
+            const tableBody = document.getElementById('staffTableBody');
+            if (tableBody) {
+                tableBody.innerHTML = markup;
+                updateStaffCount();
+            }
+        }
+
+        function openStaffModal() {
+            clearStaffAlerts();
+            clearStaffFieldErrors();
+
+            const modalElement = document.getElementById('addStaffModal');
+            if (!modalElement) {
+                return;
+            }
+
+            modalElement.classList.add('is-open');
+            modalElement.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+
+            const firstInput = modalElement.querySelector('input[name="FullName"]');
+            if (firstInput) {
+                firstInput.focus();
+            }
+        }
+
+        function closeStaffModal() {
+            const modalElement = document.getElementById('addStaffModal');
+            if (!modalElement) {
+                return;
+            }
+
+            modalElement.classList.remove('is-open');
+            modalElement.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }
+
+        function showEditStaffAlert(type, message) {
+            const successAlert = document.getElementById('editStaffSuccessAlert');
+            const errorAlert = document.getElementById('editStaffErrorAlert');
+            const successMessage = document.getElementById('editStaffSuccessMessage');
+            const errorMessage = document.getElementById('editStaffErrorMessage');
+
+            if (editStaffAlertTimer) {
+                window.clearTimeout(editStaffAlertTimer);
+                editStaffAlertTimer = null;
+            }
+
+            if (!successAlert || !errorAlert || !successMessage || !errorMessage) {
+                return;
+            }
+
+            successAlert.classList.add('staff-hidden');
+            errorAlert.classList.add('staff-hidden');
+
+            if (type === 'success') {
+                successMessage.textContent = message;
+                successAlert.classList.remove('staff-hidden');
+                editStaffAlertTimer = window.setTimeout(function () {
+                    successAlert.classList.add('staff-hidden');
+                }, 3600);
+            } else {
+                errorMessage.textContent = message;
+                errorAlert.classList.remove('staff-hidden');
+            }
+        }
+
+        function clearEditStaffAlerts() {
+            if (editStaffAlertTimer) {
+                window.clearTimeout(editStaffAlertTimer);
+                editStaffAlertTimer = null;
+            }
+            document.getElementById('editStaffSuccessAlert')?.classList.add('staff-hidden');
+            document.getElementById('editStaffErrorAlert')?.classList.add('staff-hidden');
+        }
+
+        function clearEditStaffFieldErrors() {
+            document.querySelectorAll('[data-edit-staff-field-error]').forEach(function (element) {
+                element.textContent = '';
+                element.classList.add('staff-hidden');
+            });
+
+            document.querySelectorAll('[data-edit-staff-input]').forEach(function (input) {
+                input.classList.remove('staff-invalid');
+                input.removeAttribute('aria-invalid');
+            });
+        }
+
+        function showEditStaffFieldError(fieldName, message) {
+            if (!fieldName || !message) {
+                return;
+            }
+
+            const input = document.querySelector('[data-edit-staff-input="' + fieldName + '"]');
+            const error = document.querySelector('[data-edit-staff-field-error="' + fieldName + '"]');
+
+            if (input) {
+                input.classList.add('staff-invalid');
+                input.setAttribute('aria-invalid', 'true');
+            }
+
+            if (error) {
+                error.textContent = message;
+                error.classList.remove('staff-hidden');
+            }
+        }
+
+        function applyEditStaffServerErrors(payload) {
+            clearEditStaffFieldErrors();
+
+            if (!payload) {
+                return;
+            }
+
+            if (payload.field && payload.message) {
+                showEditStaffFieldError(payload.field, payload.message);
+                return;
+            }
+
+            if (payload.validationErrors && typeof payload.validationErrors === 'object') {
+                Object.keys(payload.validationErrors).forEach(function (fieldName) {
+                    const messages = payload.validationErrors[fieldName];
+                    if (Array.isArray(messages) && messages.length > 0) {
+                        showEditStaffFieldError(fieldName, messages[0]);
+                    }
+                });
+            }
+        }
+
+        function openEditStaffModal() {
+            clearEditStaffAlerts();
+            clearEditStaffFieldErrors();
+
+            const modal = document.getElementById('editStaffModal');
+            if (!modal) {
+                return;
+            }
+
+            modal.classList.add('is-open');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeEditStaffModal() {
+            const modal = document.getElementById('editStaffModal');
+            if (!modal) {
+                return;
+            }
+
+            modal.classList.remove('is-open');
+            modal.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }
+
+        const modalElement = document.getElementById('addStaffModal');
+        const editModalElement = document.getElementById('editStaffModal');
+        const openButton = document.getElementById('openAddStaffModal');
+        const searchInput = document.getElementById('staffSearch');
+        const addStaffForm = document.getElementById('addStaffForm');
+        const saveButton = modalElement?.querySelector('[data-staff-submit="true"]');
+        const editStaffForm = document.getElementById('editStaffForm');
+        const editSaveButton = editModalElement?.querySelector('[data-edit-staff-submit="true"]');
+        const staffTableBody = document.getElementById('staffTableBody');
+
+        if (!modalElement || !editModalElement || !openButton || !searchInput || !addStaffForm || !saveButton || !editStaffForm || !editSaveButton || !staffTableBody) {
+            return;
+        }
+
+        if (modalElement.parentElement !== document.body) {
+            document.body.appendChild(modalElement);
+        }
+
+        if (editModalElement.parentElement !== document.body) {
+            document.body.appendChild(editModalElement);
+        }
+
+        const closeButtons = modalElement.querySelectorAll('[data-staff-modal-close="true"]');
+        const alertCloseButtons = modalElement.querySelectorAll('[data-staff-alert-close="true"]');
+        const editCloseButtons = editModalElement.querySelectorAll('[data-edit-staff-modal-close="true"]');
+        const editAlertCloseButtons = editModalElement.querySelectorAll('[data-edit-staff-alert-close="true"]');
+        const pageAlertCloseButtons = document.querySelectorAll('[data-staff-page-alert-close="true"]');
+
+        const handleOpenClick = function () {
+            openStaffModal();
+        };
+
+        const handleBackdropClick = function (event) {
+            if (event.target === modalElement) {
+                closeStaffModal();
+            }
+        };
+
+        const handleEditBackdropClick = function (event) {
+            if (event.target === editModalElement) {
+                closeEditStaffModal();
+            }
+        };
+
+        const handleKeydown = function (event) {
+            if (event.key === 'Escape') {
+                closeStaffModal();
+                closeEditStaffModal();
+            }
+        };
+
+        const handleSearchKeyup = function (event) {
+            const value = (event.target.value || '').toLowerCase();
+            document.querySelectorAll('#staffTableBody tr').forEach(function (row) {
+                row.style.display = row.textContent.toLowerCase().indexOf(value) > -1 ? '' : 'none';
+            });
+            updateStaffCount();
+        };
+
+        const handleAlertClose = function (event) {
+            event.currentTarget.closest('.staff-alert')?.classList.add('staff-hidden');
+        };
+
+        const handleEditAlertClose = function (event) {
+            event.currentTarget.closest('.staff-alert')?.classList.add('staff-hidden');
+        };
+
+        const handlePageAlertClose = function (event) {
+            event.currentTarget.closest('.staff-alert')?.classList.add('staff-hidden');
+        };
+
+        const handleSaveClick = function () {
+            clearStaffAlerts();
+            clearStaffFieldErrors();
+            addStaffForm.requestSubmit();
+        };
+
+        const handleEditSaveClick = function () {
+            clearEditStaffAlerts();
+            clearEditStaffFieldErrors();
+            editStaffForm.requestSubmit();
+        };
+
+        const handleSubmit = async function (event) {
+            event.preventDefault();
+
+            if (addStaffForm.dataset.submitting === 'true') {
+                return;
+            }
+
+            const refreshUrl = addStaffForm.dataset.refreshUrl;
+            const originalMarkup = saveButton.innerHTML;
+            addStaffForm.dataset.submitting = 'true';
+
+            saveButton.disabled = true;
+            saveButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Saving...</span>';
+
+            clearStaffAlerts();
+            clearStaffFieldErrors();
+
+            try {
+                const formData = new URLSearchParams(new FormData(addStaffForm));
+                const response = await fetch(addStaffForm.action, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    credentials: 'same-origin',
+                    body: formData.toString()
+                });
+
+                const contentType = response.headers.get('content-type') || '';
+                let payload = null;
+
+                if (contentType.includes('application/json')) {
+                    payload = await response.json();
+                } else {
+                    await response.text();
+                    payload = {
+                        success: false,
+                        message: 'Unexpected server response while saving staff.'
+                    };
+                }
+
+                if (!response.ok || !payload || payload.success === false) {
+                    applyStaffServerErrors(payload);
+                    showStaffAlert('error', payload?.message || 'Unable to add staff.');
+                    return;
+                }
+
+                try {
+                    await refreshStaffTable(refreshUrl);
+                    addStaffForm.reset();
+                    clearStaffFieldErrors();
+                    closeStaffModal();
+                } catch (refreshError) {
+                    console.error(refreshError);
+                    showStaffAlert('error', 'Staff was created, but the table could not be refreshed.');
+                    return;
+                }
+
+                showPageStaffAlert('success', payload.message || 'Staff added successfully!');
+            } catch (error) {
+                console.error(error);
+                showStaffAlert('error', 'Error saving staff. Please try again.');
+            } finally {
+                delete addStaffForm.dataset.submitting;
+                saveButton.disabled = false;
+                saveButton.innerHTML = originalMarkup;
+            }
+        };
+
+        const handleEditRowClick = function (event) {
+            const editTrigger = event.target.closest('[data-edit-staff="true"], a[href*="EditStaff"]');
+            if (!editTrigger) {
+                const deleteTrigger = event.target.closest('[data-delete-staff="true"]');
+                if (!deleteTrigger) {
+                    return;
+                }
+
+                const deleteUrl = deleteTrigger.getAttribute('data-delete-url');
+                const staffName = deleteTrigger.getAttribute('data-staff-name') || 'this staff member';
+                const token = addStaffForm.querySelector('input[name="__RequestVerificationToken"]')?.value;
+
+                if (!deleteUrl || !token) {
+                    showPageStaffAlert('error', 'Unable to delete the selected staff member.');
+                    return;
+                }
+
+                if (!window.confirm('Delete ' + staffName + '? This action cannot be undone.')) {
+                    return;
+                }
+
+                deleteTrigger.disabled = true;
+
+                fetch(deleteUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    credentials: 'same-origin',
+                    body: '__RequestVerificationToken=' + encodeURIComponent(token)
+                })
+                    .then(async function (response) {
+                        const payload = await response.json();
+                        if (!response.ok || !payload || payload.success === false) {
+                            throw new Error(payload?.message || 'Unable to delete the selected staff member.');
+                        }
+
+                        await refreshStaffTable(addStaffForm.dataset.refreshUrl);
+                        showPageStaffAlert('success', payload.message || 'Staff member deleted successfully!');
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                        showPageStaffAlert('error', error.message || 'Unable to delete the selected staff member.');
+                    })
+                    .finally(function () {
+                        deleteTrigger.disabled = false;
+                    });
+
+                return;
+            }
+
+            if (editTrigger.tagName === 'A') {
+                event.preventDefault();
+            }
+
+            const editUrl = editTrigger.getAttribute('data-edit-url') || editTrigger.getAttribute('href');
+            if (!editUrl) {
+                showPageStaffAlert('error', 'Unable to load the selected staff member.');
+                return;
+            }
+
+            clearEditStaffAlerts();
+            clearEditStaffFieldErrors();
+            editSaveButton.disabled = true;
+            editSaveButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Loading...</span>';
+
+            fetch(editUrl, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                credentials: 'same-origin'
+            })
+                .then(async function (response) {
+                    const contentType = response.headers.get('content-type') || '';
+                    if (!contentType.includes('application/json')) {
+                        throw new Error('Unexpected server response while loading staff.');
+                    }
+
+                    const payload = await response.json();
+                    if (!response.ok || !payload || payload.success === false || !payload.staff) {
+                        throw new Error(payload?.message || 'Unable to load the selected staff member.');
+                    }
+
+                    populateEditStaffForm(payload.staff);
+                    openEditStaffModal();
+                })
+                .catch(function (error) {
+                    console.error(error);
+                    showPageStaffAlert('error', error.message || 'Unable to load the selected staff member.');
+                })
+                .finally(function () {
+                    editSaveButton.disabled = false;
+                    editSaveButton.innerHTML = '<i class="fas fa-save"></i><span>Update Staff</span>';
+                });
+        };
+
+        const handleEditSubmit = async function (event) {
+            event.preventDefault();
+
+            if (editStaffForm.dataset.submitting === 'true') {
+                return;
+            }
+
+            const refreshUrl = editStaffForm.dataset.refreshUrl;
+            const originalMarkup = editSaveButton.innerHTML;
+            editStaffForm.dataset.submitting = 'true';
+
+            editSaveButton.disabled = true;
+            editSaveButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Saving...</span>';
+
+            clearEditStaffAlerts();
+            clearEditStaffFieldErrors();
+
+            try {
+                const formData = new URLSearchParams(new FormData(editStaffForm));
+                const response = await fetch(editStaffForm.action, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    credentials: 'same-origin',
+                    body: formData.toString()
+                });
+
+                const contentType = response.headers.get('content-type') || '';
+                let payload = null;
+
+                if (contentType.includes('application/json')) {
+                    payload = await response.json();
+                } else {
+                    await response.text();
+                    payload = {
+                        success: false,
+                        message: 'Unexpected server response while updating staff.'
+                    };
+                }
+
+                if (!response.ok || !payload || payload.success === false) {
+                    applyEditStaffServerErrors(payload);
+                    showEditStaffAlert('error', payload?.message || 'Unable to update staff.');
+                    return;
+                }
+
+                try {
+                    await refreshStaffTable(refreshUrl);
+                    closeEditStaffModal();
+                } catch (refreshError) {
+                    console.error(refreshError);
+                    showEditStaffAlert('error', 'Staff was updated, but the table could not be refreshed.');
+                    return;
+                }
+
+                showPageStaffAlert('success', payload.message || 'Staff updated successfully!');
+            } catch (error) {
+                console.error(error);
+                showEditStaffAlert('error', 'Error updating staff. Please try again.');
+            } finally {
+                delete editStaffForm.dataset.submitting;
+                editSaveButton.disabled = false;
+                editSaveButton.innerHTML = originalMarkup;
+            }
+        };
+
+        openButton.addEventListener('click', handleOpenClick);
+        modalElement.addEventListener('click', handleBackdropClick);
+        editModalElement.addEventListener('click', handleEditBackdropClick);
+        document.addEventListener('keydown', handleKeydown);
+        searchInput.addEventListener('keyup', handleSearchKeyup);
+        saveButton.addEventListener('click', handleSaveClick);
+        editSaveButton.addEventListener('click', handleEditSaveClick);
+        addStaffForm.addEventListener('submit', handleSubmit);
+        editStaffForm.addEventListener('submit', handleEditSubmit);
+        staffTableBody.addEventListener('click', handleEditRowClick);
+
+        closeButtons.forEach(function (button) {
+            button.addEventListener('click', closeStaffModal);
+        });
+
+        alertCloseButtons.forEach(function (button) {
+            button.addEventListener('click', handleAlertClose);
+        });
+
+        editCloseButtons.forEach(function (button) {
+            button.addEventListener('click', closeEditStaffModal);
+        });
+
+        editAlertCloseButtons.forEach(function (button) {
+            button.addEventListener('click', handleEditAlertClose);
+        });
+
+        pageAlertCloseButtons.forEach(function (button) {
+            button.addEventListener('click', handlePageAlertClose);
+        });
+
+        updateStaffCount();
+
+        const staffManagementCleanup = function () {
+            openButton.removeEventListener('click', handleOpenClick);
+            modalElement.removeEventListener('click', handleBackdropClick);
+            editModalElement.removeEventListener('click', handleEditBackdropClick);
+            document.removeEventListener('keydown', handleKeydown);
+            searchInput.removeEventListener('keyup', handleSearchKeyup);
+            saveButton.removeEventListener('click', handleSaveClick);
+            editSaveButton.removeEventListener('click', handleEditSaveClick);
+            addStaffForm.removeEventListener('submit', handleSubmit);
+            editStaffForm.removeEventListener('submit', handleEditSubmit);
+            staffTableBody.removeEventListener('click', handleEditRowClick);
+
+            closeButtons.forEach(function (button) {
+                button.removeEventListener('click', closeStaffModal);
+            });
+
+            alertCloseButtons.forEach(function (button) {
+                button.removeEventListener('click', handleAlertClose);
+            });
+
+            editCloseButtons.forEach(function (button) {
+                button.removeEventListener('click', closeEditStaffModal);
+            });
+
+            editAlertCloseButtons.forEach(function (button) {
+                button.removeEventListener('click', handleEditAlertClose);
+            });
+
+            pageAlertCloseButtons.forEach(function (button) {
+                button.removeEventListener('click', handlePageAlertClose);
+            });
+
+            closeStaffModal();
+            closeEditStaffModal();
+            clearPageStaffAlerts();
+
+            if (modalElement.parentElement === document.body) {
+                modalElement.remove();
+            }
+
+            if (editModalElement.parentElement === document.body) {
+                editModalElement.remove();
+            }
+
+            window.__staffManagementCleanup = null;
+        };
+
+        window.__staffManagementCleanup = staffManagementCleanup;
+        if (typeof window.__registerAdminEmbeddedCleanup === 'function') {
+            window.__registerAdminEmbeddedCleanup(staffManagementCleanup);
+        }
+    })();
+</script>

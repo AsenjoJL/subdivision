@@ -1,0 +1,136 @@
+@model HOMEOWNER.Models.ViewModels.StaffProfileViewModel
+
+<section class="staff-profile-module" data-staff-module="profile" data-profile-url="@Url.Action("Profile", "Staff")">
+    <div class="staff-profile-shell">
+        <header class="staff-profile-hero">
+            <div>
+                <h2>My profile</h2>
+                <p>Keep your staff profile details up to date so administrators and residents see the correct contact details.</p>
+            </div>
+            <div class="staff-profile-meta">
+                <span class="staff-profile-chip">
+                    <i class="fas fa-user-check"></i>
+                    <span>@(Model.IsActive ? "Active staff account" : "Inactive account")</span>
+                </span>
+                <span class="staff-profile-chip">
+                    <i class="fas fa-user-shield"></i>
+                    <span>@Model.Position team</span>
+                </span>
+            </div>
+        </header>
+
+        <div class="staff-profile-alert is-success staff-profile-hidden" data-staff-profile-success>
+            <i class="fas fa-circle-check"></i>
+            <span>Staff profile updated successfully.</span>
+        </div>
+        <div class="staff-profile-alert is-error staff-profile-hidden" data-staff-profile-error>
+            <i class="fas fa-circle-exclamation"></i>
+            <span>Unable to update the staff profile.</span>
+        </div>
+
+        <div class="staff-profile-grid">
+            <section class="staff-profile-card staff-profile-card--main">
+                <div class="staff-profile-card-header">
+                    <h3>Staff details</h3>
+                    <p>These details are used throughout the staff dashboard and administrative tools.</p>
+                </div>
+
+                <form class="staff-profile-form" data-staff-profile-form action="@Url.Action("UpdateProfile", "Staff")">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="StaffId" value="@Model.StaffId" />
+
+                    <div class="staff-profile-field">
+                        <label for="staffProfileFullName">Full name</label>
+                        <input id="staffProfileFullName" name="FullName" type="text" value="@Model.FullName" data-field="FullName" required />
+                        <div class="staff-profile-field-error" data-validation-for="FullName"></div>
+                    </div>
+
+                    <div class="staff-profile-field-grid">
+                        <div class="staff-profile-field">
+                            <label for="staffProfileEmail">Email</label>
+                            <input id="staffProfileEmail" name="Email" type="email" value="@Model.Email" data-field="Email" required />
+                            <div class="staff-profile-field-error" data-validation-for="Email"></div>
+                        </div>
+                        <div class="staff-profile-field">
+                            <label for="staffProfilePhone">Phone number</label>
+                            <input id="staffProfilePhone" name="PhoneNumber" type="text" value="@Model.PhoneNumber" data-field="PhoneNumber" required />
+                            <div class="staff-profile-field-error" data-validation-for="PhoneNumber"></div>
+                        </div>
+                    </div>
+
+                    <div class="staff-profile-field">
+                        <label for="staffProfilePosition">Position</label>
+                        <input id="staffProfilePosition" type="text" value="@Model.Position" readonly />
+                        <p class="staff-profile-help">Position assignments are managed by the administrator.</p>
+                    </div>
+
+                    <div class="staff-profile-actions">
+                        <button type="submit" class="staff-profile-submit" data-staff-profile-submit>
+                            <i class="fas fa-floppy-disk"></i>
+                            <span>Save changes</span>
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="staff-profile-card staff-profile-card--account">
+                <div class="staff-profile-card-header">
+                    <h3>Photo & security</h3>
+                    <p>Use a clear profile image and secure your staff account through reset links.</p>
+                </div>
+
+                <div class="staff-profile-identity">
+                    <img src="@Model.ProfileImageUrl"
+                         alt="Staff profile image"
+                         class="staff-profile-avatar"
+                         data-staff-profile-preview
+                         data-fallback-src="@Url.Content("~/restnesthome.png")" />
+                    <div>
+                        <strong>@Model.FullName</strong>
+                        <span>@Model.Email</span>
+                    </div>
+                </div>
+
+                <div class="staff-profile-security-box">
+                    <h4>Profile picture</h4>
+                    <p>Upload a clear image so administrators can identify staff assignments quickly.</p>
+                    <button type="button" class="staff-profile-secondary" data-staff-profile-upload-trigger>
+                        <i class="fas fa-camera"></i>
+                        <span>Upload new profile picture</span>
+                    </button>
+                    <p class="staff-profile-help">Accepted formats: JPG, PNG, WEBP, GIF. Maximum file size: 5 MB.</p>
+                </div>
+
+                <div class="staff-profile-security-box">
+                    <h4>Password reset</h4>
+                    <p>Generate a secure password reset link for your staff sign-in email.</p>
+                    <form data-staff-profile-reset-form action="@Url.Action("GeneratePasswordReset", "Staff")">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="staff-profile-secondary" data-staff-profile-reset-submit>
+                            <i class="fas fa-key"></i>
+                            <span>Generate reset link</span>
+                        </button>
+                    </form>
+
+                    @if (Model.IsDevelopment)
+                    {
+                        <div class="staff-profile-reset-link staff-profile-hidden" data-staff-profile-reset-link-wrap>
+                            <label for="staffProfileResetLink">Development reset link</label>
+                            <textarea id="staffProfileResetLink" rows="4" readonly data-staff-profile-reset-link></textarea>
+                            <div class="staff-profile-reset-actions">
+                                <button type="button" class="staff-profile-secondary" data-staff-profile-copy-link>
+                                    <i class="fas fa-copy"></i>
+                                    <span>Copy link</span>
+                                </button>
+                                <a href="#" class="staff-profile-secondary staff-profile-secondary--link" target="_blank" rel="noopener" data-staff-profile-open-link>
+                                    <i class="fas fa-arrow-up-right-from-square"></i>
+                                    <span>Open link</span>
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </section>
+        </div>
+    </div>
+</section>

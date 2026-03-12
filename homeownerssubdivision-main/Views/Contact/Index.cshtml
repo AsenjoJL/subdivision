@@ -1,0 +1,129 @@
+@model HOMEOWNER.Models.ViewModels.HomeownerContactDirectoryViewModel
+
+<section class="homeowner-contacts-module"
+         data-homeowner-module="contacts"
+         data-page-title="Contact Directory"
+         data-selected-category="@Model.SelectedCategory">
+    <div class="homeowner-contacts-shell">
+        <header class="homeowner-contacts-hero">
+            <div>
+                <h2>Contact directory</h2>
+                <p>Reach the homeowners association, security office, maintenance team, and emergency contacts from one organized directory.</p>
+            </div>
+            <div class="homeowner-contacts-stats">
+                <span class="homeowner-contacts-chip">
+                    <strong data-contact-visible-count>@Model.TotalContacts</strong>
+                    <span>Contacts</span>
+                </span>
+                <span class="homeowner-contacts-chip is-emergency">
+                    <strong>@Model.EmergencyContacts</strong>
+                    <span>Emergency</span>
+                </span>
+            </div>
+        </header>
+
+        <section class="homeowner-contacts-toolbar">
+            <label class="homeowner-contacts-search">
+                <i class="fas fa-search"></i>
+                <input type="search" placeholder="Search names, departments, phones, or email" data-contact-search />
+            </label>
+            <div class="homeowner-contacts-filters">
+                @foreach (var category in Model.Categories)
+                {
+                    <button type="button"
+                            class="homeowner-contacts-filter@(category == Model.SelectedCategory ? " is-active" : string.Empty)"
+                            data-contact-category="@category">
+                        @category
+                    </button>
+                }
+            </div>
+        </section>
+
+        @if (Model.Contacts.Count == 0)
+        {
+            <div class="homeowner-contacts-empty">
+                <i class="fas fa-address-book"></i>
+                <h3>No contacts available</h3>
+                <p>The subdivision contact directory will appear here once contacts are published.</p>
+            </div>
+        }
+        else
+        {
+            <div class="homeowner-contacts-grid" data-contact-grid>
+                @foreach (var contact in Model.Contacts)
+                {
+                    var searchIndex = $"{contact.Name} {contact.Category} {contact.Position} {contact.Department} {contact.PhoneNumber} {contact.MobileNumber} {contact.Email} {contact.OfficeLocation}".ToLowerInvariant();
+                    <article class="homeowner-contacts-card"
+                             data-contact-card
+                             data-category="@contact.Category"
+                             data-emergency="@(contact.IsEmergency ? "true" : "false")"
+                             data-search="@searchIndex">
+                        <div class="homeowner-contacts-card-top">
+                            <div>
+                                <div class="homeowner-contacts-badges">
+                                    <span class="homeowner-contacts-badge">@contact.Category</span>
+                                    @if (contact.IsEmergency)
+                                    {
+                                        <span class="homeowner-contacts-badge is-emergency">Emergency</span>
+                                    }
+                                </div>
+                                <h3>@contact.Name</h3>
+                                @if (!string.IsNullOrWhiteSpace(contact.Position))
+                                {
+                                    <p class="homeowner-contacts-role">@contact.Position</p>
+                                }
+                            </div>
+                        </div>
+
+                        <dl class="homeowner-contacts-meta">
+                            @if (!string.IsNullOrWhiteSpace(contact.Department))
+                            {
+                                <div>
+                                    <dt>Department</dt>
+                                    <dd>@contact.Department</dd>
+                                </div>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(contact.OfficeLocation))
+                            {
+                                <div>
+                                    <dt>Office</dt>
+                                    <dd>@contact.OfficeLocation</dd>
+                                </div>
+                            }
+                        </dl>
+
+                        <div class="homeowner-contacts-actions">
+                            @if (!string.IsNullOrWhiteSpace(contact.PhoneNumber))
+                            {
+                                <a href="tel:@contact.PhoneNumber" class="homeowner-contacts-action">
+                                    <i class="fas fa-phone"></i>
+                                    <span>@contact.PhoneNumber</span>
+                                </a>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(contact.MobileNumber))
+                            {
+                                <a href="tel:@contact.MobileNumber" class="homeowner-contacts-action">
+                                    <i class="fas fa-mobile-alt"></i>
+                                    <span>@contact.MobileNumber</span>
+                                </a>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(contact.Email))
+                            {
+                                <a href="mailto:@contact.Email" class="homeowner-contacts-action">
+                                    <i class="fas fa-envelope"></i>
+                                    <span>@contact.Email</span>
+                                </a>
+                            }
+                        </div>
+                    </article>
+                }
+            </div>
+
+            <div class="homeowner-contacts-empty homeowner-contacts-hidden" data-contact-empty>
+                <i class="fas fa-user-slash"></i>
+                <h3>No matching contacts</h3>
+                <p>Try a different search term or category.</p>
+            </div>
+        }
+    </div>
+</section>

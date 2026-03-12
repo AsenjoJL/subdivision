@@ -1,0 +1,135 @@
+@model HOMEOWNER.Models.ViewModels.AdminVisitorPassManagementViewModel
+
+<section class="admin-visitor-passes-module"
+         data-admin-visitor-passes
+         data-load-url="@Url.Action("LoadAdminPassCards", "VisitorPass")"
+         data-details-url="@Url.Action("GetPassDetails", "VisitorPass")"
+         data-status-url="@Url.Action("UpdateStatus", "VisitorPass")"
+         data-checkin-url="@Url.Action("CheckIn", "VisitorPass")"
+         data-checkout-url="@Url.Action("CheckOut", "VisitorPass")">
+    <div class="admin-visitor-passes-shell">
+        <header class="admin-visitor-passes-hero">
+            <div>
+                <h2>Visitor passes</h2>
+                <p>Review incoming requests, approve or reject access, and track gate check-ins without leaving the dashboard.</p>
+            </div>
+            <div class="admin-visitor-passes-stats">
+                <span class="admin-visitor-passes-chip">
+                    <strong>@Model.TotalPasses</strong>
+                    <span>Total requests</span>
+                </span>
+                <span class="admin-visitor-passes-chip">
+                    <strong>@Model.PendingPasses</strong>
+                    <span>Pending</span>
+                </span>
+                <span class="admin-visitor-passes-chip">
+                    <strong>@Model.ActiveVisits</strong>
+                    <span>Checked in</span>
+                </span>
+                <span class="admin-visitor-passes-chip">
+                    <strong>@Model.CompletedVisits</strong>
+                    <span>Completed</span>
+                </span>
+            </div>
+        </header>
+
+        <section class="admin-visitor-passes-toolbar">
+            <label class="admin-visitor-passes-search">
+                <i class="fas fa-search"></i>
+                <input type="search" placeholder="Search by visitor, homeowner, plate, or purpose" data-admin-visitor-pass-search />
+            </label>
+            <select class="admin-visitor-passes-filter" data-admin-visitor-pass-filter>
+                @foreach (var status in Model.Statuses)
+                {
+                    <option value="@status">@status</option>
+                }
+            </select>
+        </section>
+
+        <div class="admin-visitor-passes-alert is-success admin-visitor-passes-hidden" data-admin-visitor-pass-success>
+            <i class="fas fa-circle-check"></i>
+            <span>Visitor pass updated successfully.</span>
+        </div>
+        <div class="admin-visitor-passes-alert is-error admin-visitor-passes-hidden" data-admin-visitor-pass-error>
+            <i class="fas fa-circle-exclamation"></i>
+            <span>Unable to update this visitor pass right now.</span>
+        </div>
+
+        <div data-admin-visitor-pass-list-host>
+            @await Html.PartialAsync("_AdminVisitorPassCards", Model.Passes)
+        </div>
+    </div>
+
+    <div class="admin-visitor-passes-modal admin-visitor-passes-hidden" data-admin-visitor-pass-details-modal aria-hidden="true">
+        <div class="admin-visitor-passes-backdrop" data-admin-visitor-pass-close></div>
+        <div class="admin-visitor-passes-dialog">
+            <div class="admin-visitor-passes-modal-header">
+                <div>
+                    <p class="admin-visitor-passes-kicker">Details</p>
+                    <h3>Visitor pass details</h3>
+                </div>
+                <button type="button" class="admin-visitor-passes-close" data-admin-visitor-pass-close aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <dl class="admin-visitor-passes-detail-grid">
+                <div><dt>Visitor</dt><dd data-pass-detail="visitorName">-</dd></div>
+                <div><dt>Homeowner</dt><dd data-pass-detail="homeownerName">-</dd></div>
+                <div><dt>Block & lot</dt><dd data-pass-detail="homeownerBlockLot">-</dd></div>
+                <div><dt>Status</dt><dd data-pass-detail="status">-</dd></div>
+                <div><dt>Visit date</dt><dd data-pass-detail="visitDate">-</dd></div>
+                <div><dt>Arrival</dt><dd data-pass-detail="expectedArrivalTime">-</dd></div>
+                <div><dt>Phone</dt><dd data-pass-detail="visitorPhone">-</dd></div>
+                <div><dt>ID number</dt><dd data-pass-detail="visitorIdNumber">-</dd></div>
+                <div><dt>Vehicle</dt><dd data-pass-detail="vehicleType">-</dd></div>
+                <div><dt>Plate</dt><dd data-pass-detail="vehiclePlateNumber">-</dd></div>
+                <div><dt>Requested</dt><dd data-pass-detail="requestedAt">-</dd></div>
+                <div><dt>Approved</dt><dd data-pass-detail="approvedAt">-</dd></div>
+                <div><dt>Checked in</dt><dd data-pass-detail="checkedInAt">-</dd></div>
+                <div><dt>Checked out</dt><dd data-pass-detail="checkedOutAt">-</dd></div>
+                <div class="is-wide"><dt>Purpose</dt><dd data-pass-detail="purpose">-</dd></div>
+                <div class="is-wide"><dt>Admin notes</dt><dd data-pass-detail="adminNotes">-</dd></div>
+            </dl>
+        </div>
+    </div>
+
+    <div class="admin-visitor-passes-modal admin-visitor-passes-hidden" data-admin-visitor-pass-status-modal aria-hidden="true">
+        <div class="admin-visitor-passes-backdrop" data-admin-visitor-pass-status-close></div>
+        <div class="admin-visitor-passes-dialog is-compact">
+            <div class="admin-visitor-passes-modal-header">
+                <div>
+                    <p class="admin-visitor-passes-kicker">Action</p>
+                    <h3 data-admin-visitor-pass-status-title>Update visitor pass</h3>
+                </div>
+                <button type="button" class="admin-visitor-passes-close" data-admin-visitor-pass-status-close aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form class="admin-visitor-passes-form" data-admin-visitor-pass-status-form>
+                <input type="hidden" name="id" data-status-field="id" />
+                <input type="hidden" name="status" data-status-field="status" />
+                <label class="admin-visitor-passes-field">
+                    <span>Admin notes</span>
+                    <textarea name="notes" rows="4" placeholder="Add context for the homeowner or guard team."></textarea>
+                </label>
+                <div class="admin-visitor-passes-form-actions">
+                    <button type="button" class="admin-visitor-passes-secondary" data-admin-visitor-pass-status-close>Cancel</button>
+                    <button type="submit" class="admin-visitor-passes-primary" data-admin-visitor-pass-status-submit>
+                        <i class="fas fa-floppy-disk"></i>
+                        <span>Apply update</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const root = document.currentScript?.closest('[data-admin-visitor-passes]');
+            if (root && typeof window.initializeAdminVisitorPassesModule === 'function') {
+                window.initializeAdminVisitorPassesModule(root);
+            }
+        })();
+    </script>
+</section>

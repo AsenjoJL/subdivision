@@ -1,0 +1,395 @@
+@{
+    ViewData["Title"] = "Home";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RestNestHome</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/css/landing.css" asp-append-version="true">
+</head>
+<body>
+    <header class="landing-header">
+        <nav class="landing-nav">
+            <a class="landing-brand" href="#home">
+                <img src="~/restnest.png" alt="RestNestHome" class="landing-brand-mark">
+                <span class="landing-brand-copy">
+                    <strong>RestNestHome</strong>
+                    <span>Homeowner community platform</span>
+                </span>
+            </a>
+            <button class="landing-nav-toggle" type="button" aria-label="Toggle navigation" data-nav-toggle>
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="landing-nav-menu" data-nav-menu>
+                <a href="#home" class="landing-nav-link is-active">Home</a>
+                <a href="#about" class="landing-nav-link">About</a>
+                <a href="#services" class="landing-nav-link">Services</a>
+                <a href="#contact" class="landing-nav-link">Contact</a>
+                <a href="/Account/Login" class="landing-nav-cta">
+                    <span>Log in</span>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="landing-shell">
+        <section class="hero-section" id="home">
+            <div class="hero-section__backdrop"></div>
+            <div class="landing-container hero-grid">
+                <div class="hero-copy">
+                    <p class="hero-eyebrow">Rest easy. Stay connected. Live better.</p>
+                    <h1>
+                        Modern subdivision living with
+                        <span>one resident portal</span>
+                        for everything that matters.
+                    </h1>
+                    <p class="hero-lead">
+                        RestNestHome brings homeowner services, reservations, billing, announcements, documents, and
+                        support into one clear experience for residents, staff, and administrators.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="/Account/Login" class="hero-primary-action">
+                            <i class="fas fa-arrow-right"></i>
+                            <span>Open resident portal</span>
+                        </a>
+                        <a href="#services" class="hero-secondary-action">
+                            <i class="fas fa-grid-2"></i>
+                            <span>Explore services</span>
+                        </a>
+                    </div>
+                    <div class="hero-metrics">
+                        <article class="hero-metric-card">
+                            <strong>24/7</strong>
+                            <span>Service visibility and request tracking</span>
+                        </article>
+                        <article class="hero-metric-card">
+                            <strong>1 hub</strong>
+                            <span>Reservations, documents, billing, and updates</span>
+                        </article>
+                        <article class="hero-metric-card">
+                            <strong>3 roles</strong>
+                            <span>Homeowners, staff, and admin workflows aligned</span>
+                        </article>
+                    </div>
+                </div>
+                <div class="hero-panel">
+                    <div class="hero-panel__card hero-panel__card--primary">
+                        <div class="hero-panel__topline">
+                            <span class="hero-status-dot"></span>
+                            <span>Resident experience overview</span>
+                        </div>
+                        <div class="hero-panel__logo-row">
+                            <img src="~/restnest.png" alt="RestNestHome" class="hero-panel__logo">
+                            <div>
+                                <strong>RestNestHome</strong>
+                                <p>Subdivision operations made visible.</p>
+                            </div>
+                        </div>
+                        <div class="hero-panel__stack">
+                            <div class="hero-panel__feature">
+                                <i class="fas fa-bell"></i>
+                                <div>
+                                    <strong>Announcements</strong>
+                                    <span>Community updates reach everyone in one place.</span>
+                                </div>
+                            </div>
+                            <div class="hero-panel__feature">
+                                <i class="fas fa-calendar-check"></i>
+                                <div>
+                                    <strong>Reservations</strong>
+                                    <span>Facilities, approvals, and schedules stay organized.</span>
+                                </div>
+                            </div>
+                            <div class="hero-panel__feature">
+                                <i class="fas fa-wallet"></i>
+                                <div>
+                                    <strong>Billing</strong>
+                                    <span>Residents can review dues and submit payment proof online.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hero-panel__card hero-panel__card--secondary">
+                        <span class="hero-panel__label">Included workflows</span>
+                        <ul class="hero-panel__list">
+                            <li><i class="fas fa-check"></i> Service requests and assignment</li>
+                            <li><i class="fas fa-check"></i> Documents, permits, and passes</li>
+                            <li><i class="fas fa-check"></i> Community forum and resident engagement</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="story-section" id="about">
+            <div class="landing-container section-shell">
+                <div class="section-heading">
+                    <p class="section-kicker">About RestNestHome</p>
+                    <h2>Built for calm operations and a stronger community rhythm.</h2>
+                    <p>
+                        RestNestHome is designed for subdivisions that want a cleaner way to run daily operations.
+                        Residents get a clearer experience, staff get focused task visibility, and administrators
+                        get one operational view instead of scattered manual follow-ups.
+                    </p>
+                </div>
+                <div class="story-grid">
+                    <article class="story-card story-card--feature">
+                        <div class="story-card__icon"><i class="fas fa-house-signal"></i></div>
+                        <h3>A single source of truth</h3>
+                        <p>
+                            Announcements, homeowner records, reservations, documents, billing, and support requests
+                            live in one platform so updates stay consistent and searchable.
+                        </p>
+                    </article>
+                    <article class="story-card">
+                        <div class="story-card__icon"><i class="fas fa-people-group"></i></div>
+                        <h3>Resident-first communication</h3>
+                        <p>
+                            Residents can see what matters without chasing office updates, while staff and admin can
+                            respond from role-specific dashboards.
+                        </p>
+                    </article>
+                    <article class="story-card">
+                        <div class="story-card__icon"><i class="fas fa-shield-heart"></i></div>
+                        <h3>Operational visibility</h3>
+                        <p>
+                            From visitor passes to service queues and billing reviews, the system keeps daily
+                            subdivision work visible and accountable.
+                        </p>
+                    </article>
+                </div>
+                <div class="story-strip">
+                    <div class="story-strip__item">
+                        <strong>Resident portal</strong>
+                        <span>Homeowners manage requests, bills, reservations, and documents.</span>
+                    </div>
+                    <div class="story-strip__item">
+                        <strong>Staff dashboard</strong>
+                        <span>Teams focus on active tasks, completions, and profile updates.</span>
+                    </div>
+                    <div class="story-strip__item">
+                        <strong>Admin workspace</strong>
+                        <span>Operations, people management, analytics, and approvals stay centralized.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="services-section" id="services">
+            <div class="landing-container section-shell">
+                <div class="section-heading">
+                    <p class="section-kicker">Services</p>
+                    <h2>Core subdivision workflows, designed as one connected system.</h2>
+                    <p>
+                        The platform covers the practical day-to-day needs of a modern subdivision without forcing
+                        residents or staff into separate disconnected tools.
+                    </p>
+                </div>
+                <div class="services-grid">
+                    <article class="service-showcase">
+                        <div class="service-showcase__icon"><i class="fas fa-bullhorn"></i></div>
+                        <h3>Community updates</h3>
+                        <p>Announcements, events, polls, and forum engagement live in one communication layer.</p>
+                        <ul>
+                            <li>Announcements and notices</li>
+                            <li>Event publishing</li>
+                            <li>Community forum and surveys</li>
+                        </ul>
+                    </article>
+                    <article class="service-showcase">
+                        <div class="service-showcase__icon"><i class="fas fa-screwdriver-wrench"></i></div>
+                        <h3>Resident support</h3>
+                        <p>Requests, complaints, visitor passes, and vehicle registrations are handled digitally.</p>
+                        <ul>
+                            <li>Service requests and complaint tracking</li>
+                            <li>Visitor pass management</li>
+                            <li>Vehicle registration workflows</li>
+                        </ul>
+                    </article>
+                    <article class="service-showcase">
+                        <div class="service-showcase__icon"><i class="fas fa-building-user"></i></div>
+                        <h3>Facility operations</h3>
+                        <p>Reservations, facility media, approvals, and availability stay visible to everyone involved.</p>
+                        <ul>
+                            <li>Facility reservation scheduling</li>
+                            <li>Approval and monitoring flows</li>
+                            <li>Admin-side facilities management</li>
+                        </ul>
+                    </article>
+                    <article class="service-showcase">
+                        <div class="service-showcase__icon"><i class="fas fa-file-shield"></i></div>
+                        <h3>Billing and records</h3>
+                        <p>Documents, billings, receipts, and submitted proofs are easier to audit and review.</p>
+                        <ul>
+                            <li>Document library and uploads</li>
+                            <li>Billing review and payment proof</li>
+                            <li>Operational reporting and analytics</li>
+                        </ul>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="contact-section" id="contact">
+            <div class="landing-container section-shell contact-shell">
+                <div class="section-heading section-heading--left">
+                    <p class="section-kicker">Contact</p>
+                    <h2>Talk to the RestNestHome team.</h2>
+                    <p>
+                        Whether you want to ask about the platform, resident operations, or onboarding for your
+                        subdivision, use the details below or send a message directly.
+                    </p>
+                </div>
+                <div class="contact-grid">
+                    <div class="contact-panel">
+                        <article class="contact-panel__item">
+                            <i class="fas fa-phone-volume"></i>
+                            <div>
+                                <strong>Phone</strong>
+                                <span>+63 961 655 8722</span>
+                            </div>
+                        </article>
+                        <article class="contact-panel__item">
+                            <i class="fas fa-envelope-open-text"></i>
+                            <div>
+                                <strong>Email</strong>
+                                <span>restnesthome@gmail.com</span>
+                            </div>
+                        </article>
+                        <article class="contact-panel__item">
+                            <i class="fas fa-clock"></i>
+                            <div>
+                                <strong>Office hours</strong>
+                                <span>Monday to Saturday, 8:00 AM to 5:00 PM</span>
+                            </div>
+                        </article>
+                        <article class="contact-panel__item">
+                            <i class="fas fa-location-dot"></i>
+                            <div>
+                                <strong>Address</strong>
+                                <span>Laray, Chapel Talisay</span>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="contact-form-card">
+                        <form id="contactForm" class="contact-form-grid">
+                            <div class="contact-field">
+                                <label for="fullName">Full name</label>
+                                <input type="text" id="fullName" name="fullName" placeholder="Enter your full name" required>
+                            </div>
+                            <div class="contact-field">
+                                <label for="email">Email address</label>
+                                <input type="email" id="email" name="email" placeholder="Enter your email address" required>
+                            </div>
+                            <div class="contact-field contact-field--full">
+                                <label for="subject">Subject</label>
+                                <input type="text" id="subject" name="subject" placeholder="How can we help?">
+                            </div>
+                            <div class="contact-field contact-field--full">
+                                <label for="message">Message</label>
+                                <textarea id="message" name="message" rows="5" placeholder="Tell us what you need." required></textarea>
+                            </div>
+                            <button type="submit" class="contact-submit">
+                                <i class="fas fa-paper-plane"></i>
+                                <span>Send message</span>
+                            </button>
+                        </form>
+                        <p class="contact-form-note">
+                            We usually respond during office hours. For resident operations, the portal remains the
+                            fastest route for service and document requests.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="landing-footer">
+        <div class="landing-container landing-footer__row">
+            <div class="landing-footer__brand">
+                <img src="~/restnest.png" alt="RestNestHome" class="landing-footer__logo">
+                <p>RestNestHome keeps subdivision operations clear, resident-focused, and easier to manage.</p>
+            </div>
+            <div class="landing-footer__links">
+                <a href="#home">Home</a>
+                <a href="#about">About</a>
+                <a href="#services">Services</a>
+                <a href="#contact">Contact</a>
+                <a href="/Account/Login">Log in</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const navToggle = document.querySelector('[data-nav-toggle]');
+            const navMenu = document.querySelector('[data-nav-menu]');
+            const navLinks = Array.from(document.querySelectorAll('.landing-nav-link'));
+            const sections = Array.from(document.querySelectorAll('main section[id]'));
+            const contactForm = document.getElementById('contactForm');
+
+            if (navToggle && navMenu) {
+                navToggle.addEventListener('click', function () {
+                    navMenu.classList.toggle('is-open');
+                    navToggle.classList.toggle('is-open');
+                });
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function () {
+                    navMenu?.classList.remove('is-open');
+                    navToggle?.classList.remove('is-open');
+                });
+            });
+
+            const activateCurrentSection = () => {
+                const scrollPosition = window.scrollY + 140;
+                let activeId = 'home';
+
+                sections.forEach(section => {
+                    if (scrollPosition >= section.offsetTop) {
+                        activeId = section.id;
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    const isActive = link.getAttribute('href') === '#' + activeId;
+                    link.classList.toggle('is-active', isActive);
+                });
+            };
+
+            window.addEventListener('scroll', activateCurrentSection, { passive: true });
+            activateCurrentSection();
+
+            if (contactForm) {
+                contactForm.addEventListener('submit', function (event) {
+                    event.preventDefault();
+                    const submitButton = contactForm.querySelector('.contact-submit');
+                    const textNode = submitButton.querySelector('span');
+                    const originalText = textNode.textContent;
+
+                    submitButton.disabled = true;
+                    textNode.textContent = 'Sending...';
+
+                    window.setTimeout(function () {
+                        textNode.textContent = 'Message sent';
+                        contactForm.reset();
+
+                        window.setTimeout(function () {
+                            textNode.textContent = originalText;
+                            submitButton.disabled = false;
+                        }, 1500);
+                    }, 900);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+@model List<HOMEOWNER.Models.Reservation>
+
+@if (Model == null || !Model.Any())
+{
+    <tr>
+        <td colspan="8" class="reservation-empty-cell">No active reservations found.</td>
+    </tr>
+}
+else
+{
+    @foreach (var reservation in Model)
+    {
+        var status = reservation.Status ?? "Unknown";
+        var chipClass = status switch
+        {
+            "Approved" => "is-approved",
+            "Pending" => "is-pending",
+            "Rejected" => "is-rejected",
+            "Cancelled" or "Canceled" => "is-cancelled",
+            _ => "is-neutral"
+        };
+
+        <tr>
+            <td>@(reservation.Facility?.FacilityName ?? "Unknown facility")</td>
+            <td>@(reservation.Homeowner?.FullName ?? "Unknown homeowner")</td>
+            <td>@reservation.ReservationDate.ToString("MMM dd, yyyy")</td>
+            <td>@reservation.StartTime.ToString(@"hh\:mm")</td>
+            <td>@reservation.EndTime.ToString(@"hh\:mm")</td>
+            <td>@(reservation.Purpose ?? "No purpose provided")</td>
+            <td>
+                <span class="reservation-status-chip @chipClass">
+                    @status
+                </span>
+            </td>
+            <td>
+                <div class="reservation-action-row">
+                    @if (string.Equals(status, "Pending", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <button
+                            type="button"
+                            class="reservation-icon-button is-success"
+                            data-reservation-action="approve"
+                            data-reservation-id="@reservation.ReservationID"
+                            aria-label="Approve reservation">
+                            <i class="fas fa-check"></i>
+                        </button>
+                        <button
+                            type="button"
+                            class="reservation-icon-button is-danger"
+                            data-reservation-action="reject"
+                            data-reservation-id="@reservation.ReservationID"
+                            aria-label="Reject reservation">
+                            <i class="fas fa-xmark"></i>
+                        </button>
+                    }
+                    <button
+                        type="button"
+                        class="reservation-icon-button"
+                        data-view-reservation="true"
+                        data-reservation-id="@reservation.ReservationID"
+                        data-details-url="@Url.Action("GetReservationDetails", "Admin", new { reservationId = reservation.ReservationID })"
+                        aria-label="View reservation details">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    }
+}

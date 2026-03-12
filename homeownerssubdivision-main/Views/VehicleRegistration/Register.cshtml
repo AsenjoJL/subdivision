@@ -1,0 +1,152 @@
+@model HOMEOWNER.Models.ViewModels.HomeownerVehicleRegistrationsViewModel
+
+<section class="vehicle-module"
+         data-homeowner-module="vehicle-registration"
+         data-cache-url="@Context.Request.Path"
+         data-request-url="@Url.Action("Register", "VehicleRegistration")"
+         data-load-url="@Url.Action("LoadMyVehicleCards", "VehicleRegistration")">
+    <div class="vehicle-shell">
+        <header class="vehicle-hero">
+            <div>
+                <h2>Vehicle registration</h2>
+                <p>Register your household vehicles once so security can verify residents quickly and keep access records organized.</p>
+            </div>
+            <div class="vehicle-stats">
+                <span class="vehicle-chip">
+                    <strong>@Model.TotalVehicles</strong>
+                    <span>Total vehicles</span>
+                </span>
+                <span class="vehicle-chip">
+                    <strong>@Model.PendingVehicles</strong>
+                    <span>Pending</span>
+                </span>
+                <span class="vehicle-chip">
+                    <strong>@Model.ApprovedVehicles</strong>
+                    <span>Approved</span>
+                </span>
+                <span class="vehicle-chip">
+                    <strong>@Model.ExpiringSoonVehicles</strong>
+                    <span>Expiring soon</span>
+                </span>
+            </div>
+        </header>
+
+        <div class="vehicle-alert is-success vehicle-hidden" data-vehicle-success>
+            <i class="fas fa-circle-check"></i>
+            <span>Vehicle registration submitted successfully.</span>
+        </div>
+        <div class="vehicle-alert is-error vehicle-hidden" data-vehicle-error>
+            <i class="fas fa-circle-exclamation"></i>
+            <span>Unable to submit this vehicle right now.</span>
+        </div>
+
+        <section class="vehicle-form-card">
+            <div class="vehicle-section-head">
+                <div>
+                    <h3>Register a vehicle</h3>
+                    <p>Enter the vehicle details once and wait for admin approval before using resident gate access.</p>
+                </div>
+            </div>
+
+            <form action="@Url.Action("Register", "VehicleRegistration")" method="post" class="vehicle-form" data-vehicle-form>
+                <div class="vehicle-grid">
+                    <label class="vehicle-field">
+                        <span>Plate number</span>
+                        <input type="text" name="PlateNumber" value="@Model.NewVehicle.PlateNumber" maxlength="20" required data-field="PlateNumber" />
+                        <small data-validation-for="PlateNumber"></small>
+                    </label>
+                    <label class="vehicle-field">
+                        <span>Vehicle type</span>
+                        <select name="VehicleType" required data-field="VehicleType">
+                            <option value="">Select type</option>
+                            <option value="Car">Car</option>
+                            <option value="SUV">SUV</option>
+                            <option value="Truck">Truck</option>
+                            <option value="Motorcycle">Motorcycle</option>
+                            <option value="Van">Van</option>
+                        </select>
+                        <small data-validation-for="VehicleType"></small>
+                    </label>
+                    <label class="vehicle-field">
+                        <span>Brand</span>
+                        <select name="Make" data-field="Make">
+                            <option value="">Select brand</option>
+                            @if (!string.IsNullOrWhiteSpace(Model.NewVehicle.Make) &&
+                                !Model.BrandGroups.SelectMany(group => group.Options).Contains(Model.NewVehicle.Make))
+                            {
+                                <option value="@Model.NewVehicle.Make" selected>@Model.NewVehicle.Make</option>
+                            }
+                            @foreach (var group in Model.BrandGroups)
+                            {
+                                <optgroup label="@group.Label">
+                                    @foreach (var brand in group.Options)
+                                    {
+                                        <option value="@brand" selected="@(Model.NewVehicle.Make == brand ? "selected" : null)">@brand</option>
+                                    }
+                                </optgroup>
+                            }
+                        </select>
+                        <small data-validation-for="Make"></small>
+                    </label>
+                    <label class="vehicle-field">
+                        <span>Model</span>
+                        <select name="Model" data-field="Model">
+                            <option value="">Select model</option>
+                            @if (!string.IsNullOrWhiteSpace(Model.NewVehicle.Model) &&
+                                !Model.ModelGroups.SelectMany(group => group.Options).Contains(Model.NewVehicle.Model))
+                            {
+                                <option value="@Model.NewVehicle.Model" selected>@Model.NewVehicle.Model</option>
+                            }
+                            @foreach (var group in Model.ModelGroups)
+                            {
+                                <optgroup label="@group.Label">
+                                    @foreach (var item in group.Options)
+                                    {
+                                        <option value="@item" selected="@(Model.NewVehicle.Model == item ? "selected" : null)">@item</option>
+                                    }
+                                </optgroup>
+                            }
+                        </select>
+                        <small data-validation-for="Model"></small>
+                    </label>
+                    <label class="vehicle-field">
+                        <span>Color</span>
+                        <select name="Color" data-field="Color">
+                            <option value="">Select color</option>
+                            @if (!string.IsNullOrWhiteSpace(Model.NewVehicle.Color) &&
+                                !Model.ColorOptions.Contains(Model.NewVehicle.Color))
+                            {
+                                <option value="@Model.NewVehicle.Color" selected>@Model.NewVehicle.Color</option>
+                            }
+                            @foreach (var color in Model.ColorOptions)
+                            {
+                                <option value="@color" selected="@(Model.NewVehicle.Color == color ? "selected" : null)">@color</option>
+                            }
+                        </select>
+                        <small data-validation-for="Color"></small>
+                    </label>
+                </div>
+
+                <div class="vehicle-form-actions">
+                    <button type="submit" class="vehicle-submit" data-vehicle-submit>
+                        <i class="fas fa-car-side"></i>
+                        <span>Submit vehicle</span>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <section class="vehicle-history-card">
+            <div class="vehicle-section-head">
+                <div>
+                    <h3>My vehicles</h3>
+                    <p>See the approval status, expiry date, and notes for all submitted registrations.</p>
+                </div>
+            </div>
+
+            <div class="vehicle-list" data-vehicle-list data-load-url="@Url.Action("LoadMyVehicleCards", "VehicleRegistration")">
+                @await Html.PartialAsync("_HomeownerVehicleCards", Model.Vehicles)
+            </div>
+        </section>
+    </div>
+</section>

@@ -1,0 +1,138 @@
+@model HOMEOWNER.Models.ViewModels.AdminEventsViewModel
+
+<section class="admin-events-module" data-admin-events-module>
+    <div class="admin-events-shell">
+        <header class="admin-events-hero">
+            <div>
+                <h2>Manage events</h2>
+                <p>Schedule meetings, trainings, and community activities from one simple workspace.</p>
+            </div>
+            <div class="admin-events-stats">
+                <span class="admin-events-chip">
+                    <strong data-event-total>@Model.TotalEvents</strong>
+                    <span>Total events</span>
+                </span>
+                <span class="admin-events-chip">
+                    <strong data-event-upcoming>@Model.UpcomingEvents</strong>
+                    <span>Upcoming</span>
+                </span>
+                <span class="admin-events-chip">
+                    <strong data-event-month>@Model.ThisMonthEvents</strong>
+                    <span>This month</span>
+                </span>
+            </div>
+        </header>
+
+        <section class="admin-events-toolbar">
+            <label class="admin-events-search">
+                <i class="fas fa-search"></i>
+                <input type="search" placeholder="Search titles, locations, descriptions, or categories" data-event-search />
+            </label>
+            <select class="admin-events-filter" data-event-category-filter>
+                @foreach (var category in Model.Categories)
+                {
+                    <option value="@category">@category</option>
+                }
+            </select>
+            <button type="button" class="admin-events-add" data-event-open-create>
+                <i class="fas fa-plus"></i>
+                <span>Add event</span>
+            </button>
+        </section>
+
+        <div class="admin-events-alert is-success admin-events-hidden" data-event-success>
+            <i class="fas fa-circle-check"></i>
+            <span>Event saved successfully.</span>
+        </div>
+        <div class="admin-events-alert is-error admin-events-hidden" data-event-error>
+            <i class="fas fa-circle-exclamation"></i>
+            <span>Unable to save event.</span>
+        </div>
+
+        <div data-event-list-host data-load-url="@Url.Action("LoadEventCards", "Admin")">
+            @await Html.PartialAsync("_AdminEventCards", Model.Events)
+        </div>
+    </div>
+
+    <div class="admin-events-modal admin-events-hidden" data-event-modal aria-hidden="true">
+        <div class="admin-events-backdrop" data-event-close></div>
+        <div class="admin-events-dialog" role="dialog" aria-modal="true" aria-labelledby="adminEventDialogTitle">
+            <div class="admin-events-modal-header">
+                <div>
+                    <p class="admin-events-modal-kicker" data-event-modal-kicker>Create</p>
+                    <h3 id="adminEventDialogTitle" data-event-modal-title>Add event</h3>
+                </div>
+                <button type="button" class="admin-events-close" data-event-close aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form class="admin-events-form" data-event-form data-create-url="@Url.Action("AddEvent", "Admin")" data-edit-url="@Url.Action("EditEvent", "Admin")">
+                <input type="hidden" name="EventID" data-event-field-input="EventID" />
+
+                <div class="admin-events-alert is-success admin-events-hidden" data-event-modal-success>
+                    <i class="fas fa-circle-check"></i>
+                    <span>Event saved successfully.</span>
+                </div>
+                <div class="admin-events-alert is-error admin-events-hidden" data-event-modal-error>
+                    <i class="fas fa-circle-exclamation"></i>
+                    <span>Unable to save event.</span>
+                </div>
+
+                <div class="admin-events-form-grid">
+                    <label class="admin-events-field">
+                        <span>Title</span>
+                        <input type="text" name="Title" maxlength="120" required data-event-field-input="Title" />
+                        <small class="admin-events-field-error" data-event-field-error="Title"></small>
+                    </label>
+
+                    <label class="admin-events-field">
+                        <span>Category</span>
+                        <select name="Category" required data-event-field-input="Category">
+                            @foreach (var category in Model.Categories.Where(c => c != "All"))
+                            {
+                                <option value="@category">@category</option>
+                            }
+                        </select>
+                        <small class="admin-events-field-error" data-event-field-error="Category"></small>
+                    </label>
+
+                    <label class="admin-events-field">
+                        <span>Date and time</span>
+                        <input type="datetime-local" name="EventDate" required data-event-field-input="EventDate" />
+                        <small class="admin-events-field-error" data-event-field-error="EventDate"></small>
+                    </label>
+
+                    <label class="admin-events-field">
+                        <span>Location</span>
+                        <input type="text" name="Location" maxlength="140" required data-event-field-input="Location" />
+                        <small class="admin-events-field-error" data-event-field-error="Location"></small>
+                    </label>
+
+                    <label class="admin-events-field is-wide">
+                        <span>Description</span>
+                        <textarea name="Description" rows="4" maxlength="500" required data-event-field-input="Description"></textarea>
+                        <small class="admin-events-field-error" data-event-field-error="Description"></small>
+                    </label>
+                </div>
+
+                <div class="admin-events-form-actions">
+                    <button type="button" class="admin-events-secondary" data-event-close>Cancel</button>
+                    <button type="submit" class="admin-events-primary" data-event-submit>
+                        <i class="fas fa-floppy-disk"></i>
+                        <span data-event-submit-label>Save event</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const root = document.currentScript?.closest('[data-admin-events-module]');
+            if (root && typeof window.initializeAdminEventsModule === 'function') {
+                window.initializeAdminEventsModule(root);
+            }
+        })();
+    </script>
+</section>

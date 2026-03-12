@@ -1,0 +1,287 @@
+.homeowner-complaints-shell {
+    display: grid;
+    gap: 1.5rem;
+    color: #0f172a;
+}
+
+.homeowner-complaints-hero,
+.homeowner-complaints-card,
+.homeowner-complaint-alert {
+    background: rgba(255,255,255,0.92);
+    border: 1px solid rgba(148,163,184,0.24);
+    border-radius: 24px;
+    box-shadow: 0 18px 40px rgba(15,23,42,0.08);
+}
+
+.homeowner-complaints-hero,
+.homeowner-complaints-card {
+    padding: 1.5rem 1.7rem;
+}
+
+.homeowner-complaints-hero {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.homeowner-complaints-hero h2,
+.homeowner-complaints-card h3 {
+    margin: 0;
+}
+
+.homeowner-complaints-hero p,
+.homeowner-complaints-card-header p {
+    margin: 0.45rem 0 0;
+    color: #64748b;
+}
+
+.homeowner-complaints-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.homeowner-complaints-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.78rem 1rem;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-weight: 700;
+}
+
+.homeowner-complaint-alert {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.95rem 1.1rem;
+    font-weight: 700;
+}
+
+.homeowner-complaint-alert.is-success { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
+.homeowner-complaint-alert.is-error { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
+.homeowner-complaint-hidden { display:none !important; }
+
+.homeowner-complaints-grid {
+    display: grid;
+    grid-template-columns: minmax(320px, 0.95fr) minmax(0, 1.2fr);
+    gap: 1.5rem;
+}
+
+.homeowner-complaints-form,
+.homeowner-complaints-list-host {
+    display: grid;
+    gap: 1rem;
+}
+
+.homeowner-complaints-field {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.homeowner-complaints-field label {
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.homeowner-complaints-field input,
+.homeowner-complaints-field select,
+.homeowner-complaints-field textarea {
+    width: 100%;
+    border-radius: 16px;
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    color: #0f172a;
+    padding: 0.9rem 1rem;
+    font: inherit;
+}
+
+.homeowner-complaints-field input:focus,
+.homeowner-complaints-field select:focus,
+.homeowner-complaints-field textarea:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 4px rgba(37,99,235,0.14);
+    background: #fff;
+}
+
+.homeowner-complaints-field.is-invalid input,
+.homeowner-complaints-field.is-invalid select,
+.homeowner-complaints-field.is-invalid textarea {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239,68,68,0.1);
+}
+
+.homeowner-complaint-field-error {
+    min-height: 1rem;
+    color: #dc2626;
+    font-size: 0.88rem;
+}
+
+.homeowner-complaint-priority-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.homeowner-complaint-priority {
+    position: relative;
+}
+
+.homeowner-complaint-priority input {
+    position: absolute;
+    opacity: 0;
+}
+
+.homeowner-complaint-priority span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 88px;
+    padding: 0.8rem 1rem;
+    border-radius: 999px;
+    background: #e2e8f0;
+    color: #334155;
+    font-weight: 700;
+}
+
+.homeowner-complaint-priority input:checked + span {
+    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+    color: #fff;
+}
+
+.homeowner-complaint-checkbox {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-weight: 600;
+    color: #475569;
+}
+
+.homeowner-complaints-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.homeowner-complaint-submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    border: 0;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+    color: #fff;
+    padding: 0.95rem 1.2rem;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.homeowner-complaint-submit:disabled {
+    opacity: 0.7;
+    cursor: wait;
+}
+
+.homeowner-complaints-list-host.is-loading {
+    opacity: 0.7;
+}
+
+.complaint-list {
+    display: grid;
+    gap: 1rem;
+}
+
+.complaint-item-card {
+    border: 1px solid rgba(148,163,184,0.2);
+    border-radius: 20px;
+    padding: 1rem 1.1rem;
+    background: #f8fbff;
+}
+
+.complaint-item-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.complaint-item-top h3 {
+    margin: 0;
+}
+
+.complaint-item-top p,
+.complaint-item-description {
+    color: #64748b;
+}
+
+.complaint-chip-stack {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.complaint-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.42rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 800;
+}
+
+.complaint-chip.is-submitted { background:#eff6ff; color:#1d4ed8; }
+.complaint-chip.is-review { background:#fff7ed; color:#c2410c; }
+.complaint-chip.is-progress { background:#ecfeff; color:#0f766e; }
+.complaint-chip.is-resolved { background:#ecfdf5; color:#047857; }
+.complaint-chip.is-closed { background:#f1f5f9; color:#475569; }
+.complaint-chip.is-low { background:#e2e8f0; color:#334155; }
+.complaint-chip.is-medium { background:#dbeafe; color:#1d4ed8; }
+.complaint-chip.is-high { background:#fff7ed; color:#c2410c; }
+.complaint-chip.is-urgent { background:#fee2e2; color:#b91c1c; }
+
+.complaint-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.complaint-meta-grid dt {
+    font-size: 0.76rem;
+    text-transform: uppercase;
+    color: #94a3b8;
+    font-weight: 700;
+}
+
+.complaint-meta-grid dd {
+    margin: 0.25rem 0 0;
+    font-weight: 700;
+}
+
+.complaint-response-box {
+    margin-top: 0.8rem;
+    border-radius: 16px;
+    background: #fff;
+    border: 1px solid rgba(148,163,184,0.2);
+    padding: 0.9rem 1rem;
+}
+
+.complaint-empty-state {
+    display: grid;
+    place-items: center;
+    min-height: 260px;
+    text-align: center;
+    color: #64748b;
+}
+
+.complaint-empty-state i {
+    color: #2563eb;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+@media (max-width: 1100px) {
+    .homeowner-complaints-grid { grid-template-columns: 1fr; }
+}

@@ -1,0 +1,111 @@
+@model List<HOMEOWNER.Models.Contact>
+
+@if (Model.Count == 0)
+{
+    <div class="admin-contacts-empty" data-contact-admin-empty>
+        <i class="fas fa-address-book"></i>
+        <h3>No contacts yet</h3>
+        <p>Start by adding homeowner association, security, or emergency contacts.</p>
+    </div>
+}
+else
+{
+    <div class="admin-contacts-grid">
+        @foreach (var contact in Model)
+        {
+            var searchIndex = $"{contact.Name} {contact.Category} {contact.Position} {contact.Department} {contact.PhoneNumber} {contact.MobileNumber} {contact.Email} {contact.OfficeLocation}".ToLowerInvariant();
+            <article class="admin-contacts-card"
+                     data-contact-admin-card
+                     data-search="@searchIndex">
+                <div class="admin-contacts-card-top">
+                    <div>
+                        <div class="admin-contacts-badges">
+                            <span class="admin-contacts-badge">@contact.Category</span>
+                            @if (contact.IsEmergency)
+                            {
+                                <span class="admin-contacts-badge is-emergency">Emergency</span>
+                            }
+                            @if (!contact.IsActive)
+                            {
+                                <span class="admin-contacts-badge is-muted">Inactive</span>
+                            }
+                        </div>
+                        <h3>@contact.Name</h3>
+                        @if (!string.IsNullOrWhiteSpace(contact.Position))
+                        {
+                            <p class="admin-contacts-role">@contact.Position</p>
+                        }
+                    </div>
+                    <div class="admin-contacts-card-actions">
+                        <button type="button"
+                                class="admin-contacts-icon"
+                                data-contact-admin-edit
+                                data-edit-id="@contact.ContactID"
+                                title="Edit contact">
+                            <i class="fas fa-pen"></i>
+                        </button>
+                        <button type="button"
+                                class="admin-contacts-icon is-danger"
+                                data-contact-admin-delete
+                                data-delete-id="@contact.ContactID"
+                                data-delete-url="@Url.Action("Delete", "Contact")"
+                                title="Delete contact">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <dl class="admin-contacts-meta">
+                    @if (!string.IsNullOrWhiteSpace(contact.Department))
+                    {
+                        <div>
+                            <dt>Department</dt>
+                            <dd>@contact.Department</dd>
+                        </div>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(contact.OfficeLocation))
+                    {
+                        <div>
+                            <dt>Office</dt>
+                            <dd>@contact.OfficeLocation</dd>
+                        </div>
+                    }
+                    <div>
+                        <dt>Display order</dt>
+                        <dd>@contact.DisplayOrder</dd>
+                    </div>
+                </dl>
+
+                <div class="admin-contacts-actions">
+                    @if (!string.IsNullOrWhiteSpace(contact.PhoneNumber))
+                    {
+                        <a href="tel:@contact.PhoneNumber" class="admin-contacts-action">
+                            <i class="fas fa-phone"></i>
+                            <span>@contact.PhoneNumber</span>
+                        </a>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(contact.MobileNumber))
+                    {
+                        <a href="tel:@contact.MobileNumber" class="admin-contacts-action">
+                            <i class="fas fa-mobile-alt"></i>
+                            <span>@contact.MobileNumber</span>
+                        </a>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(contact.Email))
+                    {
+                        <a href="mailto:@contact.Email" class="admin-contacts-action">
+                            <i class="fas fa-envelope"></i>
+                            <span>@contact.Email</span>
+                        </a>
+                    }
+                </div>
+            </article>
+        }
+    </div>
+
+    <div class="admin-contacts-empty admin-contacts-hidden" data-contact-admin-empty>
+        <i class="fas fa-user-slash"></i>
+        <h3>No matching contacts</h3>
+        <p>Try a different search term.</p>
+    </div>
+}

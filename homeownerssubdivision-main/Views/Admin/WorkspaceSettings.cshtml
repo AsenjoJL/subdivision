@@ -1,0 +1,87 @@
+@model HOMEOWNER.Models.ViewModels.AdminWorkspaceSettingsViewModel
+
+<div class="glass-card section-card admin-settings-card" data-admin-workspace-module="true">
+    <div class="admin-settings-header">
+        <div>
+            <p class="admin-settings-eyebrow">Workspace</p>
+            <h2 class="admin-settings-title">Workspace settings</h2>
+            <p class="admin-settings-subtitle">Control the admin workspace identity, default landing experience, and dashboard table density.</p>
+        </div>
+        <div class="admin-settings-pill">
+            <span class="admin-settings-pill-label">Default section</span>
+            <span class="admin-settings-pill-value">@Model.AvailableSections.FirstOrDefault(option => option.Key == Model.DefaultLandingSection).Value</span>
+        </div>
+    </div>
+
+    <div class="admin-settings-body">
+        <div id="adminWorkspaceSuccessAlert" class="admin-settings-alert admin-settings-alert--success admin-settings-hidden" role="alert">
+            <i class="fas fa-check-circle"></i>
+            <span id="adminWorkspaceSuccessMessage">Workspace settings updated successfully.</span>
+            <button type="button" class="admin-settings-alert-close" data-admin-workspace-alert-close="true" aria-label="Close"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="adminWorkspaceErrorAlert" class="admin-settings-alert admin-settings-alert--error admin-settings-hidden" role="alert">
+            <i class="fas fa-circle-exclamation"></i>
+            <span id="adminWorkspaceErrorMessage">Unable to update workspace settings.</span>
+            <button type="button" class="admin-settings-alert-close" data-admin-workspace-alert-close="true" aria-label="Close"><i class="fas fa-times"></i></button>
+        </div>
+
+        <form id="adminWorkspaceSettingsForm" class="admin-settings-form" asp-controller="Admin" asp-action="UpdateWorkspaceSettings" method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="admin-settings-grid">
+                <div class="admin-settings-field">
+                    <label class="admin-settings-label"><i class="fas fa-briefcase"></i> Workspace name</label>
+                    <input type="text" class="admin-settings-input" name="WorkspaceName" value="@Model.WorkspaceName" data-admin-workspace-input="WorkspaceName" required />
+                    <div class="admin-settings-field-error admin-settings-hidden" data-admin-workspace-error="WorkspaceName"></div>
+                </div>
+
+                <div class="admin-settings-field">
+                    <label class="admin-settings-label"><i class="fas fa-compass"></i> Default landing section</label>
+                    <select class="admin-settings-input" name="DefaultLandingSection" data-admin-workspace-input="DefaultLandingSection" required>
+                        @foreach (var option in Model.AvailableSections)
+                        {
+                            if (option.Key == Model.DefaultLandingSection)
+                            {
+                                <option value="@option.Key" selected>@option.Value</option>
+                            }
+                            else
+                            {
+                                <option value="@option.Key">@option.Value</option>
+                            }
+                        }
+                    </select>
+                    <div class="admin-settings-field-error admin-settings-hidden" data-admin-workspace-error="DefaultLandingSection"></div>
+                </div>
+            </div>
+
+            <div class="admin-settings-toggles">
+                <label class="admin-settings-toggle">
+                    <input type="checkbox" name="UseCompactTables" value="true" @(Model.UseCompactTables ? "checked" : "") data-admin-workspace-input="UseCompactTables" />
+                    <span>
+                        <strong>Use compact tables</strong>
+                        <small>Tighten table row spacing and dense lists across admin modules.</small>
+                    </span>
+                </label>
+
+                <label class="admin-settings-toggle">
+                    <input type="checkbox" name="EnableSectionPrefetch" value="true" @(Model.EnableSectionPrefetch ? "checked" : "") data-admin-workspace-input="EnableSectionPrefetch" />
+                    <span>
+                        <strong>Enable section prefetch</strong>
+                        <small>Warm frequently used modules like homeowners, staff, and reservations after dashboard load.</small>
+                    </span>
+                </label>
+            </div>
+
+            <div class="admin-settings-actions">
+                <button type="submit" class="people-primary-btn admin-settings-submit" data-admin-workspace-submit="true">
+                    <i class="fas fa-save"></i>
+                    <span>Save workspace settings</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    window.initAdminWorkspaceSettingsModule?.(document.currentScript.previousElementSibling);
+</script>

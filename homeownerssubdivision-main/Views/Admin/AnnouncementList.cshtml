@@ -1,0 +1,122 @@
+@model HOMEOWNER.Models.ViewModels.AdminAnnouncementsViewModel
+
+<section class="admin-announcements-module" data-admin-announcements-module>
+    <div class="admin-announcements-shell">
+        <header class="admin-announcements-hero">
+            <div>
+                <h2>Manage announcements</h2>
+                <p>Publish updates, urgent notices, and community reminders from one simple admin workspace.</p>
+            </div>
+            <div class="admin-announcements-stats">
+                <span class="admin-announcements-chip">
+                    <strong data-announcement-total>@Model.TotalAnnouncements</strong>
+                    <span>Total posts</span>
+                </span>
+                <span class="admin-announcements-chip">
+                    <strong data-announcement-urgent>@Model.UrgentAnnouncements</strong>
+                    <span>Urgent</span>
+                </span>
+                <span class="admin-announcements-chip">
+                    <strong data-announcement-week>@Model.ThisWeekAnnouncements</strong>
+                    <span>This week</span>
+                </span>
+            </div>
+        </header>
+
+        <section class="admin-announcements-toolbar">
+            <label class="admin-announcements-search">
+                <i class="fas fa-search"></i>
+                <input type="search" placeholder="Search titles or announcement content" data-announcement-search />
+            </label>
+            <select class="admin-announcements-filter" data-announcement-filter>
+                <option value="All">All announcements</option>
+                <option value="Urgent">Urgent only</option>
+                <option value="Regular">Regular only</option>
+            </select>
+            <button type="button" class="admin-announcements-add" data-announcement-open-create>
+                <i class="fas fa-bullhorn"></i>
+                <span>Post announcement</span>
+            </button>
+        </section>
+
+        <div class="admin-announcements-alert is-success admin-announcements-hidden" data-announcement-success>
+            <i class="fas fa-circle-check"></i>
+            <span>Announcement saved successfully.</span>
+        </div>
+        <div class="admin-announcements-alert is-error admin-announcements-hidden" data-announcement-error>
+            <i class="fas fa-circle-exclamation"></i>
+            <span>Unable to save announcement.</span>
+        </div>
+
+        <div data-announcement-list-host data-load-url="@Url.Action("LoadAnnouncementCards", "Admin")">
+            @await Html.PartialAsync("_AnnouncementListPartial", Model.Announcements)
+        </div>
+    </div>
+
+    <div class="admin-announcements-modal admin-announcements-hidden" data-announcement-modal aria-hidden="true">
+        <div class="admin-announcements-backdrop" data-announcement-close></div>
+        <div class="admin-announcements-dialog" role="dialog" aria-modal="true" aria-labelledby="announcementDialogTitle">
+            <div class="admin-announcements-modal-header">
+                <div>
+                    <p class="admin-announcements-modal-kicker" data-announcement-modal-kicker>Create</p>
+                    <h3 id="announcementDialogTitle" data-announcement-modal-title>Post announcement</h3>
+                </div>
+                <button type="button" class="admin-announcements-close" data-announcement-close aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form class="admin-announcements-form"
+                  data-announcement-form
+                  data-create-url="@Url.Action("AnnouncementList", "Admin")"
+                  data-edit-url="@Url.Action("EditAnnouncement", "Admin")">
+                <input type="hidden" name="AnnouncementID" data-announcement-field-input="AnnouncementID" />
+
+                <div class="admin-announcements-alert is-success admin-announcements-hidden" data-announcement-modal-success>
+                    <i class="fas fa-circle-check"></i>
+                    <span>Announcement saved successfully.</span>
+                </div>
+                <div class="admin-announcements-alert is-error admin-announcements-hidden" data-announcement-modal-error>
+                    <i class="fas fa-circle-exclamation"></i>
+                    <span>Unable to save announcement.</span>
+                </div>
+
+                <div class="admin-announcements-form-grid">
+                    <label class="admin-announcements-field">
+                        <span>Title</span>
+                        <input type="text" name="Title" maxlength="120" required data-announcement-field-input="Title" />
+                        <small class="admin-announcements-field-error" data-announcement-field-error="Title"></small>
+                    </label>
+
+                    <label class="admin-announcements-field is-wide">
+                        <span>Content</span>
+                        <textarea name="Content" rows="6" maxlength="1200" required data-announcement-field-input="Content"></textarea>
+                        <small class="admin-announcements-field-error" data-announcement-field-error="Content"></small>
+                    </label>
+
+                    <label class="admin-announcements-toggle">
+                        <input type="checkbox" name="IsUrgent" value="true" data-announcement-field-input="IsUrgent" />
+                        <span>Mark as urgent announcement</span>
+                    </label>
+                </div>
+
+                <div class="admin-announcements-form-actions">
+                    <button type="button" class="admin-announcements-secondary" data-announcement-close>Cancel</button>
+                    <button type="submit" class="admin-announcements-primary" data-announcement-submit>
+                        <i class="fas fa-paper-plane"></i>
+                        <span data-announcement-submit-label>Save announcement</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const root = document.currentScript?.closest('[data-admin-announcements-module]');
+            if (root && typeof window.initializeAdminAnnouncementsModule === 'function') {
+                window.initializeAdminAnnouncementsModule(root);
+            }
+        })();
+    </script>
+</section>

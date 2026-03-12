@@ -1,0 +1,70 @@
+@model HOMEOWNER.Models.ViewModels.AdminProfileSettingsViewModel
+
+<div class="glass-card section-card admin-settings-card" data-admin-profile-module="true">
+    <div class="admin-settings-header">
+        <div>
+            <p class="admin-settings-eyebrow">Admin account</p>
+            <h2 class="admin-settings-title">Update profile</h2>
+            <p class="admin-settings-subtitle">Keep your admin identity, office location, and sign-in email accurate across the workspace.</p>
+        </div>
+        <div class="admin-settings-pill">
+            <span class="admin-settings-pill-label">Status</span>
+            <span class="admin-settings-pill-value">@Model.Status</span>
+        </div>
+    </div>
+
+    <div class="admin-settings-body">
+        <div id="adminProfileSuccessAlert" class="admin-settings-alert admin-settings-alert--success admin-settings-hidden" role="alert">
+            <i class="fas fa-check-circle"></i>
+            <span id="adminProfileSuccessMessage">Profile updated successfully.</span>
+            <button type="button" class="admin-settings-alert-close" data-admin-profile-alert-close="true" aria-label="Close"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="adminProfileErrorAlert" class="admin-settings-alert admin-settings-alert--error admin-settings-hidden" role="alert">
+            <i class="fas fa-circle-exclamation"></i>
+            <span id="adminProfileErrorMessage">Unable to update profile.</span>
+            <button type="button" class="admin-settings-alert-close" data-admin-profile-alert-close="true" aria-label="Close"><i class="fas fa-times"></i></button>
+        </div>
+
+        <form id="adminProfileForm" class="admin-settings-form" asp-controller="Admin" asp-action="UpdateAdminProfile" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="AdminID" value="@Model.AdminID" data-admin-profile-input="AdminID" />
+
+            <div class="admin-settings-grid">
+                <div class="admin-settings-field">
+                    <label class="admin-settings-label"><i class="fas fa-user"></i> Full name</label>
+                    <input type="text" class="admin-settings-input" name="FullName" value="@Model.FullName" data-admin-profile-input="FullName" required />
+                    <div class="admin-settings-field-error admin-settings-hidden" data-admin-profile-error="FullName"></div>
+                </div>
+
+                <div class="admin-settings-field">
+                    <label class="admin-settings-label"><i class="fas fa-envelope"></i> Email</label>
+                    <input type="email" class="admin-settings-input" name="Email" value="@Model.Email" data-admin-profile-input="Email" required />
+                    <div class="admin-settings-field-error admin-settings-hidden" data-admin-profile-error="Email"></div>
+                </div>
+
+                <div class="admin-settings-field">
+                    <label class="admin-settings-label"><i class="fas fa-building"></i> Office location</label>
+                    <input type="text" class="admin-settings-input" name="OfficeLocation" value="@Model.OfficeLocation" data-admin-profile-input="OfficeLocation" required />
+                    <div class="admin-settings-field-error admin-settings-hidden" data-admin-profile-error="OfficeLocation"></div>
+                </div>
+
+                <div class="admin-settings-field">
+                    <label class="admin-settings-label"><i class="fas fa-shield-alt"></i> Access status</label>
+                    <input type="text" class="admin-settings-input admin-settings-input--readonly" value="@Model.Status" readonly />
+                    <p class="admin-settings-note">Status is controlled through admin provisioning and role management.</p>
+                </div>
+            </div>
+
+            <div class="admin-settings-actions">
+                <button type="submit" class="people-primary-btn admin-settings-submit" data-admin-profile-submit="true">
+                    <i class="fas fa-save"></i>
+                    <span>Save profile</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    window.initAdminProfileSettingsModule?.(document.currentScript.previousElementSibling);
+</script>

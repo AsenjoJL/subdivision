@@ -1,0 +1,139 @@
+@model HOMEOWNER.Models.ViewModels.HomeownerSettingsViewModel
+
+<section class="homeowner-settings-module" data-homeowner-module="settings" data-cache-url="@Url.Action("Settings", "Homeowner")" data-home-url="@Url.Action("Dashboard", "Homeowner")">
+    <div class="homeowner-settings-shell">
+        <header class="homeowner-settings-hero">
+            <div>
+                <h2>Account settings</h2>
+                <p>Keep your homeowner profile details accurate and manage account recovery from one secure place.</p>
+            </div>
+            <div class="homeowner-settings-meta">
+                <span class="homeowner-settings-chip">
+                    <i class="fas fa-user-check"></i>
+                    <span>@(Model.IsActive ? "Active account" : "Inactive account")</span>
+                </span>
+                <span class="homeowner-settings-chip">
+                    <i class="fas fa-calendar-days"></i>
+                    <span>Member since @Model.CreatedAt.ToLocalTime().ToString("MMM dd, yyyy")</span>
+                </span>
+            </div>
+        </header>
+
+        <div class="homeowner-settings-alert is-success homeowner-settings-hidden" data-settings-success>
+            <i class="fas fa-circle-check"></i>
+            <span>Settings updated successfully.</span>
+        </div>
+        <div class="homeowner-settings-alert is-error homeowner-settings-hidden" data-settings-error>
+            <i class="fas fa-circle-exclamation"></i>
+            <span>Unable to update your settings.</span>
+        </div>
+
+        <div class="homeowner-settings-grid">
+            <section class="homeowner-settings-card homeowner-settings-card--profile">
+                <div class="homeowner-settings-card-header">
+                    <h3>Profile information</h3>
+                    <p>Update your homeowner record details used across the dashboard.</p>
+                </div>
+
+                <form class="homeowner-settings-form" data-settings-form action="@Url.Action("UpdateSettings", "Homeowner")">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="HomeownerId" value="@Model.HomeownerId" />
+
+                    <div class="homeowner-settings-field">
+                        <label for="settingsFullName">Full name</label>
+                        <input id="settingsFullName" name="FullName" type="text" value="@Model.FullName" data-field="FullName" required />
+                        <div class="homeowner-settings-field-error" data-validation-for="FullName"></div>
+                    </div>
+
+                    <div class="homeowner-settings-field">
+                        <label for="settingsEmail">Email</label>
+                        <input id="settingsEmail" type="email" value="@Model.Email" readonly />
+                        <p class="homeowner-settings-help">Email sign-in is managed through secure authentication and cannot be changed here.</p>
+                    </div>
+
+                    <div class="homeowner-settings-field-grid">
+                        <div class="homeowner-settings-field">
+                            <label for="settingsContactNumber">Contact number</label>
+                            <input id="settingsContactNumber" name="ContactNumber" type="text" value="@Model.ContactNumber" data-field="ContactNumber" required />
+                            <div class="homeowner-settings-field-error" data-validation-for="ContactNumber"></div>
+                        </div>
+                        <div class="homeowner-settings-field">
+                            <label for="settingsBlockLot">Block / lot number</label>
+                            <input id="settingsBlockLot" name="BlockLotNumber" type="text" value="@Model.BlockLotNumber" data-field="BlockLotNumber" required />
+                            <div class="homeowner-settings-field-error" data-validation-for="BlockLotNumber"></div>
+                        </div>
+                    </div>
+
+                    <div class="homeowner-settings-field">
+                        <label for="settingsAddress">Address</label>
+                        <textarea id="settingsAddress" name="Address" rows="4" data-field="Address" required>@Model.Address</textarea>
+                        <div class="homeowner-settings-field-error" data-validation-for="Address"></div>
+                    </div>
+
+                    <div class="homeowner-settings-actions">
+                        <button type="submit" class="homeowner-settings-submit" data-settings-submit>
+                            <i class="fas fa-floppy-disk"></i>
+                            <span>Save changes</span>
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="homeowner-settings-card homeowner-settings-card--security">
+                <div class="homeowner-settings-card-header">
+                    <h3>Security & recovery</h3>
+                    <p>Use your registered email to recover access without changing your profile data manually.</p>
+                </div>
+
+                <div class="homeowner-settings-security-profile">
+                    <img src="@Model.ProfileImageUrl" alt="Profile image" class="homeowner-settings-avatar" data-homeowner-profile-image data-fallback-src="@Url.Content("~/restnesthome.png")" />
+                    <div>
+                        <strong>@Model.FullName</strong>
+                        <span>@Model.Email</span>
+                    </div>
+                </div>
+
+                <div class="homeowner-settings-security-box">
+                    <h4>Profile picture</h4>
+                    <p>Upload a clear image so guards and administrators can recognize your account quickly.</p>
+                    <button type="button" class="homeowner-settings-secondary" data-profile-upload-trigger>
+                        <i class="fas fa-camera"></i>
+                        <span>Upload new profile picture</span>
+                    </button>
+                    <p class="homeowner-settings-help">Accepted formats: JPG, PNG, WEBP, GIF. Maximum file size: 5 MB.</p>
+                </div>
+
+                <div class="homeowner-settings-security-box">
+                    <h4>Password reset</h4>
+                    <p>Generate a secure reset link tied to your homeowner email account.</p>
+
+                    <form data-settings-reset-form action="@Url.Action("GeneratePasswordReset", "Homeowner")">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="homeowner-settings-secondary" data-settings-reset-submit>
+                            <i class="fas fa-key"></i>
+                            <span>Generate reset link</span>
+                        </button>
+                    </form>
+
+                    @if (Model.IsDevelopment)
+                    {
+                        <div class="homeowner-settings-reset-link homeowner-settings-hidden" data-settings-reset-link-wrap>
+                            <label for="homeownerSettingsResetLink">Development reset link</label>
+                            <textarea id="homeownerSettingsResetLink" rows="4" readonly data-settings-reset-link></textarea>
+                            <div class="homeowner-settings-reset-actions">
+                                <button type="button" class="homeowner-settings-secondary" data-settings-copy-link>
+                                    <i class="fas fa-copy"></i>
+                                    <span>Copy link</span>
+                                </button>
+                                <a href="#" class="homeowner-settings-secondary homeowner-settings-secondary--link" target="_blank" rel="noopener" data-settings-open-link>
+                                    <i class="fas fa-arrow-up-right-from-square"></i>
+                                    <span>Open link</span>
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </section>
+        </div>
+    </div>
+</section>

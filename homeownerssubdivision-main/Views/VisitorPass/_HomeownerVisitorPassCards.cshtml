@@ -1,0 +1,53 @@
+@model IReadOnlyList<HOMEOWNER.Models.VisitorPass>
+
+@if (Model != null && Model.Any())
+{
+    <div class="visitor-pass-cards">
+        @foreach (var pass in Model)
+        {
+            var statusClass = $"is-{pass.Status.ToLowerInvariant()}";
+            <article class="visitor-pass-card">
+                <div class="visitor-pass-card-top">
+                    <div>
+                        <h4>@pass.VisitorName</h4>
+                        <p>@(string.IsNullOrWhiteSpace(pass.Purpose) ? "Visit request" : pass.Purpose)</p>
+                    </div>
+                    <span class="visitor-pass-status @statusClass">@pass.Status</span>
+                </div>
+                <dl class="visitor-pass-meta">
+                    <div>
+                        <dt>Visit date</dt>
+                        <dd>@pass.VisitDate.ToLocalTime().ToString("MMM dd, yyyy")</dd>
+                    </div>
+                    <div>
+                        <dt>Arrival</dt>
+                        <dd>@(pass.ExpectedArrivalTime?.ToString(@"hh\:mm") ?? "-")</dd>
+                    </div>
+                    <div>
+                        <dt>Vehicle</dt>
+                        <dd>@(!string.IsNullOrWhiteSpace(pass.VehiclePlateNumber) ? $"{pass.VehicleType ?? "Vehicle"} · {pass.VehiclePlateNumber}" : "No vehicle")</dd>
+                    </div>
+                    <div>
+                        <dt>Requested</dt>
+                        <dd>@pass.RequestedAt.ToLocalTime().ToString("MMM dd, yyyy hh:mm tt")</dd>
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(pass.AdminNotes))
+                    {
+                        <div class="is-wide">
+                            <dt>Admin notes</dt>
+                            <dd>@pass.AdminNotes</dd>
+                        </div>
+                    }
+                </dl>
+            </article>
+        }
+    </div>
+}
+else
+{
+    <div class="visitor-pass-empty">
+        <i class="fas fa-id-card"></i>
+        <h4>No visitor passes yet</h4>
+        <p>Your submitted passes will appear here once you create one.</p>
+    </div>
+}

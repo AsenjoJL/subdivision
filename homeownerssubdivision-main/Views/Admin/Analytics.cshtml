@@ -1,0 +1,158 @@
+@using System.Text.Json
+@model HOMEOWNER.Models.ViewModels.AdminAnalyticsViewModel
+
+<section class="admin-analytics-module" data-admin-analytics-module data-analytics='@Html.Raw(JsonSerializer.Serialize(Model))'>
+    <div class="admin-analytics-shell">
+        <header class="admin-analytics-hero">
+            <div>
+                <p class="admin-analytics-eyebrow">Reports & analytics</p>
+                <h2>Operational insights</h2>
+                <p>Track bookings, payments, service demand, and community participation from one analytics workspace.</p>
+            </div>
+            <div class="admin-analytics-generated">
+                <span>Generated</span>
+                <strong>@Model.GeneratedAt.ToLocalTime().ToString("MMM dd, yyyy · hh:mm tt")</strong>
+            </div>
+        </header>
+
+        <section class="admin-analytics-metrics">
+            @foreach (var metric in Model.Metrics)
+            {
+                <article class="admin-analytics-metric" data-analytics-metric data-tone="@metric.Tone">
+                    <div class="admin-analytics-metric__icon">
+                        <i class="fas @metric.Icon"></i>
+                    </div>
+                    <div>
+                        <p class="admin-analytics-metric__label">@metric.Label</p>
+                        <p class="admin-analytics-metric__value" data-target="@metric.Value">@metric.Value</p>
+                        <p class="admin-analytics-metric__caption">@metric.Caption</p>
+                    </div>
+                </article>
+            }
+        </section>
+
+        <section class="admin-analytics-grid">
+            <article class="admin-analytics-panel admin-analytics-panel--wide">
+                <div class="admin-analytics-panel__header">
+                    <div>
+                        <h3>Monthly operations trend</h3>
+                        <p>Reservations, service requests, and billings across the last six months.</p>
+                    </div>
+                </div>
+                <div class="admin-analytics-line-chart" data-analytics-line-chart="operations">
+                    <div class="admin-analytics-line-chart__svg-wrap">
+                        <svg viewBox="0 0 720 280" preserveAspectRatio="none" aria-hidden="true">
+                            <g data-analytics-grid-lines></g>
+                            <path class="admin-analytics-line admin-analytics-line--reservations" data-analytics-line="reservations"></path>
+                            <path class="admin-analytics-line admin-analytics-line--requests" data-analytics-line="requests"></path>
+                            <path class="admin-analytics-line admin-analytics-line--billings" data-analytics-line="billings"></path>
+                            <g data-analytics-points="reservations"></g>
+                            <g data-analytics-points="requests"></g>
+                            <g data-analytics-points="billings"></g>
+                        </svg>
+                    </div>
+                    <div class="admin-analytics-line-chart__labels" data-analytics-line-labels></div>
+                    <div class="admin-analytics-legend">
+                        <span><i class="fas fa-circle"></i> Reservations</span>
+                        <span class="requests"><i class="fas fa-circle"></i> Service requests</span>
+                        <span class="billings"><i class="fas fa-circle"></i> Billings</span>
+                    </div>
+                </div>
+            </article>
+
+            <article class="admin-analytics-panel admin-analytics-panel--wide">
+                <div class="admin-analytics-panel__header">
+                    <div>
+                        <h3>Financial trend line</h3>
+                        <p>Collected revenue versus open balance across the last six months.</p>
+                    </div>
+                </div>
+                <div class="admin-analytics-line-chart" data-analytics-line-chart="financial">
+                    <div class="admin-analytics-line-chart__svg-wrap">
+                        <svg viewBox="0 0 720 280" preserveAspectRatio="none" aria-hidden="true">
+                            <g data-analytics-grid-lines></g>
+                            <path class="admin-analytics-line admin-analytics-line--collected" data-analytics-line="collected"></path>
+                            <path class="admin-analytics-line admin-analytics-line--outstanding" data-analytics-line="outstanding"></path>
+                            <g data-analytics-points="collected"></g>
+                            <g data-analytics-points="outstanding"></g>
+                        </svg>
+                    </div>
+                    <div class="admin-analytics-line-chart__labels" data-analytics-line-labels></div>
+                    <div class="admin-analytics-legend">
+                        <span class="collected"><i class="fas fa-circle"></i> Collected revenue</span>
+                        <span class="outstanding"><i class="fas fa-circle"></i> Outstanding balance</span>
+                    </div>
+                </div>
+            </article>
+
+            <article class="admin-analytics-panel">
+                <div class="admin-analytics-panel__header">
+                    <div>
+                        <h3>Reservation status mix</h3>
+                        <p>Booking state distribution across the full reservation pipeline.</p>
+                    </div>
+                </div>
+                <div class="admin-analytics-breakdown" data-analytics-breakdown="reservations"></div>
+            </article>
+
+            <article class="admin-analytics-panel">
+                <div class="admin-analytics-panel__header">
+                    <div>
+                        <h3>Billing collection mix</h3>
+                        <p>See how billing records are moving through collection and review.</p>
+                    </div>
+                </div>
+                <div class="admin-analytics-breakdown" data-analytics-breakdown="billing"></div>
+            </article>
+
+            <article class="admin-analytics-panel">
+                <div class="admin-analytics-panel__header">
+                    <div>
+                        <h3>Service request flow</h3>
+                        <p>Operational load by current request status.</p>
+                    </div>
+                </div>
+                <div class="admin-analytics-breakdown" data-analytics-breakdown="serviceRequests"></div>
+            </article>
+
+            <article class="admin-analytics-panel admin-analytics-panel--wide">
+                <div class="admin-analytics-panel__header">
+                    <div>
+                        <h3>Facility performance</h3>
+                        <p>Most-booked amenities and recent demand snapshots.</p>
+                    </div>
+                </div>
+                <div class="admin-analytics-bars" data-analytics-bars="facilities"></div>
+            </article>
+
+            <article class="admin-analytics-panel">
+                <div class="admin-analytics-panel__header">
+                    <div>
+                        <h3>Top service categories</h3>
+                        <p>Where maintenance and admin attention are concentrated.</p>
+                    </div>
+                </div>
+                <div class="admin-analytics-bars" data-analytics-bars="serviceCategories"></div>
+            </article>
+
+            <article class="admin-analytics-panel">
+                <div class="admin-analytics-panel__header">
+                    <div>
+                        <h3>Community signals</h3>
+                        <p>Fast view of participation and issue-resolution momentum.</p>
+                    </div>
+                </div>
+                <div class="admin-analytics-bars" data-analytics-bars="communitySignals"></div>
+            </article>
+        </section>
+    </div>
+
+    <script>
+        (function () {
+            const root = document.currentScript?.closest('[data-admin-analytics-module]');
+            if (root && typeof window.initializeAdminAnalyticsModule === 'function') {
+                window.initializeAdminAnalyticsModule(root);
+            }
+        })();
+    </script>
+</section>

@@ -1,0 +1,116 @@
+@model Tuple<HOMEOWNER.Models.ForumPost, bool>
+@{
+    var post = Model.Item1;
+    var canParticipate = Model.Item2;
+}
+
+<article class="forum-post-card" data-post-id="@post.ForumPostID">
+    <div class="post-header">
+        <div>
+            <div class="post-author">@post.Homeowner?.FullName</div>
+            <div class="post-meta">Posted @post.CreatedAt.ToLocalTime().ToString("MMM dd, yyyy 'at' h:mm tt")</div>
+        </div>
+        <button type="button" class="forum-toggle-comments">
+            <i class="fas fa-comments"></i>
+            <span>@(post.Comments?.Count ?? 0) comments & replies</span>
+        </button>
+    </div>
+
+    <div>
+        <h5>@post.Title</h5>
+        <p>@post.Content</p>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(post.MediaUrl))
+    {
+        <div class="post-media">
+            @if (string.Equals(post.MediaType, "video", StringComparison.OrdinalIgnoreCase))
+            {
+                <video controls preload="metadata" src="@post.MediaUrl"></video>
+            }
+            else
+            {
+                <img src="@post.MediaUrl" alt="Forum post media" />
+            }
+        </div>
+    }
+
+    @if (canParticipate)
+    {
+        <div class="forum-actions">
+            <button type="button" class="forum-react-btn" data-reaction-type="like" data-forum-success-message="Reaction saved successfully.">
+                <i class="fas fa-thumbs-up"></i>
+                <span>@(post.Reactions?.Count(r => r.ReactionType == "like") ?? 0)</span>
+            </button>
+            <button type="button" class="forum-react-btn" data-reaction-type="love" data-forum-success-message="Reaction saved successfully.">
+                <i class="fas fa-heart"></i>
+                <span>@(post.Reactions?.Count(r => r.ReactionType == "love") ?? 0)</span>
+            </button>
+            <button type="button" class="forum-react-btn" data-reaction-type="laugh" data-forum-success-message="Reaction saved successfully.">
+                <i class="fas fa-face-laugh"></i>
+                <span>@(post.Reactions?.Count(r => r.ReactionType == "laugh") ?? 0)</span>
+            </button>
+        </div>
+    }
+    else
+    {
+        <div class="forum-note">
+            Reactions: like @(post.Reactions?.Count(r => r.ReactionType == "like") ?? 0),
+            love @(post.Reactions?.Count(r => r.ReactionType == "love") ?? 0),
+            laugh @(post.Reactions?.Count(r => r.ReactionType == "laugh") ?? 0)
+        </div>
+    }
+
+    <div class="forum-comment-thread @(canParticipate ? "is-open" : string.Empty)">
+        @if (post.Comments != null && post.Comments.Count > 0)
+        {
+            @foreach (var comment in post.Comments.OrderBy(c => c.CreatedAt))
+            {
+                <div class="comment-item">
+                    <div class="comment-header">
+                        <div class="comment-author">@comment.Homeowner?.FullName</div>
+                        <div class="comment-time">@comment.CreatedAt.ToLocalTime().ToString("MMM dd, yyyy h:mm tt")</div>
+                    </div>
+                    <p>@comment.CommentText</p>
+                    @if (!string.IsNullOrWhiteSpace(comment.MediaUrl))
+                    {
+                        <div class="comment-media">
+                            <img src="@comment.MediaUrl" alt="Comment media" />
+                        </div>
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            <div class="forum-muted">No comments yet.</div>
+        }
+
+        @if (canParticipate)
+        {
+            <form class="forum-comment-form"
+                  method="post"
+                  enctype="multipart/form-data"
+                  asp-action="AddComment"
+                  asp-controller="Forum"
+                  data-forum-success-message="Comment added successfully.">
+                <div class="forum-comment-form-header">
+                    <h6>Reply to this post</h6>
+                    <span>Share a quick comment without leaving the post.</span>
+                </div>
+                <input type="hidden" name="postId" value="@post.ForumPostID" />
+                <label>
+                    <span>Comment</span>
+                    <input class="forum-input" type="text" name="commentText" placeholder="Write a comment" required />
+                </label>
+                <label>
+                    <span>Optional image</span>
+                    <input class="forum-input" type="file" name="mediaFile" accept="image/*" />
+                </label>
+                <div class="forum-actions">
+                    <button type="submit" class="forum-secondary-button" data-forum-submit-label="Send comment">Send comment</button>
+                </div>
+            </form>
+        }
+    </div>
+</article>

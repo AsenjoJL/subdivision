@@ -1,0 +1,35 @@
+@model HOMEOWNER.Models.ViewModels.StaffDashboardHomeViewModel
+
+<div class="staff-dashboard-home" data-page-title="@Model.Position Dashboard" data-staff-view="dashboard">
+    <div class="content-box">
+        <h2>Welcome, @Model.StaffName! 👋</h2>
+        <p class="intro">You are currently assigned to the @Model.Position.ToLowerInvariant() team. Review your queue and update requests without leaving the dashboard.</p>
+    </div>
+
+    <div class="stats-container">
+        <div class="stat-card reservations">
+            <h3>Pending @Model.Position</h3>
+            <p>Awaiting action</p>
+            <span class="stat-value">@Model.PendingCount</span>
+        </div>
+        <div class="stat-card payments">
+            <h3>Completed</h3>
+            <p>Finished tasks</p>
+            <span class="stat-value">@Model.CompletedCount</span>
+        </div>
+        <div class="stat-card requests">
+            <h3>Total requests</h3>
+            <p>Your category queue</p>
+            <span class="stat-value">@Model.TotalCount</span>
+        </div>
+    </div>
+
+    <div class="content-box">
+        <h2>Quick Actions</h2>
+        <div class="staff-quick-actions">
+            <a href="#" class="cta-btn staff-quick-action" data-staff-action="management">
+                <i class="fas fa-tasks"></i> View all tasks
+            </a>
+        </div>
+    </div>
+</div>

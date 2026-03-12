@@ -1,0 +1,583 @@
+.reservation-react-shell {
+    --reservation-bg: #f6f8fc;
+    --reservation-surface: #ffffff;
+    --reservation-border: rgba(17, 24, 39, 0.08);
+    --reservation-border-strong: rgba(37, 99, 235, 0.18);
+    --reservation-ink: #10203b;
+    --reservation-muted: #64748b;
+    --reservation-brand: #2563eb;
+    --reservation-brand-strong: #1d4ed8;
+    --reservation-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+    font-family: "Inter", sans-serif;
+    color: var(--reservation-ink);
+    background: linear-gradient(180deg, #fcfdff 0%, #f5f8fd 100%);
+    padding: 2rem;
+    border: 1px solid var(--reservation-border);
+    border-radius: 28px;
+    box-shadow: var(--reservation-shadow);
+}
+
+.reservation-react-loading {
+    padding: 2rem;
+    border-radius: 24px;
+    background: #ffffff;
+    border: 1px solid rgba(17, 24, 39, 0.08);
+    color: #10203b;
+    font: 600 1rem/1.5 "Inter", sans-serif;
+}
+
+.reservation-react-error {
+    color: #b91c1c;
+}
+
+.reservation-react-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.reservation-react-title h2 {
+    margin: 0;
+    font-family: "Space Grotesk", sans-serif;
+    font-size: clamp(2rem, 3vw, 2.7rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: #0f172a;
+}
+
+.reservation-react-title p {
+    margin: 0.65rem 0 0;
+    max-width: 760px;
+    color: var(--reservation-muted);
+    font-size: 1rem;
+}
+
+.reservation-react-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    border: 1px solid var(--reservation-border-strong);
+    background: #ffffff;
+    color: var(--reservation-brand-strong);
+    border-radius: 999px;
+    padding: 0.8rem 1.2rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.reservation-react-back:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 20px rgba(37, 99, 235, 0.12);
+    border-color: rgba(37, 99, 235, 0.28);
+}
+
+.reservation-react-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.75rem;
+}
+
+.reservation-react-stat {
+    background: #ffffff;
+    border: 1px solid var(--reservation-border);
+    border-radius: 22px;
+    padding: 1.1rem 1.15rem;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+}
+
+.reservation-react-stat span {
+    display: block;
+    color: var(--reservation-muted);
+    font-size: 0.87rem;
+    margin-bottom: 0.35rem;
+}
+
+.reservation-react-stat strong {
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 1.7rem;
+    color: #0f172a;
+}
+
+.reservation-react-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-radius: 18px;
+    padding: 0.9rem 1rem;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+.reservation-react-banner.success {
+    background: rgba(15, 159, 110, 0.12);
+    color: #0d7a55;
+}
+
+.reservation-react-banner.error {
+    background: rgba(194, 65, 65, 0.1);
+    color: #a12828;
+}
+
+.reservation-react-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.reservation-react-card {
+    background: #ffffff;
+    border: 1px solid var(--reservation-border);
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 14px 30px rgba(15, 23, 42, 0.06);
+    transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.reservation-react-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 24px 40px rgba(15, 23, 42, 0.1);
+}
+
+.reservation-react-card-image {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+    background: #dbe5f2;
+}
+
+.reservation-react-card-body {
+    padding: 1.35rem 1.4rem 1.4rem;
+}
+
+.reservation-react-card-top {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.85rem;
+}
+
+.reservation-react-card-top h3 {
+    margin: 0;
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 1.35rem;
+    color: #13233f;
+}
+
+.reservation-react-card-description {
+    margin: 0 0 1rem;
+    color: var(--reservation-muted);
+    min-height: 3rem;
+    line-height: 1.55;
+}
+
+.reservation-react-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+}
+
+.reservation-react-pill,
+.reservation-react-rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    border-radius: 999px;
+    padding: 0.48rem 0.8rem;
+    font-weight: 700;
+    font-size: 0.88rem;
+}
+
+.reservation-react-pill.capacity {
+    background: rgba(15, 23, 42, 0.06);
+    color: #24324a;
+}
+
+.reservation-react-pill.available {
+    background: rgba(15, 159, 110, 0.12);
+    color: #0d7a55;
+}
+
+.reservation-react-pill.partial {
+    background: rgba(212, 137, 22, 0.14);
+    color: #9d6410;
+}
+
+.reservation-react-pill.full {
+    background: rgba(194, 65, 65, 0.13);
+    color: #a12828;
+}
+
+.reservation-react-rating {
+    background: rgba(37, 99, 235, 0.1);
+    color: #1d4ed8;
+}
+
+.reservation-react-card-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: 1.15rem;
+}
+
+.reservation-react-link {
+    border: none;
+    background: transparent;
+    color: #3259c5;
+    font-weight: 700;
+    padding: 0;
+    cursor: pointer;
+}
+
+.reservation-react-primary {
+    border: none;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #2563eb 0%, #1747c4 100%);
+    color: #ffffff;
+    padding: 0.85rem 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+}
+
+.reservation-react-primary:hover:not(:disabled),
+.reservation-react-secondary:hover:not(:disabled) {
+    transform: translateY(-2px);
+}
+
+.reservation-react-primary:disabled,
+.reservation-react-secondary:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.reservation-react-secondary {
+    border: 1px solid rgba(17, 24, 39, 0.12);
+    border-radius: 16px;
+    background: #ffffff;
+    color: #23324b;
+    padding: 0.85rem 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.reservation-react-reserved-list {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(17, 24, 39, 0.08);
+    display: grid;
+    gap: 0.6rem;
+}
+
+.reservation-react-reserved-item {
+    padding: 0.72rem 0.8rem;
+    border-radius: 16px;
+    background: repeating-linear-gradient(-45deg, rgba(37, 99, 235, 0.07), rgba(37, 99, 235, 0.07) 10px, rgba(37, 99, 235, 0.11) 10px, rgba(37, 99, 235, 0.11) 20px);
+    color: #1f366a;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.reservation-react-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1050;
+    background: rgba(15, 23, 42, 0.42);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    animation: reservationFadeIn 180ms ease;
+}
+
+.reservation-react-modal {
+    width: min(860px, 100%);
+    max-height: calc(100vh - 3rem);
+    overflow: auto;
+    background: #ffffff;
+    border-radius: 28px;
+    border: 1px solid rgba(17, 24, 39, 0.08);
+    box-shadow: 0 30px 70px rgba(15, 23, 42, 0.2);
+    animation: reservationLiftIn 220ms ease;
+}
+
+.reservation-react-modal-header,
+.reservation-react-modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem 1.4rem;
+    border-bottom: 1px solid rgba(17, 24, 39, 0.08);
+}
+
+.reservation-react-modal-footer {
+    border-bottom: none;
+    border-top: 1px solid rgba(17, 24, 39, 0.08);
+}
+
+.reservation-react-modal-header h3 {
+    margin: 0;
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 1.5rem;
+}
+
+.reservation-react-close {
+    border: none;
+    background: rgba(15, 23, 42, 0.06);
+    width: 42px;
+    height: 42px;
+    border-radius: 999px;
+    color: #22314a;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.reservation-react-modal-body {
+    padding: 1.4rem;
+    display: grid;
+    gap: 1.35rem;
+}
+
+.reservation-react-stepper {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.reservation-react-step {
+    flex: 1;
+    border-radius: 18px;
+    background: #f8fbff;
+    border: 1px solid rgba(37, 99, 235, 0.08);
+    padding: 0.95rem 1rem;
+}
+
+.reservation-react-step.active {
+    background: rgba(37, 99, 235, 0.08);
+    border-color: rgba(37, 99, 235, 0.18);
+}
+
+.reservation-react-step span {
+    display: block;
+    color: var(--reservation-muted);
+    font-size: 0.82rem;
+    margin-bottom: 0.25rem;
+}
+
+.reservation-react-step strong {
+    color: #13233f;
+}
+
+.reservation-react-facility-summary {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 1.1rem;
+    align-items: stretch;
+}
+
+.reservation-react-facility-summary img {
+    width: 100%;
+    height: 100%;
+    min-height: 200px;
+    object-fit: cover;
+    border-radius: 22px;
+}
+
+.reservation-react-summary-card {
+    border-radius: 22px;
+    background: #f8fbff;
+    border: 1px solid rgba(17, 24, 39, 0.08);
+    padding: 1.1rem;
+}
+
+.reservation-react-summary-card h4 {
+    margin: 0 0 0.5rem;
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 1.25rem;
+}
+
+.reservation-react-summary-card p {
+    margin: 0 0 0.85rem;
+    color: var(--reservation-muted);
+    line-height: 1.55;
+}
+
+.reservation-react-field-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.reservation-react-field {
+    display: grid;
+    gap: 0.45rem;
+}
+
+.reservation-react-field label {
+    font-weight: 700;
+    color: #152744;
+}
+
+.reservation-react-field input,
+.reservation-react-field textarea,
+.reservation-react-field select {
+    width: 100%;
+    border-radius: 16px;
+    border: 1px solid rgba(17, 24, 39, 0.12);
+    background: #ffffff;
+    color: #12233f;
+    padding: 0.85rem 0.95rem;
+    font: inherit;
+    transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.reservation-react-field textarea {
+    min-height: 130px;
+    resize: vertical;
+}
+
+.reservation-react-field input:focus,
+.reservation-react-field textarea:focus,
+.reservation-react-field select:focus {
+    outline: none;
+    border-color: rgba(37, 99, 235, 0.4);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+.reservation-react-time-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.65rem;
+}
+
+.reservation-react-time-help,
+.reservation-react-duration {
+    color: var(--reservation-muted);
+    font-size: 0.9rem;
+}
+
+.reservation-react-duration strong {
+    color: #16325f;
+}
+
+.reservation-react-warning,
+.reservation-react-field-error {
+    border-radius: 16px;
+    padding: 0.85rem 0.95rem;
+    background: rgba(194, 65, 65, 0.1);
+    color: #a12828;
+    font-weight: 600;
+}
+
+.reservation-react-field-error {
+    padding: 0;
+    background: transparent;
+    font-size: 0.85rem;
+}
+
+.reservation-react-slot-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-top: 0.5rem;
+}
+
+.reservation-react-slot-chip {
+    border-radius: 999px;
+    padding: 0.38rem 0.7rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border: 1px dashed rgba(17, 24, 39, 0.12);
+    color: #28406f;
+    background: #f8fbff;
+}
+
+.reservation-react-slot-chip.booked {
+    color: #8a1f1f;
+    background: repeating-linear-gradient(-45deg, rgba(194, 65, 65, 0.1), rgba(194, 65, 65, 0.1) 8px, rgba(194, 65, 65, 0.16) 8px, rgba(194, 65, 65, 0.16) 16px);
+    border-color: rgba(194, 65, 65, 0.25);
+}
+
+.reservation-react-confirm-card {
+    border-radius: 22px;
+    background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+    border: 1px solid rgba(37, 99, 235, 0.12);
+    padding: 1.15rem;
+    display: grid;
+    gap: 0.8rem;
+}
+
+.reservation-react-confirm-card h4 {
+    margin: 0;
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 1.2rem;
+}
+
+.reservation-react-confirm-card p {
+    margin: 0;
+    color: var(--reservation-muted);
+}
+
+.reservation-react-confirm-card strong {
+    color: #10203b;
+}
+
+@keyframes reservationFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes reservationLiftIn {
+    from { opacity: 0; transform: translateY(20px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 900px) {
+    .reservation-react-shell {
+        padding: 1.3rem;
+        border-radius: 24px;
+    }
+
+    .reservation-react-header,
+    .reservation-react-card-actions,
+    .reservation-react-modal-header,
+    .reservation-react-modal-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .reservation-react-facility-summary,
+    .reservation-react-field-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .reservation-react-shell {
+        padding: 1rem;
+    }
+
+    .reservation-react-modal-backdrop {
+        padding: 0.75rem;
+    }
+
+    .reservation-react-modal {
+        max-height: calc(100vh - 1.5rem);
+    }
+
+    .reservation-react-time-grid {
+        grid-template-columns: 1fr;
+    }
+}

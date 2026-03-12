@@ -1,0 +1,53 @@
+@model HOMEOWNER.Models.ViewModels.HomeownerDashboardHomeViewModel
+
+<div class="homeowner-dashboard-home" data-page-title="Welcome to your dashboard" data-home-view="true">
+    <div class="content-box">
+        <h2>Hello, @Model.HomeownerName! </h2>
+        <p class="intro">Welcome to your homeowner dashboard. Manage your reservations, payments, service requests, and stay connected with your community, all in one place.</p>
+    </div>
+
+    <div class="stats-container">
+        <div class="stat-card reservations">
+            <h3>Active Reservations</h3>
+            <p>Confirmed bookings</p>
+            <span class="stat-value">@Model.ActiveReservations</span>
+        </div>
+        <div class="stat-card payments">
+            <h3>Outstanding Payments</h3>
+            <p>Amount Due</p>
+            <span class="stat-value">@Model.OutstandingBalance.ToString("C")</span>
+        </div>
+        <div class="stat-card requests">
+            <h3>Service Requests</h3>
+            <p>Open Tickets</p>
+            <span class="stat-value">@Model.OpenServiceRequests</span>
+        </div>
+    </div>
+
+    <div class="content-box">
+        <h2>Quick Actions</h2>
+        <div class="homeowner-quick-actions">
+            <a href="#"
+               class="cta-btn homeowner-quick-action"
+               data-dashboard-link
+               data-load-url="@Url.Action("Index", "Reservation")"
+               data-nav-match="@Url.Action("Index", "Reservation")">
+                <i class="fas fa-calendar-plus"></i> Book Facility
+            </a>
+            <a href="#"
+               class="cta-btn homeowner-quick-action homeowner-quick-action-billing"
+               data-dashboard-link
+               data-load-url="@Url.Action("Index", "Payment")"
+               data-nav-match="@Url.Action("Index", "Payment")">
+                <i class="fas fa-money-bill-wave"></i> Pay Bills
+            </a>
+            <a href="#"
+               class="cta-btn homeowner-quick-action homeowner-quick-action-service"
+               data-dashboard-link
+               data-load-url="@Url.Action("SubmitRequest", "Homeowner")"
+               data-nav-match="@Url.Action("SubmitRequest", "Homeowner")">
+                <i class="fas fa-wrench"></i> Request Service
+            </a>
+        </div>
+    </div>
+</div>

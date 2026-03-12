@@ -1,0 +1,144 @@
+@model HOMEOWNER.Models.ViewModels.HomeownerBillingViewModel
+
+@{
+    ViewData["Title"] = "My Bills";
+    var moduleId = $"payment-module-{Guid.NewGuid():N}";
+    var modalId = $"{moduleId}-submit-modal";
+    var formId = $"{moduleId}-submit-form";
+    var submitButtonId = $"{moduleId}-submit-button";
+    var modalAlertId = $"{moduleId}-modal-alert";
+    var modalContextId = $"{moduleId}-modal-context";
+}
+
+<div id="@moduleId"
+     class="payment-module"
+     data-page-title="My bills"
+     data-submit-url="@Url.Action("SubmitPayment", "Payment")"
+     data-refresh-url="@Url.Action("Index", "Payment")"
+     data-modal-id="@modalId"
+     data-form-id="@formId"
+     data-submit-button-id="@submitButtonId"
+     data-modal-alert-id="@modalAlertId"
+     data-modal-context-id="@modalContextId">
+    <form class="payment-token-form">@Html.AntiForgeryToken()</form>
+    <div class="payment-module__header">
+        <div>
+            <h2 class="payment-module__title">My bills</h2>
+            <p class="payment-module__caption">Review balances, submit your payment details, and track admin verification, @Model.HomeownerName.</p>
+        </div>
+    </div>
+
+    <div class="payment-alert payment-hidden" data-payment-section-alert></div>
+
+    <div class="payment-stats">
+        <article class="payment-stat-card">
+            <p class="payment-stat-label">Outstanding balance</p>
+            <p class="payment-stat-value">Php @Model.OutstandingBalance.ToString("N2")</p>
+        </article>
+        <article class="payment-stat-card">
+            <p class="payment-stat-label">Pending bills</p>
+            <p class="payment-stat-value">@Model.PendingBills</p>
+        </article>
+        <article class="payment-stat-card">
+            <p class="payment-stat-label">Overdue bills</p>
+            <p class="payment-stat-value">@Model.OverdueBills</p>
+        </article>
+        <article class="payment-stat-card">
+            <p class="payment-stat-label">Submitted for review</p>
+            <p class="payment-stat-value">@Model.SubmittedBills</p>
+        </article>
+        <article class="payment-stat-card">
+            <p class="payment-stat-label">Paid bills</p>
+            <p class="payment-stat-value">@Model.PaidBills</p>
+        </article>
+    </div>
+
+    <section class="payment-card">
+        <div class="payment-card__header">
+            <h3 class="payment-card__title">Billing history</h3>
+            <p class="payment-card__subtitle">Submit your payment details here. The admin office will verify the submission before marking the bill as paid.</p>
+        </div>
+        <div class="payment-table-shell">
+            <table class="payment-table">
+                <thead>
+                    <tr>
+                        <th>Bill ID</th>
+                        <th>Description</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Due date</th>
+                        <th>Bill status</th>
+                        <th>Payment review</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @await Html.PartialAsync("_BillingTableRows", Model.Billings)
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<div class="payment-modal" id="@modalId" aria-hidden="true" role="dialog">
+    <div class="payment-modal-dialog">
+        <div class="payment-modal-panel">
+            <div class="payment-modal-header">
+                <h3 class="payment-modal-title"><i class="fas fa-receipt"></i>Submit payment</h3>
+                <button type="button" class="payment-modal-close" data-payment-close aria-label="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="payment-modal-body">
+                <div id="@modalAlertId" class="payment-alert payment-hidden"></div>
+                <div class="payment-meta" id="@modalContextId"></div>
+                <form id="@formId">
+                    <input type="hidden" name="BillingID" data-payment-input="BillingID" />
+                    <div class="payment-form-row">
+                        <div class="payment-form-group">
+                            <label class="payment-form-label"><i class="fas fa-money-check-dollar"></i>Payment method</label>
+                            <select class="payment-form-control" name="PaymentMethod" data-payment-input="PaymentMethod" required>
+                                <option value="">Select payment method</option>
+                                <option value="GCash">GCash</option>
+                                <option value="Bank Transfer">Bank transfer</option>
+                                <option value="Cash Deposit">Cash deposit</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <div class="payment-field-error payment-hidden" data-payment-error="PaymentMethod"></div>
+                        </div>
+                        <div class="payment-form-group">
+                            <label class="payment-form-label"><i class="fas fa-peso-sign"></i>Submitted amount</label>
+                            <input type="number" class="payment-form-control" name="SubmittedAmount" data-payment-input="SubmittedAmount" min="0.01" step="0.01" required>
+                            <div class="payment-field-error payment-hidden" data-payment-error="SubmittedAmount"></div>
+                        </div>
+                    </div>
+                    <div class="payment-form-row">
+                        <div class="payment-form-group">
+                            <label class="payment-form-label"><i class="fas fa-hashtag"></i>Reference number</label>
+                            <input type="text" class="payment-form-control" name="ReferenceNumber" data-payment-input="ReferenceNumber" maxlength="100">
+                            <div class="payment-field-error payment-hidden" data-payment-error="ReferenceNumber"></div>
+                        </div>
+                        <div class="payment-form-group">
+                            <label class="payment-form-label"><i class="fas fa-file-arrow-up"></i>Proof of payment</label>
+                            <input type="file" class="payment-form-control" name="proofFile" data-payment-input="ProofFile" accept="image/*,.pdf">
+                            <div class="payment-field-error payment-hidden" data-payment-error="ProofFile"></div>
+                        </div>
+                    </div>
+                    <div class="payment-form-group">
+                        <label class="payment-form-label"><i class="fas fa-comment-dots"></i>Notes</label>
+                        <textarea class="payment-form-control" name="Notes" data-payment-input="Notes" rows="4" maxlength="500" placeholder="Optional notes for the admin reviewer"></textarea>
+                        <div class="payment-field-error payment-hidden" data-payment-error="Notes"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="payment-modal-footer">
+                <button type="button" class="payment-button payment-button-secondary" data-payment-close>Cancel</button>
+                <button type="button" class="payment-button" id="@submitButtonId"><i class="fas fa-paper-plane"></i><span>Send submission</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    if (typeof window.__initializeHomeownerBillingModule === 'function') {
+        window.__initializeHomeownerBillingModule(document.getElementById('@moduleId'));
+    }
+</script>

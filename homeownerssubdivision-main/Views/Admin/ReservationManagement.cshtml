@@ -1,0 +1,1511 @@
+@model HOMEOWNER.Models.ViewModels.ReservationManagementViewModel
+
+<style>
+    :root {
+        --reservation-primary: #4361ee;
+        --reservation-primary-hover: #3651d4;
+        --reservation-text: #18263d;
+        --reservation-muted: #64748b;
+        --reservation-line: rgba(18, 35, 60, 0.08);
+        --reservation-surface: #ffffff;
+        --reservation-surface-soft: #f8fbff;
+        --reservation-success: #157f61;
+        --reservation-warning: #a96a00;
+        --reservation-danger: #b42318;
+        --reservation-neutral: #5b6b81;
+    }
+
+    .reservation-module {
+        color: var(--reservation-text);
+    }
+
+    .reservation-token-form {
+        display: none;
+    }
+
+    .reservation-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 1.75rem;
+    }
+
+    .reservation-summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 1rem;
+    }
+
+    .reservation-summary-card {
+        background: var(--reservation-surface);
+        border: 1px solid var(--reservation-line);
+        border-radius: 18px;
+        padding: 1.2rem 1.25rem;
+        box-shadow: 0 10px 26px rgba(18, 35, 60, 0.05);
+    }
+
+    .reservation-summary-label {
+        margin: 0;
+        font-size: 0.84rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--reservation-muted);
+    }
+
+    .reservation-summary-value {
+        margin: 0.45rem 0 0;
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--reservation-text);
+        letter-spacing: -0.04em;
+    }
+
+    .reservation-summary-caption {
+        margin-top: 0.35rem;
+        color: var(--reservation-muted);
+        font-size: 0.88rem;
+    }
+
+    .reservation-panel {
+        background: var(--reservation-surface);
+        border: 1px solid var(--reservation-line);
+        border-radius: 22px;
+        box-shadow: 0 14px 32px rgba(18, 35, 60, 0.06);
+        overflow: hidden;
+    }
+
+    .reservation-panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1.35rem 1.5rem 1rem;
+        border-bottom: 1px solid var(--reservation-line);
+    }
+
+    .reservation-panel-title {
+        margin: 0;
+        font-size: 1.45rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        color: var(--reservation-text);
+    }
+
+    .reservation-panel-title i {
+        color: var(--reservation-primary);
+    }
+
+    .reservation-panel-caption {
+        margin: 0.4rem 0 0;
+        color: var(--reservation-muted);
+        font-size: 0.92rem;
+    }
+
+    .reservation-panel-actions {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .reservation-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        height: 42px;
+        padding: 0 1rem;
+        border-radius: 10px;
+        border: 1px solid transparent;
+        background: var(--reservation-primary);
+        color: #ffffff;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .reservation-button:hover {
+        background: var(--reservation-primary-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 10px 22px rgba(67, 97, 238, 0.18);
+    }
+
+    .reservation-button-secondary {
+        background: #ffffff;
+        color: var(--reservation-text);
+        border-color: rgba(18, 35, 60, 0.14);
+    }
+
+    .reservation-button-secondary:hover {
+        background: #f5f8ff;
+        box-shadow: none;
+    }
+
+    .reservation-panel-body {
+        padding: 1.25rem 1.5rem 1.5rem;
+    }
+
+    .reservation-section-alert {
+        margin-bottom: 1rem;
+        padding: 0.9rem 1rem;
+        border-radius: 12px;
+        font-weight: 600;
+        position: relative;
+    }
+
+    .reservation-section-alert.is-success {
+        background: rgba(21, 127, 97, 0.08);
+        color: var(--reservation-success);
+        border: 1px solid rgba(21, 127, 97, 0.16);
+    }
+
+    .reservation-section-alert.is-error {
+        background: rgba(180, 35, 24, 0.08);
+        color: var(--reservation-danger);
+        border: 1px solid rgba(180, 35, 24, 0.16);
+    }
+
+    .reservation-hidden {
+        display: none !important;
+    }
+
+    .reservation-table-shell {
+        overflow-x: auto;
+    }
+
+    .reservation-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .reservation-table th {
+        background: var(--reservation-primary);
+        color: #ffffff;
+        font-weight: 700;
+        padding: 0.9rem 1rem;
+        text-align: left;
+    }
+
+    .reservation-table th:first-child {
+        border-top-left-radius: 12px;
+    }
+
+    .reservation-table th:last-child {
+        border-top-right-radius: 12px;
+    }
+
+    .reservation-table td {
+        padding: 0.95rem 1rem;
+        border-bottom: 1px solid var(--reservation-line);
+        color: #45556f;
+        vertical-align: middle;
+        font-weight: 500;
+    }
+
+    .reservation-table tbody tr:hover {
+        background: rgba(67, 97, 238, 0.04);
+    }
+
+    .reservation-action-row {
+        display: flex;
+        gap: 0.45rem;
+        align-items: center;
+    }
+
+    .reservation-icon-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        border: 1px solid rgba(18, 35, 60, 0.08);
+        background: #ffffff;
+        color: var(--reservation-primary);
+        cursor: pointer;
+        transition: transform 0.18s ease, background-color 0.18s ease;
+    }
+
+    .reservation-icon-button:hover {
+        background: #eef3ff;
+        transform: translateY(-1px);
+    }
+
+    .reservation-icon-button.is-success {
+        color: var(--reservation-success);
+    }
+
+    .reservation-icon-button.is-success:hover {
+        background: rgba(21, 127, 97, 0.08);
+    }
+
+    .reservation-icon-button.is-danger {
+        color: var(--reservation-danger);
+    }
+
+    .reservation-icon-button.is-danger:hover {
+        background: rgba(180, 35, 24, 0.08);
+    }
+
+    .reservation-status-chip {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 88px;
+        padding: 0.42rem 0.7rem;
+        border-radius: 999px;
+        font-size: 0.83rem;
+        font-weight: 700;
+        background: rgba(91, 107, 129, 0.08);
+        color: var(--reservation-neutral);
+    }
+
+    .reservation-status-chip.is-available,
+    .reservation-status-chip.is-approved {
+        background: rgba(21, 127, 97, 0.1);
+        color: var(--reservation-success);
+    }
+
+    .reservation-status-chip.is-unavailable,
+    .reservation-status-chip.is-rejected {
+        background: rgba(180, 35, 24, 0.1);
+        color: var(--reservation-danger);
+    }
+
+    .reservation-status-chip.is-pending {
+        background: rgba(169, 106, 0, 0.12);
+        color: var(--reservation-warning);
+    }
+
+    .reservation-status-chip.is-cancelled {
+        background: rgba(91, 107, 129, 0.1);
+        color: var(--reservation-neutral);
+    }
+
+    .reservation-facility-thumb {
+        width: 78px;
+        height: 54px;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 1px solid rgba(18, 35, 60, 0.08);
+    }
+
+    .reservation-muted-text {
+        color: var(--reservation-muted);
+        font-size: 0.88rem;
+    }
+
+    .reservation-empty-cell {
+        text-align: center;
+        color: var(--reservation-muted);
+        padding: 1.4rem 0;
+    }
+
+    .reservation-modal {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        background: rgba(10, 17, 30, 0.45);
+        backdrop-filter: blur(5px);
+        z-index: 1200;
+    }
+
+    .reservation-modal.is-open {
+        display: flex;
+    }
+
+    .reservation-modal-dialog {
+        width: min(100%, 640px);
+        max-height: calc(100vh - 48px);
+    }
+
+    .reservation-modal-panel {
+        background: #ffffff;
+        border-radius: 20px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        max-height: min(88vh, 760px);
+        box-shadow: 0 30px 80px rgba(4, 10, 20, 0.3);
+    }
+
+    .reservation-modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1.2rem 1.4rem;
+        background: var(--reservation-primary);
+        color: #ffffff;
+    }
+
+    .reservation-modal-title {
+        margin: 0;
+        font-size: 1.05rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+    }
+
+    .reservation-modal-close {
+        border: none;
+        background: transparent;
+        color: #ffffff;
+        font-size: 1.1rem;
+        cursor: pointer;
+    }
+
+    .reservation-modal-body {
+        padding: 1.35rem 1.4rem;
+        overflow-y: auto;
+    }
+
+    .reservation-modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+        padding: 1rem 1.4rem 1.2rem;
+        border-top: 1px solid var(--reservation-line);
+        background: #ffffff;
+    }
+
+    .reservation-alert {
+        margin-bottom: 1rem;
+        padding: 0.9rem 1rem;
+        border-radius: 12px;
+        font-weight: 600;
+        position: relative;
+    }
+
+    .reservation-alert.is-success {
+        background: rgba(21, 127, 97, 0.08);
+        color: var(--reservation-success);
+        border: 1px solid rgba(21, 127, 97, 0.16);
+    }
+
+    .reservation-alert.is-error {
+        background: rgba(180, 35, 24, 0.08);
+        color: var(--reservation-danger);
+        border: 1px solid rgba(180, 35, 24, 0.16);
+    }
+
+    .reservation-form-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+    }
+
+    .reservation-form-group {
+        margin-bottom: 1rem;
+    }
+
+    .reservation-form-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.4rem;
+        font-weight: 700;
+        color: var(--reservation-text);
+    }
+
+    .reservation-form-label i {
+        color: var(--reservation-primary);
+    }
+
+    .reservation-form-control {
+        width: 100%;
+        min-height: 44px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid rgba(18, 35, 60, 0.12);
+        color: var(--reservation-text);
+        background: #ffffff;
+        font-size: 0.95rem;
+        transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .reservation-form-control:focus {
+        border-color: var(--reservation-primary);
+        box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.12);
+        outline: none;
+    }
+
+    .reservation-invalid {
+        border-color: #dc3545 !important;
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.12) !important;
+    }
+
+    .reservation-field-error {
+        margin-top: 0.35rem;
+        color: var(--reservation-danger);
+        font-size: 0.82rem;
+        line-height: 1.3;
+    }
+
+    .reservation-details-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+    }
+
+    .reservation-detail-item {
+        padding: 0.9rem 1rem;
+        border-radius: 12px;
+        background: var(--reservation-surface-soft);
+        border: 1px solid var(--reservation-line);
+    }
+
+    .reservation-detail-label {
+        color: var(--reservation-muted);
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+
+    .reservation-detail-value {
+        margin-top: 0.35rem;
+        color: var(--reservation-text);
+        font-weight: 700;
+        word-break: break-word;
+    }
+
+    .reservation-detail-image {
+        width: 100%;
+        max-height: 220px;
+        object-fit: cover;
+        border-radius: 14px;
+        border: 1px solid var(--reservation-line);
+        background: var(--reservation-surface-soft);
+    }
+
+    @@media (max-width: 1100px) {
+        .reservation-summary-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .reservation-panel-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .reservation-panel-actions {
+            width: 100%;
+        }
+
+        .reservation-form-row,
+        .reservation-details-grid,
+        .reservation-summary-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .reservation-modal {
+            align-items: flex-start;
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .reservation-modal-dialog {
+            width: 100%;
+            max-height: calc(100vh - 32px);
+            margin: 18px 0;
+        }
+    }
+</style>
+
+<div
+    id="reservationManagementModule"
+    class="reservation-module"
+    data-summary-url="@Url.Action("ReservationManagementSummary", "Admin")"
+    data-facilities-url="@Url.Action("LoadFacilitiesList", "Admin")"
+    data-facilities-lookup-url="@Url.Action("GetFacilitiesLookup", "Admin")"
+    data-reservations-url="@Url.Action("LoadReservationsList", "Admin")"
+    data-add-facility-url="@Url.Action("AddFacility", "Admin")"
+    data-edit-facility-url="@Url.Action("EditFacility", "Admin")"
+    data-delete-facility-url="@Url.Action("DeleteFacility", "Admin")"
+    data-approve-url="@Url.Action("ApproveReservation", "Admin")"
+    data-reject-url="@Url.Action("RejectReservation", "Admin")"
+    data-report-url="@Url.Action("GenerateReservationReport", "Admin")">
+
+    <form id="reservationManagementTokenForm" class="reservation-token-form">
+        @Html.AntiForgeryToken()
+    </form>
+
+    <div id="reservationSectionAlert" class="reservation-section-alert @(Model.HasLoadError ? "is-error" : "reservation-hidden")">
+        @(Model.HasLoadError ? Model.LoadErrorMessage : string.Empty)
+    </div>
+
+    <div class="reservation-stack">
+        <section class="reservation-summary-grid">
+            <article class="reservation-summary-card">
+                <p class="reservation-summary-label">Total reservations</p>
+                <p class="reservation-summary-value" id="reservationSummaryTotal">@Model.TotalReservations</p>
+                <div class="reservation-summary-caption">Across all facilities</div>
+            </article>
+            <article class="reservation-summary-card">
+                <p class="reservation-summary-label">Approval rate</p>
+                <p class="reservation-summary-value" id="reservationSummaryApproval">@Model.ApprovalRate%</p>
+                <div class="reservation-summary-caption">
+                    Approved: <span id="reservationSummaryApproved">@Model.ApprovedCount</span> |
+                    Pending: <span id="reservationSummaryPending">@Model.PendingCount</span>
+                </div>
+            </article>
+            <article class="reservation-summary-card">
+                <p class="reservation-summary-label">Most booked facility</p>
+                <p class="reservation-summary-value" id="reservationSummaryPopular">@Model.PopularFacility</p>
+                <div class="reservation-summary-caption">
+                    <span id="reservationSummaryPopularCount">@Model.PopularFacilityCount</span> bookings
+                </div>
+            </article>
+            <article class="reservation-summary-card">
+                <p class="reservation-summary-label">Peak reservation day</p>
+                <p class="reservation-summary-value" id="reservationSummaryPeak">@Model.PeakDay</p>
+                <div class="reservation-summary-caption">
+                    <span id="reservationSummaryPeakCount">@Model.PeakDayCount</span> bookings
+                </div>
+            </article>
+        </section>
+
+        <section class="reservation-panel">
+            <div class="reservation-panel-header">
+                <div>
+                    <h2 class="reservation-panel-title"><i class="fas fa-warehouse"></i>Facility management</h2>
+                    <p class="reservation-panel-caption">Add, review, edit, and retire community facilities from one place.</p>
+                </div>
+                <div class="reservation-panel-actions">
+                    <button type="button" class="reservation-button" id="openAddFacilityModal">
+                        <i class="fas fa-plus"></i>
+                        <span>Add facility</span>
+                    </button>
+                </div>
+            </div>
+            <div class="reservation-panel-body">
+                <div class="reservation-table-shell">
+                    <table class="reservation-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Capacity</th>
+                                <th>Status</th>
+                                <th>Image</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="facilityTableBody">
+                            @await Html.PartialAsync("_FacilityTableRows", Model.Facilities)
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="reservation-panel">
+            <div class="reservation-panel-header">
+                <div>
+                    <h2 class="reservation-panel-title"><i class="fas fa-calendar-check"></i>Reservation operations</h2>
+                    <p class="reservation-panel-caption">Monitor live bookings, inspect details, handle exceptions, and export reports.</p>
+                </div>
+                <div class="reservation-panel-actions">
+                    <a href="@Url.Action("ViewExpiredHistory", "Reservation")" class="reservation-button reservation-button-secondary">
+                        <i class="fas fa-clock-rotate-left"></i>
+                        <span>View expired</span>
+                    </a>
+                    <button type="button" class="reservation-button" id="openReportModal">
+                        <i class="fas fa-file-arrow-down"></i>
+                        <span>Generate report</span>
+                    </button>
+                </div>
+            </div>
+            <div class="reservation-panel-body">
+                <div class="reservation-table-shell">
+                    <table class="reservation-table">
+                        <thead>
+                            <tr>
+                                <th>Facility</th>
+                                <th>Homeowner</th>
+                                <th>Date</th>
+                                <th>Start</th>
+                                <th>End</th>
+                                <th>Purpose</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reservationTableBody">
+                            @await Html.PartialAsync("_ReservationTableRows", Model.ActiveReservations)
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<div class="reservation-modal" id="addFacilityModal" aria-hidden="true" role="dialog">
+    <div class="reservation-modal-dialog">
+        <div class="reservation-modal-panel">
+            <div class="reservation-modal-header">
+                <h3 class="reservation-modal-title"><i class="fas fa-plus"></i>Add facility</h3>
+                <button type="button" class="reservation-modal-close" data-reservation-close="addFacilityModal" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="reservation-modal-body">
+                <div id="addFacilityAlert" class="reservation-alert reservation-hidden"></div>
+                <form id="addFacilityForm" enctype="multipart/form-data">
+                    <div class="reservation-form-row">
+                        <div class="reservation-form-group">
+                            <label class="reservation-form-label"><i class="fas fa-building"></i> Facility name</label>
+                            <input type="text" class="reservation-form-control" name="FacilityName" data-facility-input="add:FacilityName" required>
+                            <div class="reservation-field-error reservation-hidden" data-facility-error="add:FacilityName"></div>
+                        </div>
+                        <div class="reservation-form-group">
+                            <label class="reservation-form-label"><i class="fas fa-users"></i> Capacity</label>
+                            <input type="number" class="reservation-form-control" name="Capacity" data-facility-input="add:Capacity" min="1" required>
+                            <div class="reservation-field-error reservation-hidden" data-facility-error="add:Capacity"></div>
+                        </div>
+                    </div>
+                    <div class="reservation-form-group">
+                        <label class="reservation-form-label"><i class="fas fa-align-left"></i> Description</label>
+                        <textarea class="reservation-form-control" name="Description" data-facility-input="add:Description" rows="3" required></textarea>
+                        <div class="reservation-field-error reservation-hidden" data-facility-error="add:Description"></div>
+                    </div>
+                    <div class="reservation-form-row">
+                        <div class="reservation-form-group">
+                            <label class="reservation-form-label"><i class="fas fa-toggle-on"></i> Status</label>
+                            <select class="reservation-form-control" name="AvailabilityStatus" data-facility-input="add:AvailabilityStatus" required>
+                                <option value="Available">Available</option>
+                                <option value="Unavailable">Unavailable</option>
+                            </select>
+                            <div class="reservation-field-error reservation-hidden" data-facility-error="add:AvailabilityStatus"></div>
+                        </div>
+                        <div class="reservation-form-group">
+                            <label class="reservation-form-label"><i class="fas fa-image"></i> Images</label>
+                            <input type="file" class="reservation-form-control" name="ImageFiles" data-facility-input="add:ImageFiles" accept="image/*" multiple>
+                            <div class="reservation-field-error reservation-hidden" data-facility-error="add:ImageFiles"></div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="reservation-modal-footer">
+                <button type="button" class="reservation-button reservation-button-secondary" data-reservation-close="addFacilityModal">Cancel</button>
+                <button type="button" class="reservation-button" id="submitAddFacility">
+                    <i class="fas fa-save"></i>
+                    <span>Save facility</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="reservation-modal" id="editFacilityModal" aria-hidden="true" role="dialog">
+    <div class="reservation-modal-dialog">
+        <div class="reservation-modal-panel">
+            <div class="reservation-modal-header">
+                <h3 class="reservation-modal-title"><i class="fas fa-pen-to-square"></i>Edit facility</h3>
+                <button type="button" class="reservation-modal-close" data-reservation-close="editFacilityModal" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="reservation-modal-body">
+                <div id="editFacilityAlert" class="reservation-alert reservation-hidden"></div>
+                <form id="editFacilityForm" enctype="multipart/form-data">
+                    <input type="hidden" name="FacilityID" data-facility-input="edit:FacilityID">
+                    <input type="hidden" name="ExistingImageUrl" data-facility-input="edit:ExistingImageUrl">
+                    <div class="reservation-form-row">
+                        <div class="reservation-form-group">
+                            <label class="reservation-form-label"><i class="fas fa-building"></i> Facility name</label>
+                            <input type="text" class="reservation-form-control" name="FacilityName" data-facility-input="edit:FacilityName" required>
+                            <div class="reservation-field-error reservation-hidden" data-facility-error="edit:FacilityName"></div>
+                        </div>
+                        <div class="reservation-form-group">
+                            <label class="reservation-form-label"><i class="fas fa-users"></i> Capacity</label>
+                            <input type="number" class="reservation-form-control" name="Capacity" data-facility-input="edit:Capacity" min="1" required>
+                            <div class="reservation-field-error reservation-hidden" data-facility-error="edit:Capacity"></div>
+                        </div>
+                    </div>
+                    <div class="reservation-form-group">
+                        <label class="reservation-form-label"><i class="fas fa-align-left"></i> Description</label>
+                        <textarea class="reservation-form-control" name="Description" data-facility-input="edit:Description" rows="3" required></textarea>
+                        <div class="reservation-field-error reservation-hidden" data-facility-error="edit:Description"></div>
+                    </div>
+                    <div class="reservation-form-row">
+                        <div class="reservation-form-group">
+                            <label class="reservation-form-label"><i class="fas fa-toggle-on"></i> Status</label>
+                            <select class="reservation-form-control" name="AvailabilityStatus" data-facility-input="edit:AvailabilityStatus" required>
+                                <option value="Available">Available</option>
+                                <option value="Unavailable">Unavailable</option>
+                            </select>
+                            <div class="reservation-field-error reservation-hidden" data-facility-error="edit:AvailabilityStatus"></div>
+                        </div>
+                        <div class="reservation-form-group">
+                            <label class="reservation-form-label"><i class="fas fa-image"></i> Replace images</label>
+                            <input type="file" class="reservation-form-control" name="ImageFiles" data-facility-input="edit:ImageFiles" accept="image/*" multiple>
+                            <div class="reservation-field-error reservation-hidden" data-facility-error="edit:ImageFiles"></div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="reservation-modal-footer">
+                <button type="button" class="reservation-button reservation-button-secondary" data-reservation-close="editFacilityModal">Cancel</button>
+                <button type="button" class="reservation-button" id="submitEditFacility">
+                    <i class="fas fa-save"></i>
+                    <span>Update facility</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="reservation-modal" id="reservationDetailsModal" aria-hidden="true" role="dialog">
+    <div class="reservation-modal-dialog">
+        <div class="reservation-modal-panel">
+            <div class="reservation-modal-header">
+                <h3 class="reservation-modal-title"><i class="fas fa-eye"></i>Reservation details</h3>
+                <button type="button" class="reservation-modal-close" data-reservation-close="reservationDetailsModal" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="reservation-modal-body">
+                <div class="reservation-details-grid">
+                    <div class="reservation-detail-item"><div class="reservation-detail-label">Facility</div><div class="reservation-detail-value" id="reservationDetailFacility">-</div></div>
+                    <div class="reservation-detail-item"><div class="reservation-detail-label">Homeowner</div><div class="reservation-detail-value" id="reservationDetailHomeowner">-</div></div>
+                    <div class="reservation-detail-item"><div class="reservation-detail-label">Date</div><div class="reservation-detail-value" id="reservationDetailDate">-</div></div>
+                    <div class="reservation-detail-item"><div class="reservation-detail-label">Time window</div><div class="reservation-detail-value" id="reservationDetailTime">-</div></div>
+                    <div class="reservation-detail-item"><div class="reservation-detail-label">Status</div><div class="reservation-detail-value" id="reservationDetailStatus">-</div></div>
+                    <div class="reservation-detail-item"><div class="reservation-detail-label">Created</div><div class="reservation-detail-value" id="reservationDetailCreated">-</div></div>
+                    <div class="reservation-detail-item" style="grid-column: 1 / -1;">
+                        <div class="reservation-detail-label">Purpose</div>
+                        <div class="reservation-detail-value" id="reservationDetailPurpose">-</div>
+                    </div>
+                </div>
+            </div>
+            <div class="reservation-modal-footer">
+                <button type="button" class="reservation-button reservation-button-secondary" data-reservation-close="reservationDetailsModal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="reservation-modal" id="facilityDetailsModal" aria-hidden="true" role="dialog">
+    <div class="reservation-modal-dialog">
+        <div class="reservation-modal-panel">
+            <div class="reservation-modal-header">
+                <h3 class="reservation-modal-title"><i class="fas fa-eye"></i>Facility details</h3>
+                <button type="button" class="reservation-modal-close" data-reservation-close="facilityDetailsModal" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="reservation-modal-body">
+                <div class="reservation-details-grid">
+                    <div class="reservation-detail-item"><div class="reservation-detail-label">Facility</div><div class="reservation-detail-value" id="facilityDetailName">-</div></div>
+                    <div class="reservation-detail-item"><div class="reservation-detail-label">Status</div><div class="reservation-detail-value" id="facilityDetailStatus">-</div></div>
+                    <div class="reservation-detail-item"><div class="reservation-detail-label">Capacity</div><div class="reservation-detail-value" id="facilityDetailCapacity">-</div></div>
+                    <div class="reservation-detail-item" style="grid-column: 1 / -1;">
+                        <div class="reservation-detail-label">Description</div>
+                        <div class="reservation-detail-value" id="facilityDetailDescription">-</div>
+                    </div>
+                    <div class="reservation-detail-item" style="grid-column: 1 / -1;">
+                        <div class="reservation-detail-label">Preview</div>
+                        <div class="reservation-detail-value">
+                            <img id="facilityDetailImage" class="reservation-detail-image reservation-hidden" alt="Facility preview" />
+                            <span id="facilityDetailImageFallback">No facility image</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="reservation-modal-footer">
+                <button type="button" class="reservation-button reservation-button-secondary" data-reservation-close="facilityDetailsModal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="reservation-modal" id="reportModal" aria-hidden="true" role="dialog">
+    <div class="reservation-modal-dialog">
+        <div class="reservation-modal-panel">
+            <div class="reservation-modal-header">
+                <h3 class="reservation-modal-title"><i class="fas fa-file-arrow-down"></i>Generate reservation report</h3>
+                <button type="button" class="reservation-modal-close" data-reservation-close="reportModal" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="reservation-modal-body">
+                <form id="reportForm">
+                    <div class="reservation-form-group">
+                        <label class="reservation-form-label"><i class="fas fa-layer-group"></i> Report type</label>
+                        <select class="reservation-form-control" name="reportType">
+                            <option value="summary">Summary report</option>
+                            <option value="detailed">Detailed report</option>
+                            <option value="facility">Facility usage report</option>
+                        </select>
+                    </div>
+                    <div class="reservation-form-row">
+                        <div class="reservation-form-group">
+                            <label class="reservation-form-label"><i class="fas fa-calendar-day"></i> Start date</label>
+                            <input type="date" class="reservation-form-control" name="startDate">
+                        </div>
+                        <div class="reservation-form-group">
+                            <label class="reservation-form-label"><i class="fas fa-calendar-day"></i> End date</label>
+                            <input type="date" class="reservation-form-control" name="endDate">
+                        </div>
+                    </div>
+                    <div class="reservation-form-group">
+                        <label class="reservation-form-label"><i class="fas fa-warehouse"></i> Facility</label>
+                        <select class="reservation-form-control" name="facilityId" id="reportFacilitySelect">
+                            <option value="">All facilities</option>
+                            @foreach (var facility in Model.Facilities)
+                            {
+                                <option value="@facility.FacilityID">@facility.FacilityName</option>
+                            }
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="reservation-modal-footer">
+                <button type="button" class="reservation-button reservation-button-secondary" data-reservation-close="reportModal">Cancel</button>
+                <button type="button" class="reservation-button" id="generateReservationReport">
+                    <i class="fas fa-download"></i>
+                    <span>Download CSV</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        if (window.__reservationManagementCleanup) {
+            window.__reservationManagementCleanup();
+        }
+
+        const moduleRoot = document.getElementById('reservationManagementModule');
+        if (!moduleRoot) {
+            return;
+        }
+
+        const moduleContainer = moduleRoot.parentElement || document;
+        const token = document.querySelector('#reservationManagementTokenForm input[name="__RequestVerificationToken"]')?.value || '';
+        const facilityTableBody = document.getElementById('facilityTableBody');
+        const reservationTableBody = document.getElementById('reservationTableBody');
+        const sectionAlert = document.getElementById('reservationSectionAlert');
+
+        const addFacilityModal = moduleContainer.querySelector('#addFacilityModal');
+        const editFacilityModal = moduleContainer.querySelector('#editFacilityModal');
+        const detailsModal = moduleContainer.querySelector('#reservationDetailsModal');
+        const facilityDetailsModal = moduleContainer.querySelector('#facilityDetailsModal');
+        const reportModal = moduleContainer.querySelector('#reportModal');
+
+        const addFacilityForm = document.getElementById('addFacilityForm');
+        const editFacilityForm = document.getElementById('editFacilityForm');
+        const reportForm = document.getElementById('reportForm');
+
+        const addFacilityAlert = document.getElementById('addFacilityAlert');
+        const editFacilityAlert = document.getElementById('editFacilityAlert');
+
+        const openAddFacilityButton = document.getElementById('openAddFacilityModal');
+        const openReportButton = document.getElementById('openReportModal');
+        const submitAddFacilityButton = document.getElementById('submitAddFacility');
+        const submitEditFacilityButton = document.getElementById('submitEditFacility');
+        const generateReportButton = document.getElementById('generateReservationReport');
+        const reportFacilitySelect = document.getElementById('reportFacilitySelect');
+
+        if (!facilityTableBody || !reservationTableBody || !addFacilityModal || !editFacilityModal || !detailsModal || !facilityDetailsModal || !reportModal || !addFacilityForm || !editFacilityForm || !reportForm || !openAddFacilityButton || !openReportButton || !submitAddFacilityButton || !submitEditFacilityButton || !generateReportButton || !reportFacilitySelect) {
+            return;
+        }
+
+        const reservationModals = [addFacilityModal, editFacilityModal, detailsModal, facilityDetailsModal, reportModal];
+        let sectionAlertTimer = null;
+
+        reservationModals.forEach(function (modal) {
+            Array.from(document.querySelectorAll('[id="' + modal.id + '"]'))
+                .filter(function (candidate) { return candidate !== modal; })
+                .forEach(function (staleModal) { staleModal.remove(); });
+
+            if (modal.parentElement !== document.body) {
+                document.body.appendChild(modal);
+            }
+        });
+
+        function showSectionAlert(type, message) {
+            if (!sectionAlert) {
+                return;
+            }
+
+            if (sectionAlertTimer) {
+                clearTimeout(sectionAlertTimer);
+                sectionAlertTimer = null;
+            }
+
+            sectionAlert.className = 'reservation-section-alert';
+            sectionAlert.classList.add(type === 'success' ? 'is-success' : 'is-error');
+            sectionAlert.textContent = message;
+            sectionAlert.classList.remove('reservation-hidden');
+
+            if (type === 'success') {
+                sectionAlertTimer = setTimeout(function () {
+                    clearSectionAlert();
+                }, 3200);
+            }
+        }
+
+        function clearSectionAlert() {
+            if (!sectionAlert) {
+                return;
+            }
+
+            if (sectionAlertTimer) {
+                clearTimeout(sectionAlertTimer);
+                sectionAlertTimer = null;
+            }
+
+            sectionAlert.className = 'reservation-section-alert reservation-hidden';
+            sectionAlert.textContent = '';
+        }
+
+        function showModal(modal) {
+            modal.classList.add('is-open');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(modal) {
+            modal.classList.remove('is-open');
+            modal.setAttribute('aria-hidden', 'true');
+            const hasOpenModal = reservationModals.some(function (candidate) {
+                return candidate.classList.contains('is-open');
+            });
+            document.body.style.overflow = hasOpenModal ? 'hidden' : '';
+        }
+
+        function clearFacilityFieldErrors(prefix) {
+            document.querySelectorAll('[data-facility-error^="' + prefix + ':"]').forEach(function (element) {
+                element.textContent = '';
+                element.classList.add('reservation-hidden');
+            });
+
+            document.querySelectorAll('[data-facility-input^="' + prefix + ':"]').forEach(function (input) {
+                input.classList.remove('reservation-invalid');
+                input.removeAttribute('aria-invalid');
+            });
+        }
+
+        function showFacilityFieldError(prefix, fieldName, message) {
+            const input = document.querySelector('[data-facility-input="' + prefix + ':' + fieldName + '"]');
+            const error = document.querySelector('[data-facility-error="' + prefix + ':' + fieldName + '"]');
+
+            if (input) {
+                input.classList.add('reservation-invalid');
+                input.setAttribute('aria-invalid', 'true');
+            }
+
+            if (error) {
+                error.textContent = message;
+                error.classList.remove('reservation-hidden');
+            }
+        }
+
+        function applyFacilityErrors(prefix, payload) {
+            clearFacilityFieldErrors(prefix);
+
+            if (!payload) {
+                return;
+            }
+
+            if (payload.field && payload.message) {
+                showFacilityFieldError(prefix, payload.field, payload.message);
+                return;
+            }
+
+            if (payload.validationErrors && typeof payload.validationErrors === 'object') {
+                Object.keys(payload.validationErrors).forEach(function (fieldName) {
+                    const messages = payload.validationErrors[fieldName];
+                    if (Array.isArray(messages) && messages.length > 0) {
+                        showFacilityFieldError(prefix, fieldName, messages[0]);
+                    }
+                });
+            }
+        }
+
+        function showModalAlert(alertElement, type, message) {
+            if (!alertElement) {
+                return;
+            }
+
+            alertElement.className = 'reservation-alert';
+            alertElement.classList.add(type === 'success' ? 'is-success' : 'is-error');
+            alertElement.textContent = message;
+            alertElement.classList.remove('reservation-hidden');
+        }
+
+        function clearModalAlert(alertElement) {
+            if (!alertElement) {
+                return;
+            }
+
+            alertElement.className = 'reservation-alert reservation-hidden';
+            alertElement.textContent = '';
+        }
+
+        async function fetchText(url) {
+            const response = await fetch(url, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                credentials: 'same-origin'
+            });
+
+            if (!response.ok) {
+                throw new Error('Unable to load updated data.');
+            }
+
+            return response.text();
+        }
+
+        async function refreshFacilitiesTable() {
+            facilityTableBody.innerHTML = await fetchText(moduleRoot.dataset.facilitiesUrl);
+        }
+
+        async function refreshReservationsTable() {
+            reservationTableBody.innerHTML = await fetchText(moduleRoot.dataset.reservationsUrl);
+        }
+
+        async function refreshFacilityLookup() {
+            const response = await fetch(moduleRoot.dataset.facilitiesLookupUrl, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                credentials: 'same-origin'
+            });
+
+            if (!response.ok) {
+                throw new Error('Unable to refresh facility lookup.');
+            }
+
+            const facilities = await response.json();
+            const existingValue = reportFacilitySelect.value;
+            reportFacilitySelect.innerHTML = '<option value="">All facilities</option>';
+
+            facilities.forEach(function (facility) {
+                const option = document.createElement('option');
+                option.value = facility.facilityID;
+                option.textContent = facility.facilityName;
+                reportFacilitySelect.appendChild(option);
+            });
+
+            reportFacilitySelect.value = existingValue;
+        }
+
+        async function refreshSummary() {
+            const response = await fetch(moduleRoot.dataset.summaryUrl, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                credentials: 'same-origin'
+            });
+
+            if (!response.ok) {
+                throw new Error('Unable to refresh reservation summary.');
+            }
+
+            const payload = await response.json();
+            document.getElementById('reservationSummaryTotal').textContent = payload.totalReservations ?? 0;
+            document.getElementById('reservationSummaryApproval').textContent = (payload.approvalRate ?? 0) + '%';
+            document.getElementById('reservationSummaryApproved').textContent = payload.approvedCount ?? 0;
+            document.getElementById('reservationSummaryPending').textContent = payload.pendingCount ?? 0;
+            document.getElementById('reservationSummaryPopular').textContent = payload.popularFacility ?? 'No data';
+            document.getElementById('reservationSummaryPopularCount').textContent = payload.popularFacilityCount ?? 0;
+            document.getElementById('reservationSummaryPeak').textContent = payload.peakDay ?? 'No data';
+            document.getElementById('reservationSummaryPeakCount').textContent = payload.peakDayCount ?? 0;
+        }
+
+        async function refreshReservationModule() {
+            const results = await Promise.allSettled([
+                refreshFacilitiesTable(),
+                refreshReservationsTable(),
+                refreshFacilityLookup(),
+                refreshSummary()
+            ]);
+
+            const failed = results.find(function (result) {
+                return result.status === 'rejected';
+            });
+
+            if (failed) {
+                console.error(failed.reason);
+                showSectionAlert('error', 'Some reservation data could not be refreshed. The section is showing the latest data it could load.');
+            }
+        }
+
+        async function refreshFacilitiesModule() {
+            await Promise.all([
+                refreshFacilitiesTable(),
+                refreshFacilityLookup()
+            ]);
+        }
+
+        function buildFormBody(additionalFields) {
+            const params = new URLSearchParams(additionalFields);
+            params.append('__RequestVerificationToken', token);
+            return params.toString();
+        }
+
+        function populateEditFacilityForm(facility) {
+            editFacilityForm.querySelector('[data-facility-input="edit:FacilityID"]').value = facility.facilityID || '';
+            editFacilityForm.querySelector('[data-facility-input="edit:FacilityName"]').value = facility.facilityName || '';
+            editFacilityForm.querySelector('[data-facility-input="edit:Description"]').value = facility.description || '';
+            editFacilityForm.querySelector('[data-facility-input="edit:Capacity"]').value = facility.capacity || '';
+            editFacilityForm.querySelector('[data-facility-input="edit:AvailabilityStatus"]').value = facility.availabilityStatus || 'Available';
+            editFacilityForm.querySelector('[data-facility-input="edit:ExistingImageUrl"]').value = facility.imageUrl || '';
+            editFacilityForm.querySelector('[data-facility-input="edit:ImageFiles"]').value = '';
+        }
+
+        function resetAddFacilityForm() {
+            addFacilityForm.reset();
+            clearFacilityFieldErrors('add');
+            clearModalAlert(addFacilityAlert);
+        }
+
+        function resetEditFacilityForm() {
+            editFacilityForm.reset();
+            clearFacilityFieldErrors('edit');
+            clearModalAlert(editFacilityAlert);
+        }
+
+        async function submitFacilityForm(form, submitButton, url, prefix, successMessage, alertElement, closeTarget, refreshWork) {
+            if (form.dataset.submitting === 'true') {
+                return;
+            }
+
+            const originalMarkup = submitButton.innerHTML;
+            form.dataset.submitting = 'true';
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Saving...</span>';
+
+            clearSectionAlert();
+            clearFacilityFieldErrors(prefix);
+            clearModalAlert(alertElement);
+
+            try {
+                const formData = new FormData(form);
+                formData.append('__RequestVerificationToken', token);
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    credentials: 'same-origin',
+                    body: formData
+                });
+
+                const contentType = response.headers.get('content-type') || '';
+                const payload = contentType.includes('application/json')
+                    ? await response.json()
+                    : { success: false, message: 'Unexpected server response.' };
+
+                if (!response.ok || !payload || payload.success === false) {
+                    applyFacilityErrors(prefix, payload);
+                    showModalAlert(alertElement, 'error', payload?.message || 'Unable to save facility.');
+                    return;
+                }
+
+                closeModal(closeTarget);
+                if (prefix === 'add') {
+                    resetAddFacilityForm();
+                } else {
+                    resetEditFacilityForm();
+                }
+                showSectionAlert('success', payload.message || successMessage);
+
+                Promise.resolve(refreshWork())
+                    .catch(function (error) {
+                        console.error(error);
+                        showSectionAlert('error', 'Facility saved, but the list could not be refreshed. Reload the page.');
+                    });
+            } catch (error) {
+                console.error(error);
+                showModalAlert(alertElement, 'error', 'Unable to save facility. Please try again.');
+            } finally {
+                delete form.dataset.submitting;
+                submitButton.disabled = false;
+                submitButton.innerHTML = originalMarkup;
+            }
+        }
+
+        function fillReservationDetails(details) {
+            document.getElementById('reservationDetailFacility').textContent = details.facility || '-';
+            document.getElementById('reservationDetailHomeowner').textContent = details.homeowner || '-';
+            document.getElementById('reservationDetailDate').textContent = details.reservationDate || '-';
+            document.getElementById('reservationDetailTime').textContent = (details.startTime || '-') + ' - ' + (details.endTime || '-');
+            document.getElementById('reservationDetailStatus').textContent = details.status || '-';
+            document.getElementById('reservationDetailCreated').textContent = details.createdAt || '-';
+            document.getElementById('reservationDetailPurpose').textContent = details.purpose || '-';
+        }
+
+        function fillFacilityDetails(button) {
+            document.getElementById('facilityDetailName').textContent = button.getAttribute('data-facility-name') || '-';
+            document.getElementById('facilityDetailStatus').textContent = button.getAttribute('data-facility-status') || '-';
+            document.getElementById('facilityDetailCapacity').textContent = button.getAttribute('data-facility-capacity') || '-';
+            document.getElementById('facilityDetailDescription').textContent = button.getAttribute('data-facility-description') || '-';
+
+            const image = document.getElementById('facilityDetailImage');
+            const fallback = document.getElementById('facilityDetailImageFallback');
+            const imageUrl = button.getAttribute('data-facility-image') || '';
+
+            if (imageUrl) {
+                image.src = imageUrl;
+                image.classList.remove('reservation-hidden');
+                fallback.classList.add('reservation-hidden');
+            } else {
+                image.removeAttribute('src');
+                image.classList.add('reservation-hidden');
+                fallback.classList.remove('reservation-hidden');
+            }
+        }
+
+        async function handleReservationAction(action, reservationId) {
+            const url = action === 'approve' ? moduleRoot.dataset.approveUrl : moduleRoot.dataset.rejectUrl;
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                credentials: 'same-origin',
+                body: new URLSearchParams({ reservationId: reservationId }).toString()
+            });
+
+            const payload = await response.json();
+            if (!response.ok || !payload || payload.success === false) {
+                throw new Error(payload?.message || 'Unable to update reservation.');
+            }
+
+            await Promise.all([refreshReservationsTable(), refreshSummary()]);
+            showSectionAlert('success', payload.message || 'Reservation updated successfully.');
+        }
+
+        const handleModuleClick = function (event) {
+            const editFacilityButton = event.target.closest('[data-edit-facility="true"]');
+            if (editFacilityButton) {
+                const editUrl = editFacilityButton.getAttribute('data-edit-url');
+                if (!editUrl) {
+                    showSectionAlert('error', 'Unable to load the selected facility.');
+                    return;
+                }
+
+                clearSectionAlert();
+                resetEditFacilityForm();
+                fetch(editUrl, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    credentials: 'same-origin'
+                })
+                    .then(async function (response) {
+                        const payload = await response.json();
+                        if (!response.ok || !payload || payload.success === false || !payload.facility) {
+                            throw new Error(payload?.message || 'Unable to load the selected facility.');
+                        }
+
+                        populateEditFacilityForm(payload.facility);
+                        showModal(editFacilityModal);
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                        showSectionAlert('error', error.message || 'Unable to load the selected facility.');
+                    });
+                return;
+            }
+
+            const viewFacilityButton = event.target.closest('[data-view-facility="true"]');
+            if (viewFacilityButton) {
+                clearSectionAlert();
+                fillFacilityDetails(viewFacilityButton);
+                showModal(facilityDetailsModal);
+                return;
+            }
+
+            const deleteFacilityButton = event.target.closest('[data-delete-facility="true"]');
+            if (deleteFacilityButton) {
+                const facilityId = deleteFacilityButton.getAttribute('data-facility-id');
+                const facilityName = deleteFacilityButton.getAttribute('data-facility-name') || 'this facility';
+                if (!facilityId || !confirm('Delete ' + facilityName + '?')) {
+                    return;
+                }
+
+                clearSectionAlert();
+                fetch(moduleRoot.dataset.deleteFacilityUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    credentials: 'same-origin',
+                    body: buildFormBody({ facilityId: facilityId })
+                })
+                    .then(async function (response) {
+                        const payload = await response.json();
+                        if (!response.ok || !payload || payload.success === false) {
+                            throw new Error(payload?.message || 'Unable to delete the facility.');
+                        }
+
+                        await refreshFacilitiesModule();
+                        showSectionAlert('success', payload.message || 'Facility deleted successfully.');
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                        showSectionAlert('error', error.message || 'Unable to delete the facility.');
+                    });
+                return;
+            }
+
+            const reservationActionButton = event.target.closest('[data-reservation-action]');
+            if (reservationActionButton) {
+                const action = reservationActionButton.getAttribute('data-reservation-action');
+                const reservationId = reservationActionButton.getAttribute('data-reservation-id');
+                if (!action || !reservationId) {
+                    return;
+                }
+
+                clearSectionAlert();
+                handleReservationAction(action, reservationId).catch(function (error) {
+                    console.error(error);
+                    showSectionAlert('error', error.message || 'Unable to update the reservation.');
+                });
+                return;
+            }
+
+            const viewReservationButton = event.target.closest('[data-view-reservation="true"]');
+            if (viewReservationButton) {
+                const detailsUrl = viewReservationButton.getAttribute('data-details-url');
+                if (!detailsUrl) {
+                    showSectionAlert('error', 'Unable to load reservation details.');
+                    return;
+                }
+
+                fetch(detailsUrl, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    credentials: 'same-origin'
+                })
+                    .then(async function (response) {
+                        const payload = await response.json();
+                        if (!response.ok || !payload || payload.success === false || !payload.reservation) {
+                            throw new Error(payload?.message || 'Unable to load reservation details.');
+                        }
+
+                        fillReservationDetails(payload.reservation);
+                        showModal(detailsModal);
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                        showSectionAlert('error', error.message || 'Unable to load reservation details.');
+                    });
+            }
+        };
+
+        const handleBackdropClick = function (event) {
+            if (event.target.classList.contains('reservation-modal')) {
+                closeModal(event.target);
+            }
+        };
+
+        const handleDocumentClick = function (event) {
+            const closeButton = event.target.closest('[data-reservation-close]');
+            if (!closeButton) {
+                return;
+            }
+
+            const matchingModal = reservationModals.find(function (modal) {
+                return modal.contains(closeButton);
+            });
+
+            if (!matchingModal) {
+                return;
+            }
+
+            event.preventDefault();
+            event.stopPropagation();
+            closeModal(matchingModal);
+        };
+
+        const handleKeydown = function (event) {
+            if (event.key === 'Escape') {
+                [addFacilityModal, editFacilityModal, detailsModal, facilityDetailsModal, reportModal].forEach(closeModal);
+            }
+        };
+
+        const handleReportDownload = function () {
+            const params = new URLSearchParams(new FormData(reportForm));
+            window.open(moduleRoot.dataset.reportUrl + '?' + params.toString(), '_blank', 'noopener');
+            closeModal(reportModal);
+            showSectionAlert('success', 'Reservation report opened in a new tab.');
+        };
+
+        openAddFacilityButton.addEventListener('click', function () {
+            resetAddFacilityForm();
+            showModal(addFacilityModal);
+        });
+
+        openReportButton.addEventListener('click', function () {
+            showModal(reportModal);
+        });
+
+        submitAddFacilityButton.addEventListener('click', function () {
+            submitFacilityForm(
+                addFacilityForm,
+                submitAddFacilityButton,
+                moduleRoot.dataset.addFacilityUrl,
+                'add',
+                'Facility added successfully.',
+                addFacilityAlert,
+                addFacilityModal,
+                refreshFacilitiesModule
+            );
+        });
+
+        submitEditFacilityButton.addEventListener('click', function () {
+            submitFacilityForm(
+                editFacilityForm,
+                submitEditFacilityButton,
+                moduleRoot.dataset.editFacilityUrl,
+                'edit',
+                'Facility updated successfully.',
+                editFacilityAlert,
+                editFacilityModal,
+                refreshFacilitiesModule
+            );
+        });
+
+        generateReportButton.addEventListener('click', handleReportDownload);
+        moduleRoot.addEventListener('click', handleModuleClick);
+        document.addEventListener('click', handleDocumentClick);
+        reservationModals.forEach(function (modal) {
+            modal.addEventListener('click', handleBackdropClick);
+        });
+        document.addEventListener('keydown', handleKeydown);
+
+        const reservationManagementCleanup = function () {
+            moduleRoot.removeEventListener('click', handleModuleClick);
+            generateReportButton.removeEventListener('click', handleReportDownload);
+            document.removeEventListener('click', handleDocumentClick);
+            document.removeEventListener('keydown', handleKeydown);
+            reservationModals.forEach(function (modal) {
+                modal.removeEventListener('click', handleBackdropClick);
+                closeModal(modal);
+                if (modal.parentElement === document.body) {
+                    modal.remove();
+                }
+            });
+            window.__reservationManagementCleanup = null;
+        };
+
+        window.__reservationManagementCleanup = reservationManagementCleanup;
+        if (typeof window.__registerAdminEmbeddedCleanup === 'function') {
+            window.__registerAdminEmbeddedCleanup(reservationManagementCleanup);
+        }
+
+        requestAnimationFrame(function () {
+            refreshReservationModule();
+        });
+    })();
+</script>

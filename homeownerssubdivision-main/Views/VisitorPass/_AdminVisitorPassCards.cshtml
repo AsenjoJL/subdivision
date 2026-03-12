@@ -1,0 +1,104 @@
+@model IReadOnlyList<HOMEOWNER.Models.VisitorPass>
+
+@if (Model != null && Model.Any())
+{
+    <div class="admin-visitor-passes-grid">
+        @foreach (var pass in Model)
+        {
+            var searchable = string.Join(" ",
+                pass.VisitorName,
+                pass.Homeowner?.FullName,
+                pass.VehiclePlateNumber,
+                pass.Purpose,
+                pass.Status);
+            <article class="admin-visitor-pass-card"
+                     data-admin-visitor-pass-card
+                     data-search="@searchable"
+                     data-status="@pass.Status">
+                <div class="admin-visitor-pass-card-top">
+                    <div>
+                        <h3>@pass.VisitorName</h3>
+                        <p>@(pass.Homeowner?.FullName ?? "Unknown homeowner") · @(pass.Homeowner?.BlockLotNumber ?? "No block/lot")</p>
+                    </div>
+                    <span class="admin-visitor-pass-status is-@pass.Status.ToLowerInvariant()">@pass.Status</span>
+                </div>
+                <dl class="admin-visitor-pass-meta">
+                    <div>
+                        <dt>Visit date</dt>
+                        <dd>@pass.VisitDate.ToLocalTime().ToString("MMM dd, yyyy")</dd>
+                    </div>
+                    <div>
+                        <dt>Arrival</dt>
+                        <dd>@(pass.ExpectedArrivalTime?.ToString(@"hh\:mm") ?? "-")</dd>
+                    </div>
+                    <div>
+                        <dt>Purpose</dt>
+                        <dd>@(string.IsNullOrWhiteSpace(pass.Purpose) ? "-" : pass.Purpose)</dd>
+                    </div>
+                    <div>
+                        <dt>Vehicle</dt>
+                        <dd>@(!string.IsNullOrWhiteSpace(pass.VehiclePlateNumber) ? $"{pass.VehicleType ?? "Vehicle"} · {pass.VehiclePlateNumber}" : "No vehicle")</dd>
+                    </div>
+                </dl>
+                <div class="admin-visitor-pass-actions">
+                    <button type="button"
+                            class="admin-visitor-pass-action"
+                            data-admin-visitor-pass-view
+                            data-pass-id="@pass.VisitorPassID">
+                        <i class="fas fa-eye"></i>
+                        <span>View</span>
+                    </button>
+                    @if (pass.Status == "Pending")
+                    {
+                        <button type="button"
+                                class="admin-visitor-pass-action is-primary"
+                                data-admin-visitor-pass-open-status
+                                data-pass-id="@pass.VisitorPassID"
+                                data-pass-status="Approved"
+                                data-pass-title="Approve visitor pass">
+                            <i class="fas fa-check"></i>
+                            <span>Approve</span>
+                        </button>
+                        <button type="button"
+                                class="admin-visitor-pass-action is-danger"
+                                data-admin-visitor-pass-open-status
+                                data-pass-id="@pass.VisitorPassID"
+                                data-pass-status="Rejected"
+                                data-pass-title="Reject visitor pass">
+                            <i class="fas fa-xmark"></i>
+                            <span>Reject</span>
+                        </button>
+                    }
+                    @if (pass.Status == "Approved" && pass.CheckedInAt == null)
+                    {
+                        <button type="button"
+                                class="admin-visitor-pass-action is-secondary"
+                                data-admin-visitor-pass-checkin
+                                data-pass-id="@pass.VisitorPassID">
+                            <i class="fas fa-right-to-bracket"></i>
+                            <span>Check in</span>
+                        </button>
+                    }
+                    @if (pass.CheckedInAt != null && pass.CheckedOutAt == null)
+                    {
+                        <button type="button"
+                                class="admin-visitor-pass-action is-secondary"
+                                data-admin-visitor-pass-checkout
+                                data-pass-id="@pass.VisitorPassID">
+                            <i class="fas fa-right-from-bracket"></i>
+                            <span>Check out</span>
+                        </button>
+                    }
+                </div>
+            </article>
+        }
+    </div>
+}
+else
+{
+    <div class="admin-visitor-pass-empty">
+        <i class="fas fa-id-card"></i>
+        <h3>No visitor passes yet</h3>
+        <p>Incoming homeowner visitor requests will appear here once they are submitted.</p>
+    </div>
+}

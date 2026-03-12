@@ -1,0 +1,79 @@
+@model List<HOMEOWNER.Models.Poll>
+
+@if (Model.Count == 0)
+{
+    <div class="admin-polls-empty" data-admin-polls-empty>
+        <i class="fas fa-poll"></i>
+        <h3>No polls created yet</h3>
+        <p>Create your first community poll to gather homeowner feedback.</p>
+    </div>
+}
+else
+{
+    <div class="admin-polls-grid" data-admin-polls-grid>
+        @foreach (var poll in Model)
+        {
+            var searchIndex = $"{poll.Question} {poll.Description} {poll.Status} {string.Join(" ", poll.Options.Select(option => option.OptionText))}".ToLowerInvariant();
+            <article class="admin-polls-card"
+                     data-admin-poll-card
+                     data-poll-status="@poll.Status"
+                     data-search="@searchIndex">
+                <div class="admin-polls-card-top">
+                    <div>
+                        <span class="admin-polls-status is-@poll.Status.ToLowerInvariant()">@poll.Status</span>
+                        <h3>@poll.Question</h3>
+                        @if (!string.IsNullOrWhiteSpace(poll.Description))
+                        {
+                            <p>@poll.Description</p>
+                        }
+                    </div>
+                    <div class="admin-polls-votes">
+                        <strong>@poll.TotalVotes</strong>
+                        <span>Votes</span>
+                    </div>
+                </div>
+
+                <div class="admin-polls-meta">
+                    <span><i class="fas fa-calendar-plus"></i> @(poll.StartDate?.ToLocalTime().ToString("MMM dd, yyyy h:mm tt") ?? "Starts immediately")</span>
+                    <span><i class="fas fa-calendar-check"></i> @(poll.EndDate?.ToLocalTime().ToString("MMM dd, yyyy h:mm tt") ?? "No end date")</span>
+                </div>
+
+                <div class="admin-polls-option-preview">
+                    @foreach (var option in poll.Options.OrderBy(option => option.DisplayOrder).Take(3))
+                    {
+                        <span>@option.OptionText</span>
+                    }
+                    @if (poll.Options.Count > 3)
+                    {
+                        <span>+@(poll.Options.Count - 3) more</span>
+                    }
+                </div>
+
+                <div class="admin-polls-actions">
+                    <button type="button"
+                            class="admin-polls-action is-secondary"
+                            data-admin-poll-view
+                            data-poll-id="@poll.PollID">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>View results</span>
+                    </button>
+                    <select class="admin-polls-status-select"
+                            data-admin-poll-status
+                            data-poll-id="@poll.PollID">
+                        @foreach (var status in new[] { "Draft", "Active", "Closed" })
+                        {
+                            <option value="@status" selected="@(status == poll.Status)">@status</option>
+                        }
+                    </select>
+                    <button type="button"
+                            class="admin-polls-action is-danger"
+                            data-admin-poll-delete
+                            data-poll-id="@poll.PollID">
+                        <i class="fas fa-trash"></i>
+                        <span>Delete</span>
+                    </button>
+                </div>
+            </article>
+        }
+    </div>
+}

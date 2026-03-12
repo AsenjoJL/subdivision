@@ -1,0 +1,91 @@
+@model IEnumerable<HOMEOWNER.Models.Document>
+
+@{
+    var documents = (Model ?? Enumerable.Empty<HOMEOWNER.Models.Document>()).ToList();
+
+    string GetFileIcon(string? fileType)
+    {
+        return (fileType ?? string.Empty).ToLowerInvariant() switch
+        {
+            "pdf" => "fa-file-pdf",
+            "doc" or "docx" => "fa-file-word",
+            "xls" or "xlsx" => "fa-file-excel",
+            "ppt" or "pptx" => "fa-file-powerpoint",
+            _ => "fa-file-lines"
+        };
+    }
+
+    string FormatFileSize(long bytes)
+    {
+        if (bytes >= 1024 * 1024)
+        {
+            return $"{bytes / 1024d / 1024d:N1} MB";
+        }
+
+        return $"{bytes / 1024d:N0} KB";
+    }
+}
+
+<section class="admin-documents-grid" data-doc-admin-grid>
+    @foreach (var document in documents)
+    {
+        var searchIndex = $"{document.Title} {document.Description} {document.Category} {document.FileType}".ToLowerInvariant();
+        <article class="admin-documents-card"
+                 data-doc-admin-card
+                 data-search="@searchIndex">
+            <div class="admin-documents-card-top">
+                <div class="admin-documents-icon">
+                    <i class="fas @GetFileIcon(document.FileType)"></i>
+                </div>
+                <div class="admin-documents-badges">
+                    <span class="admin-documents-badge">@document.Category</span>
+                    <span class="admin-documents-badge is-file">@((document.FileType ?? "file").ToUpperInvariant())</span>
+                </div>
+            </div>
+
+            <div>
+                <h3>@document.Title</h3>
+                <p>@(string.IsNullOrWhiteSpace(document.Description) ? "Subdivision document ready for homeowner download." : document.Description)</p>
+            </div>
+
+            <dl class="admin-documents-details">
+                <div>
+                    <dt>Uploaded</dt>
+                    <dd>@document.UploadedAt.ToString("MMM dd, yyyy")</dd>
+                </div>
+                <div>
+                    <dt>Size</dt>
+                    <dd>@FormatFileSize(document.FileSize)</dd>
+                </div>
+                <div>
+                    <dt>Downloads</dt>
+                    <dd>@document.DownloadCount</dd>
+                </div>
+            </dl>
+
+            <div class="admin-documents-card-actions">
+                <a href="@Url.Action("Download", "Document", new { id = document.DocumentID })"
+                   class="admin-documents-action is-download"
+                   data-doc-admin-download
+                   data-document-title="@document.Title">
+                    <i class="fas fa-download"></i>
+                    <span>Download</span>
+                </a>
+                <button type="button"
+                        class="admin-documents-action is-delete"
+                        data-doc-admin-delete
+                        data-delete-id="@document.DocumentID"
+                        data-delete-url="@Url.Action("Delete", "Document")">
+                    <i class="fas fa-trash"></i>
+                    <span>Delete</span>
+                </button>
+            </div>
+        </article>
+    }
+</section>
+
+<div class="admin-documents-empty@(documents.Count > 0 ? " admin-documents-hidden" : string.Empty)" data-doc-admin-empty>
+    <i class="fas fa-folder-open"></i>
+    <h3>No documents yet</h3>
+    <p>Upload your first document to make it available to homeowners.</p>
+</div>

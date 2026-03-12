@@ -1,0 +1,177 @@
+@model HOMEOWNER.Models.ViewModels.AdminPollManagementViewModel
+
+<section class="admin-polls-module"
+         data-admin-polls-module
+         data-load-url="@Url.Action("LoadPollCards", "Poll")"
+         data-create-url="@Url.Action("Create", "Poll")"
+         data-status-url="@Url.Action("UpdateStatus", "Poll")"
+         data-delete-url="@Url.Action("Delete", "Poll")"
+         data-details-url="@Url.Action("GetPoll", "Poll")">
+    <div class="admin-polls-shell">
+        <header class="admin-polls-hero">
+            <div>
+                <h2>Manage polls & surveys</h2>
+                <p>Create surveys, activate voting, and review results without leaving the admin dashboard.</p>
+            </div>
+            <div class="admin-polls-stats">
+                <span class="admin-polls-chip">
+                    <strong data-admin-polls-total>@Model.TotalPolls</strong>
+                    <span>Total polls</span>
+                </span>
+                <span class="admin-polls-chip">
+                    <strong data-admin-polls-active>@Model.ActivePolls</strong>
+                    <span>Active</span>
+                </span>
+                <span class="admin-polls-chip">
+                    <strong data-admin-polls-votes>@Model.TotalVotes</strong>
+                    <span>Total votes</span>
+                </span>
+            </div>
+        </header>
+
+        <section class="admin-polls-toolbar">
+            <label class="admin-polls-search">
+                <i class="fas fa-search"></i>
+                <input type="search" placeholder="Search questions, descriptions, or options" data-admin-polls-search />
+            </label>
+            <select class="admin-polls-filter" data-admin-polls-filter>
+                @foreach (var status in Model.Statuses)
+                {
+                    <option value="@status">@status</option>
+                }
+            </select>
+            <button type="button" class="admin-polls-add" data-admin-polls-open-create>
+                <i class="fas fa-plus"></i>
+                <span>Create poll</span>
+            </button>
+        </section>
+
+        <div class="admin-polls-alert is-success admin-polls-hidden" data-admin-polls-success>
+            <i class="fas fa-circle-check"></i>
+            <span>Poll updated successfully.</span>
+        </div>
+        <div class="admin-polls-alert is-error admin-polls-hidden" data-admin-polls-error>
+            <i class="fas fa-circle-exclamation"></i>
+            <span>Unable to save this poll.</span>
+        </div>
+
+        <div data-admin-polls-list-host>
+            @await Html.PartialAsync("_AdminPollCards", Model.Polls)
+        </div>
+    </div>
+
+    <div class="admin-polls-modal admin-polls-hidden" data-admin-polls-modal aria-hidden="true">
+        <div class="admin-polls-backdrop" data-admin-polls-close></div>
+        <div class="admin-polls-dialog" role="dialog" aria-modal="true" aria-labelledby="adminPollDialogTitle">
+            <div class="admin-polls-modal-header">
+                <div>
+                    <p class="admin-polls-modal-kicker">Create</p>
+                    <h3 id="adminPollDialogTitle">Create poll</h3>
+                </div>
+                <button type="button" class="admin-polls-close" data-admin-polls-close aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form class="admin-polls-form" data-admin-polls-form>
+                <div class="admin-polls-alert is-error admin-polls-hidden" data-admin-polls-modal-error>
+                    <i class="fas fa-circle-exclamation"></i>
+                    <span>Unable to save this poll.</span>
+                </div>
+
+                <div class="admin-polls-form-grid">
+                    <label class="admin-polls-field is-wide">
+                        <span>Question</span>
+                        <input type="text" name="Question" maxlength="200" required data-admin-polls-field="Question" />
+                        <small data-admin-polls-field-error="Question"></small>
+                    </label>
+
+                    <label class="admin-polls-field is-wide">
+                        <span>Description</span>
+                        <textarea name="Description" rows="3" maxlength="500" data-admin-polls-field="Description"></textarea>
+                        <small data-admin-polls-field-error="Description"></small>
+                    </label>
+
+                    <label class="admin-polls-field">
+                        <span>Start date</span>
+                        <input type="datetime-local" name="StartDate" data-admin-polls-field="StartDate" />
+                        <small data-admin-polls-field-error="StartDate"></small>
+                    </label>
+
+                    <label class="admin-polls-field">
+                        <span>End date</span>
+                        <input type="datetime-local" name="EndDate" data-admin-polls-field="EndDate" />
+                        <small data-admin-polls-field-error="EndDate"></small>
+                    </label>
+
+                    <label class="admin-polls-field">
+                        <span>Status</span>
+                        <select name="Status" data-admin-polls-field="Status">
+                            @foreach (var status in Model.Statuses.Where(s => s != "All"))
+                            {
+                                <option value="@status">@status</option>
+                            }
+                        </select>
+                        <small data-admin-polls-field-error="Status"></small>
+                    </label>
+
+                    <div class="admin-polls-checkboxes">
+                        <label class="admin-polls-check">
+                            <input type="checkbox" name="IsAnonymous" data-admin-polls-field="IsAnonymous" />
+                            <span>Anonymous voting</span>
+                        </label>
+                        <label class="admin-polls-check">
+                            <input type="checkbox" name="AllowMultipleChoices" data-admin-polls-field="AllowMultipleChoices" />
+                            <span>Allow multiple choices</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="admin-polls-options">
+                    <div class="admin-polls-options-header">
+                        <h4>Options</h4>
+                        <button type="button" class="admin-polls-option-add" data-admin-polls-add-option>
+                            <i class="fas fa-plus"></i>
+                            <span>Add option</span>
+                        </button>
+                    </div>
+                    <div class="admin-polls-option-list" data-admin-polls-options></div>
+                    <small class="admin-polls-field-error" data-admin-polls-field-error="Options"></small>
+                </div>
+
+                <div class="admin-polls-form-actions">
+                    <button type="button" class="admin-polls-secondary" data-admin-polls-close>Cancel</button>
+                    <button type="submit" class="admin-polls-primary" data-admin-polls-submit>
+                        <i class="fas fa-floppy-disk"></i>
+                        <span>Save poll</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="admin-polls-modal admin-polls-hidden" data-admin-polls-results-modal aria-hidden="true">
+        <div class="admin-polls-backdrop" data-admin-polls-results-close></div>
+        <div class="admin-polls-dialog is-results" role="dialog" aria-modal="true" aria-labelledby="adminPollResultsTitle">
+            <div class="admin-polls-modal-header">
+                <div>
+                    <p class="admin-polls-modal-kicker">Results</p>
+                    <h3 id="adminPollResultsTitle" data-admin-polls-results-title>Poll results</h3>
+                </div>
+                <button type="button" class="admin-polls-close" data-admin-polls-results-close aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="admin-polls-results-body" data-admin-polls-results-body></div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const root = document.currentScript?.closest('[data-admin-polls-module]');
+            if (root && typeof window.initializeAdminPollsModule === 'function') {
+                window.initializeAdminPollsModule(root);
+            }
+        })();
+    </script>
+</section>

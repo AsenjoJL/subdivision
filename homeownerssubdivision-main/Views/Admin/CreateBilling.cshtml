@@ -1,0 +1,338 @@
+@model HOMEOWNER.Models.ViewModels.BillingManagementViewModel
+
+<style>
+    .billing-module{color:#18263d}.billing-hidden{display:none!important}.billing-token-form{display:none}
+    .billing-stack{display:flex;flex-direction:column;gap:1.5rem}.billing-summary-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1rem}
+    .billing-summary-card,.billing-panel{background:#fff;border:1px solid rgba(18,35,60,.08);border-radius:22px;box-shadow:0 14px 32px rgba(18,35,60,.06)}
+    .billing-summary-card{padding:1.2rem 1.25rem}.billing-summary-label{margin:0;font-size:.83rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#64748b}
+    .billing-summary-value{margin:.5rem 0 0;font-size:1.95rem;font-weight:800;letter-spacing:-.04em;color:#18263d}
+    .billing-panel-header{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;padding:1.3rem 1.5rem 1rem;border-bottom:1px solid rgba(18,35,60,.08)}
+    .billing-panel-title{margin:0;font-size:1.4rem;font-weight:800;display:flex;align-items:center;gap:.7rem}.billing-panel-title i{color:#4361ee}
+    .billing-panel-caption{margin:.35rem 0 0;color:#64748b;font-size:.92rem}.billing-panel-actions{display:flex;gap:.75rem;align-items:center;flex-wrap:wrap}
+    .billing-search,.billing-form-control{border:1px solid rgba(18,35,60,.12);background:#fff;color:#18263d}.billing-search{min-width:280px;height:44px;padding:0 .95rem;border-radius:12px}
+    .billing-search:focus,.billing-form-control:focus{outline:none;border-color:#4361ee;box-shadow:0 0 0 .2rem rgba(67,97,238,.12)}
+    .billing-button{display:inline-flex;align-items:center;gap:.5rem;height:42px;padding:0 1rem;border-radius:10px;border:1px solid transparent;background:#4361ee;color:#fff;font-weight:700;cursor:pointer}
+    .billing-button-secondary{background:#fff;border-color:rgba(18,35,60,.14);color:#18263d}.billing-panel-body{padding:1.2rem 1.5rem 1.5rem}
+    .billing-section-alert,.billing-modal-alert{padding:.9rem 1rem;border-radius:12px;font-weight:600}.billing-section-alert{margin-bottom:1rem}
+    .billing-section-alert.is-success,.billing-modal-alert.is-success{background:rgba(21,127,97,.08);color:#157f61;border:1px solid rgba(21,127,97,.16)}
+    .billing-section-alert.is-error,.billing-modal-alert.is-error{background:rgba(180,35,24,.08);color:#b42318;border:1px solid rgba(180,35,24,.16)}
+    .billing-table-shell{overflow-x:auto}.billing-table{width:100%;border-collapse:separate;border-spacing:0}.billing-table th{padding:.95rem 1rem;background:#4361ee;color:#fff;text-align:left;font-weight:700}
+    .billing-table th:first-child{border-top-left-radius:12px}.billing-table th:last-child{border-top-right-radius:12px}.billing-table td{padding:1rem;border-bottom:1px solid rgba(18,35,60,.08);color:#30425d;vertical-align:middle}
+    .billing-cell-primary{font-weight:700;color:#18263d}.billing-cell-secondary{color:#64748b;font-size:.86rem}.billing-empty-cell{text-align:center;color:#64748b;padding:1.4rem 0}
+    .billing-status-chip{display:inline-flex;align-items:center;justify-content:center;min-width:90px;padding:.42rem .7rem;border-radius:999px;font-size:.82rem;font-weight:700}
+    .billing-status-chip.is-paid{background:rgba(21,127,97,.12);color:#157f61}.billing-status-chip.is-pending{background:rgba(169,106,0,.12);color:#a96a00}.billing-status-chip.is-overdue{background:rgba(180,35,24,.12);color:#b42318}
+    .billing-action-row{display:flex;gap:.45rem;align-items:center}.billing-icon-button{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;border:1px solid rgba(18,35,60,.08);background:#fff;cursor:pointer}
+    .billing-icon-button.is-success{color:#157f61}.billing-icon-button.is-danger{color:#b42318}.billing-modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(10,17,30,.45);backdrop-filter:blur(5px);z-index:1200}
+    .billing-modal.is-open{display:flex}.billing-modal-dialog{width:min(100%,640px)}.billing-modal-panel{background:#fff;border-radius:20px;overflow:hidden;display:flex;flex-direction:column;max-height:min(88vh,760px);box-shadow:0 30px 80px rgba(4,10,20,.3)}
+    .billing-modal-header{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.2rem 1.4rem;background:#4361ee;color:#fff}.billing-modal-title{margin:0;font-size:1.05rem;font-weight:800;display:flex;align-items:center;gap:.7rem}
+    .billing-modal-close{border:none;background:transparent;color:#fff;font-size:1.1rem;cursor:pointer}.billing-modal-body{padding:1.35rem 1.4rem;overflow-y:auto}.billing-modal-footer{display:flex;justify-content:flex-end;gap:.75rem;padding:1rem 1.4rem 1.2rem;border-top:1px solid rgba(18,35,60,.08)}
+    .billing-form-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.billing-form-group{margin-bottom:1rem}.billing-form-label{display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem;font-weight:700;color:#18263d}
+    .billing-form-label i{color:#4361ee}.billing-form-control{width:100%;min-height:44px;padding:10px 12px;border-radius:10px}.billing-invalid{border-color:#dc3545!important;box-shadow:0 0 0 .2rem rgba(220,53,69,.12)!important}
+    .billing-field-error{margin-top:.35rem;color:#b42318;font-size:.82rem;line-height:1.3}
+    .billing-review-grid{display:grid;gap:1rem}.billing-review-card{padding:1rem 1.05rem;border-radius:16px;background:#f8fafc;border:1px solid rgba(18,35,60,.08)}.billing-review-label{margin:0 0 .2rem;font-size:.78rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.06em}.billing-review-value{margin:0;color:#18263d;word-break:break-word}
+    @@media (max-width:960px){.billing-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@@media (max-width:720px){.billing-panel-header{flex-direction:column}.billing-panel-actions{width:100%;flex-direction:column;align-items:stretch}.billing-search,.billing-button{width:100%}.billing-form-row,.billing-summary-grid{grid-template-columns:1fr}}
+</style>
+
+<div id="billingManagementModule" class="billing-module" data-create-url="@Url.Action("CreateBilling", "Admin")" data-list-url="@Url.Action("LoadBillingList", "Admin")" data-summary-url="@Url.Action("BillingSummary", "Admin")" data-update-status-url="@Url.Action("UpdateBillingStatus", "Admin")" data-delete-url="@Url.Action("DeleteBilling", "Admin")" data-billing-details-url="@Url.Action("GetBillingDetails", "Admin")" data-review-url="@Url.Action("ReviewBillingSubmission", "Admin")">
+    <form id="billingTokenForm" class="billing-token-form">@Html.AntiForgeryToken()</form>
+    <div class="billing-stack">
+        <div class="billing-summary-grid">
+            <article class="billing-summary-card"><p class="billing-summary-label">Total revenue</p><p class="billing-summary-value" id="billingSummaryRevenue">Php @Model.TotalRevenue.ToString("N2")</p></article>
+            <article class="billing-summary-card"><p class="billing-summary-label">Total bills</p><p class="billing-summary-value" id="billingSummaryTotal">@Model.TotalBills</p></article>
+            <article class="billing-summary-card"><p class="billing-summary-label">Pending bills</p><p class="billing-summary-value" id="billingSummaryPending">@Model.PendingBills</p></article>
+            <article class="billing-summary-card"><p class="billing-summary-label">Overdue bills</p><p class="billing-summary-value" id="billingSummaryOverdue">@Model.OverdueBills</p></article>
+            <article class="billing-summary-card"><p class="billing-summary-label">Pending review</p><p class="billing-summary-value" id="billingSummarySubmitted">@Model.SubmittedPayments</p></article>
+        </div>
+        <section class="billing-panel">
+            <div class="billing-panel-header">
+                <div>
+                    <h2 class="billing-panel-title"><i class="fas fa-credit-card"></i>Billing & payments</h2>
+                    <p class="billing-panel-caption">Create homeowner bills, monitor payment status, and keep collections organized.</p>
+                </div>
+                <div class="billing-panel-actions">
+                    <input type="search" id="billingSearchInput" class="billing-search" placeholder="Search by bill ID, homeowner, type, status, or submission">
+                    <button type="button" id="openCreateBillingModal" class="billing-button"><i class="fas fa-plus"></i><span>Create bill</span></button>
+                </div>
+            </div>
+            <div class="billing-panel-body">
+                <div id="billingSectionAlert" class="billing-section-alert billing-hidden"></div>
+                <div class="billing-table-shell">
+                    <table class="billing-table">
+                        <thead><tr><th>Bill ID</th><th>Homeowner</th><th>Description</th><th>Type</th><th>Amount</th><th>Due date</th><th>Status</th><th>Submission</th><th>Actions</th></tr></thead>
+                        <tbody id="billingTableBody">@await Html.PartialAsync("_BillingTableRows", Model.Billings)</tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<div class="billing-modal" id="createBillingModal" aria-hidden="true" role="dialog">
+    <div class="billing-modal-dialog">
+        <div class="billing-modal-panel">
+            <div class="billing-modal-header">
+                <h3 class="billing-modal-title"><i class="fas fa-file-invoice-dollar"></i>Create bill</h3>
+                <button type="button" class="billing-modal-close" data-billing-close="createBillingModal" aria-label="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="billing-modal-body">
+                <div id="createBillingAlert" class="billing-modal-alert billing-hidden"></div>
+                <form id="createBillingForm">
+                    <div class="billing-form-group">
+                        <label class="billing-form-label"><i class="fas fa-user"></i>Homeowner</label>
+                        <select class="billing-form-control" name="HomeownerID" data-billing-input="HomeownerID" required>
+                            <option value="">Select homeowner</option>
+                            @foreach (var homeowner in Model.Homeowners)
+                            {
+                                <option value="@homeowner.HomeownerID">@homeowner.Label</option>
+                            }
+                        </select>
+                        <div class="billing-field-error billing-hidden" data-billing-error="HomeownerID"></div>
+                    </div>
+                    <div class="billing-form-group">
+                        <label class="billing-form-label"><i class="fas fa-align-left"></i>Description</label>
+                        <input type="text" class="billing-form-control" name="Description" data-billing-input="Description" maxlength="255" required>
+                        <div class="billing-field-error billing-hidden" data-billing-error="Description"></div>
+                    </div>
+                    <div class="billing-form-row">
+                        <div class="billing-form-group">
+                            <label class="billing-form-label"><i class="fas fa-money-bill-wave"></i>Amount</label>
+                            <input type="number" class="billing-form-control" name="Amount" data-billing-input="Amount" min="0.01" step="0.01" required>
+                            <div class="billing-field-error billing-hidden" data-billing-error="Amount"></div>
+                        </div>
+                        <div class="billing-form-group">
+                            <label class="billing-form-label"><i class="fas fa-calendar-day"></i>Due date</label>
+                            <input type="date" class="billing-form-control" name="DueDate" data-billing-input="DueDate" required>
+                            <div class="billing-field-error billing-hidden" data-billing-error="DueDate"></div>
+                        </div>
+                    </div>
+                    <div class="billing-form-group">
+                        <label class="billing-form-label"><i class="fas fa-layer-group"></i>Bill type</label>
+                        <select class="billing-form-control" name="BillType" data-billing-input="BillType" required>
+                            <option value="">Select bill type</option>
+                            <option value="Association Fee">Association fee</option>
+                            <option value="Maintenance Fee">Maintenance fee</option>
+                            <option value="Utility Fee">Utility fee</option>
+                            <option value="Penalty">Penalty</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <div class="billing-field-error billing-hidden" data-billing-error="BillType"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="billing-modal-footer">
+                <button type="button" class="billing-button billing-button-secondary" data-billing-close="createBillingModal">Cancel</button>
+                <button type="button" class="billing-button" id="submitCreateBilling"><i class="fas fa-save"></i><span>Save bill</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="billing-modal" id="reviewBillingModal" aria-hidden="true" role="dialog">
+    <div class="billing-modal-dialog">
+        <div class="billing-modal-panel">
+            <div class="billing-modal-header">
+                <h3 class="billing-modal-title"><i class="fas fa-file-circle-check"></i>Review payment submission</h3>
+                <button type="button" class="billing-modal-close" data-billing-close="reviewBillingModal" aria-label="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="billing-modal-body">
+                <div id="reviewBillingAlert" class="billing-modal-alert billing-hidden"></div>
+                <div class="billing-review-grid">
+                    <div class="billing-review-card"><p class="billing-review-label">Bill</p><p class="billing-review-value" id="reviewBillDescription">-</p></div>
+                    <div class="billing-review-card"><p class="billing-review-label">Homeowner</p><p class="billing-review-value" id="reviewBillHomeowner">-</p></div>
+                    <div class="billing-review-card"><p class="billing-review-label">Submitted amount</p><p class="billing-review-value" id="reviewSubmittedAmount">-</p></div>
+                    <div class="billing-review-card"><p class="billing-review-label">Payment method</p><p class="billing-review-value" id="reviewPaymentMethod">-</p></div>
+                    <div class="billing-review-card"><p class="billing-review-label">Reference number</p><p class="billing-review-value" id="reviewReferenceNumber">-</p></div>
+                    <div class="billing-review-card"><p class="billing-review-label">Submitted at</p><p class="billing-review-value" id="reviewSubmittedAt">-</p></div>
+                    <div class="billing-review-card"><p class="billing-review-label">Proof file</p><p class="billing-review-value"><a id="reviewProofLink" href="#" target="_blank" rel="noopener" class="billing-hidden">Open proof</a><span id="reviewProofMissing">No proof uploaded</span></p></div>
+                    <div class="billing-review-card"><p class="billing-review-label">Notes</p><p class="billing-review-value" id="reviewSubmissionNotes">-</p></div>
+                </div>
+                <form id="reviewBillingForm" style="margin-top:1rem">
+                    <input type="hidden" name="BillingID" data-review-input="BillingID">
+                    <div class="billing-form-group">
+                        <label class="billing-form-label"><i class="fas fa-comment-dots"></i>Review notes</label>
+                        <textarea class="billing-form-control" name="ReviewNotes" data-review-input="ReviewNotes" rows="4" placeholder="Optional notes for approval or rejection"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="billing-modal-footer">
+                <button type="button" class="billing-button billing-button-secondary" data-billing-close="reviewBillingModal">Cancel</button>
+                <button type="button" class="billing-button billing-button-secondary" id="rejectBillingSubmission"><i class="fas fa-ban"></i><span>Reject</span></button>
+                <button type="button" class="billing-button" id="approveBillingSubmission"><i class="fas fa-check"></i><span>Approve & mark paid</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        if (window.__billingManagementCleanup) { window.__billingManagementCleanup(); }
+        const root = document.getElementById('billingManagementModule'); if (!root) { return; }
+        const container = root.parentElement || document;
+        const token = document.querySelector('#billingTokenForm input[name="__RequestVerificationToken"]')?.value || '';
+        const tableBody = document.getElementById('billingTableBody');
+        const searchInput = document.getElementById('billingSearchInput');
+        const sectionAlert = document.getElementById('billingSectionAlert');
+        const modal = container.querySelector('#createBillingModal');
+        const reviewModal = container.querySelector('#reviewBillingModal');
+        const form = document.getElementById('createBillingForm');
+        const modalAlert = document.getElementById('createBillingAlert');
+        const reviewAlert = document.getElementById('reviewBillingAlert');
+        const reviewForm = document.getElementById('reviewBillingForm');
+        const openButton = document.getElementById('openCreateBillingModal');
+        const submitButton = document.getElementById('submitCreateBilling');
+        const revenueValue = document.getElementById('billingSummaryRevenue');
+        const totalValue = document.getElementById('billingSummaryTotal');
+        const pendingValue = document.getElementById('billingSummaryPending');
+        const overdueValue = document.getElementById('billingSummaryOverdue');
+        const submittedValue = document.getElementById('billingSummarySubmitted');
+        const approveButton = document.getElementById('approveBillingSubmission');
+        const rejectButton = document.getElementById('rejectBillingSubmission');
+        if (!tableBody || !searchInput || !modal || !reviewModal || !form || !modalAlert || !reviewAlert || !reviewForm || !openButton || !submitButton || !approveButton || !rejectButton) { return; }
+        Array.from(document.querySelectorAll('[id="' + modal.id + '"]')).filter(x => x !== modal).forEach(x => x.remove());
+        Array.from(document.querySelectorAll('[id="' + reviewModal.id + '"]')).filter(x => x !== reviewModal).forEach(x => x.remove());
+        if (modal.parentElement !== document.body) { document.body.appendChild(modal); }
+        if (reviewModal.parentElement !== document.body) { document.body.appendChild(reviewModal); }
+        const setAlert = (el, type, message) => { el.className = (el === sectionAlert ? 'billing-section-alert' : 'billing-modal-alert') + ' ' + (type === 'success' ? 'is-success' : 'is-error'); el.textContent = message; el.classList.remove('billing-hidden'); };
+        const clearAlert = (el, base) => { el.className = base + ' billing-hidden'; el.textContent = ''; };
+        const clearFieldErrors = () => { form.querySelectorAll('[data-billing-error]').forEach(el => { el.textContent=''; el.classList.add('billing-hidden'); }); form.querySelectorAll('[data-billing-input]').forEach(el => { el.classList.remove('billing-invalid'); el.removeAttribute('aria-invalid'); }); };
+        const applyErrors = payload => {
+            clearFieldErrors();
+            if (!payload) { return; }
+            if (payload.field && payload.message) {
+                const input = form.querySelector('[data-billing-input="' + payload.field + '"]'); const error = form.querySelector('[data-billing-error="' + payload.field + '"]');
+                if (input) { input.classList.add('billing-invalid'); input.setAttribute('aria-invalid','true'); }
+                if (error) { error.textContent = payload.message; error.classList.remove('billing-hidden'); }
+                return;
+            }
+            if (payload.validationErrors) {
+                Object.keys(payload.validationErrors).forEach(field => {
+                    const input = form.querySelector('[data-billing-input="' + field + '"]'); const error = form.querySelector('[data-billing-error="' + field + '"]'); const messages = payload.validationErrors[field];
+                    if (input) { input.classList.add('billing-invalid'); input.setAttribute('aria-invalid','true'); }
+                    if (error && Array.isArray(messages) && messages.length) { error.textContent = messages[0]; error.classList.remove('billing-hidden'); }
+                });
+            }
+        };
+        const showModal = targetModal => { targetModal.classList.add('is-open'); targetModal.setAttribute('aria-hidden','false'); document.body.style.overflow = 'hidden'; };
+        const closeModal = targetModal => { targetModal.classList.remove('is-open'); targetModal.setAttribute('aria-hidden','true'); if (!modal.classList.contains('is-open') && !reviewModal.classList.contains('is-open')) { document.body.style.overflow = ''; } };
+        const resetForm = () => { form.reset(); clearFieldErrors(); clearAlert(modalAlert, 'billing-modal-alert'); const dueInput = form.querySelector('[name="DueDate"]'); if (dueInput) { dueInput.min = new Date().toISOString().split('T')[0]; } };
+        const applySearch = () => { const query = searchInput.value.trim().toLowerCase(); tableBody.querySelectorAll('tr[data-billing-row="true"]').forEach(row => row.style.display = row.textContent.toLowerCase().includes(query) ? '' : 'none'); };
+        const refreshTable = async () => { const response = await fetch(root.dataset.listUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' }, credentials: 'same-origin' }); if (!response.ok) throw new Error('Unable to refresh billing list.'); tableBody.innerHTML = await response.text(); applySearch(); };
+        const refreshSummary = async () => { const response = await fetch(root.dataset.summaryUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' }, credentials: 'same-origin' }); if (!response.ok) throw new Error('Unable to refresh billing summary.'); const payload = await response.json(); revenueValue.textContent = 'Php ' + Number(payload.totalRevenue ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }); totalValue.textContent = payload.totalBills ?? 0; pendingValue.textContent = payload.pendingBills ?? 0; overdueValue.textContent = payload.overdueBills ?? 0; submittedValue.textContent = payload.submittedPayments ?? 0; };
+        const refreshModule = () => Promise.all([refreshTable(), refreshSummary()]);
+        const submitCreate = async () => {
+            if (form.dataset.submitting === 'true' || !form.reportValidity()) { return; }
+            const originalMarkup = submitButton.innerHTML; form.dataset.submitting = 'true'; submitButton.disabled = true; submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Saving...</span>';
+            clearAlert(sectionAlert, 'billing-section-alert'); clearAlert(modalAlert, 'billing-modal-alert'); clearFieldErrors();
+            try {
+                const body = new URLSearchParams(new FormData(form)); body.append('__RequestVerificationToken', token);
+                const response = await fetch(root.dataset.createUrl, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'X-Requested-With': 'XMLHttpRequest' }, credentials: 'same-origin', body: body.toString() });
+                const payload = await response.json();
+                if (!response.ok || !payload || payload.success === false) { applyErrors(payload); setAlert(modalAlert, 'error', payload?.message || 'Unable to create bill.'); return; }
+                closeModal(modal); resetForm(); setAlert(sectionAlert, 'success', payload.message || 'Bill created successfully.');
+                Promise.resolve(refreshModule()).catch(error => { console.error(error); setAlert(sectionAlert, 'error', 'Bill saved, but the billing list could not be refreshed. Reload the page.'); });
+            } catch (error) {
+                console.error(error); setAlert(modalAlert, 'error', 'Unable to create bill. Please try again.');
+            } finally {
+                delete form.dataset.submitting; submitButton.disabled = false; submitButton.innerHTML = originalMarkup;
+            }
+        };
+        const fillReviewModal = billing => {
+            reviewForm.querySelector('[data-review-input="BillingID"]').value = billing.billingID ?? billing.BillingID ?? '';
+            reviewForm.querySelector('[data-review-input="ReviewNotes"]').value = billing.paymentReviewNotes || '';
+            document.getElementById('reviewBillDescription').textContent = billing.description || '-';
+            document.getElementById('reviewBillHomeowner').textContent = (billing.homeownerName || '-') + ' (' + (billing.homeownerEmail || '-') + ')';
+            document.getElementById('reviewSubmittedAmount').textContent = billing.submittedAmount != null ? 'Php ' + Number(billing.submittedAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '-';
+            document.getElementById('reviewPaymentMethod').textContent = billing.submittedPaymentMethod || '-';
+            document.getElementById('reviewReferenceNumber').textContent = billing.submittedReferenceNumber || '-';
+            document.getElementById('reviewSubmittedAt').textContent = billing.paymentSubmittedAt ? new Date(billing.paymentSubmittedAt).toLocaleString() : '-';
+            document.getElementById('reviewSubmissionNotes').textContent = billing.paymentSubmissionNotes || '-';
+            const proofLink = document.getElementById('reviewProofLink');
+            const proofMissing = document.getElementById('reviewProofMissing');
+            if (billing.paymentProofUrl) {
+                proofLink.href = billing.paymentProofUrl;
+                proofLink.classList.remove('billing-hidden');
+                proofMissing.classList.add('billing-hidden');
+            } else {
+                proofLink.href = '#';
+                proofLink.classList.add('billing-hidden');
+                proofMissing.classList.remove('billing-hidden');
+            }
+        };
+        const runReview = async action => {
+            const billingId = reviewForm.querySelector('[data-review-input="BillingID"]').value;
+            if (!billingId) { return; }
+            const triggerButton = action === 'Approve' ? approveButton : rejectButton;
+            const originalMarkup = triggerButton.innerHTML;
+            triggerButton.disabled = true;
+            triggerButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Saving...</span>';
+            clearAlert(reviewAlert, 'billing-modal-alert');
+            clearAlert(sectionAlert, 'billing-section-alert');
+            try {
+                const body = new URLSearchParams({
+                    BillingID: billingId,
+                    Action: action,
+                    ReviewNotes: reviewForm.querySelector('[data-review-input="ReviewNotes"]').value || '',
+                    __RequestVerificationToken: token
+                });
+                const response = await fetch(root.dataset.reviewUrl, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'X-Requested-With': 'XMLHttpRequest' }, credentials: 'same-origin', body: body.toString() });
+                const payload = await response.json();
+                if (!response.ok || !payload || payload.success === false) { throw new Error(payload?.message || 'Unable to review payment submission.'); }
+                closeModal(reviewModal);
+                setAlert(sectionAlert, 'success', payload.message || 'Payment review completed.');
+                await refreshModule();
+            } catch (error) {
+                console.error(error);
+                setAlert(reviewAlert, 'error', error.message || 'Unable to review payment submission.');
+            } finally {
+                triggerButton.disabled = false;
+                triggerButton.innerHTML = originalMarkup;
+            }
+        };
+        const postAction = async (url, body, successMessage) => {
+            const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'X-Requested-With': 'XMLHttpRequest' }, credentials: 'same-origin', body: body.toString() });
+            const payload = await response.json(); if (!response.ok || !payload || payload.success === false) throw new Error(payload?.message || 'Unable to update billing record.');
+            await refreshModule(); setAlert(sectionAlert, 'success', payload.message || successMessage);
+        };
+        const onModuleClick = async event => {
+            const button = event.target.closest('[data-billing-action]'); if (!button) { return; }
+            const action = button.getAttribute('data-billing-action'); const billingId = button.getAttribute('data-billing-id'); if (!action || !billingId) { return; }
+            clearAlert(sectionAlert, 'billing-section-alert');
+            if (action === 'review') {
+                try {
+                    const response = await fetch(root.dataset.billingDetailsUrl + '?id=' + encodeURIComponent(billingId), { headers: { 'X-Requested-With': 'XMLHttpRequest' }, credentials: 'same-origin' });
+                    const payload = await response.json();
+                    if (!response.ok || !payload || payload.success === false || !payload.billing) { throw new Error(payload?.message || 'Unable to load billing submission.'); }
+                    clearAlert(reviewAlert, 'billing-modal-alert');
+                    fillReviewModal(payload.billing);
+                    showModal(reviewModal);
+                } catch (error) {
+                    console.error(error);
+                    setAlert(sectionAlert, 'error', error.message || 'Unable to load billing submission.');
+                }
+                return;
+            }
+            if (action === 'mark-paid') {
+                const body = new URLSearchParams({ id: billingId, status: 'Paid', paymentMethod: 'Admin Manual', __RequestVerificationToken: token });
+                postAction(root.dataset.updateStatusUrl, body, 'Bill marked as paid.').catch(error => { console.error(error); setAlert(sectionAlert, 'error', error.message || 'Unable to update bill.'); });
+                return;
+            }
+            if (action === 'delete') {
+                const label = button.getAttribute('data-billing-label') || 'this bill'; if (!confirm('Delete ' + label + '?')) { return; }
+                const body = new URLSearchParams({ id: billingId, __RequestVerificationToken: token });
+                postAction(root.dataset.deleteUrl, body, 'Billing record deleted.').catch(error => { console.error(error); setAlert(sectionAlert, 'error', error.message || 'Unable to delete bill.'); });
+            }
+        };
+        const onDocumentClick = event => { const closeButton = event.target.closest('[data-billing-close]'); if (!closeButton) { return; } const targetId = closeButton.getAttribute('data-billing-close'); if (targetId === 'createBillingModal') { event.preventDefault(); event.stopPropagation(); closeModal(modal); } if (targetId === 'reviewBillingModal') { event.preventDefault(); event.stopPropagation(); closeModal(reviewModal); } };
+        const onBackdropClick = event => { if (event.target === modal) { closeModal(modal); } if (event.target === reviewModal) { closeModal(reviewModal); } };
+        const onKeydown = event => { if (event.key === 'Escape') { closeModal(modal); closeModal(reviewModal); } };
+        const openCreateHandler = () => { resetForm(); showModal(modal); };
+        const approveHandler = () => runReview('Approve');
+        const rejectHandler = () => runReview('Reject');
+        openButton.addEventListener('click', openCreateHandler);
+        approveButton.addEventListener('click', approveHandler);
+        rejectButton.addEventListener('click', rejectHandler);
+        submitButton.addEventListener('click', submitCreate); searchInput.addEventListener('input', applySearch); root.addEventListener('click', onModuleClick); modal.addEventListener('click', onBackdropClick); reviewModal.addEventListener('click', onBackdropClick); document.addEventListener('click', onDocumentClick); document.addEventListener('keydown', onKeydown);
+        const cleanup = () => { openButton.removeEventListener('click', openCreateHandler); submitButton.removeEventListener('click', submitCreate); approveButton.removeEventListener('click', approveHandler); rejectButton.removeEventListener('click', rejectHandler); searchInput.removeEventListener('input', applySearch); root.removeEventListener('click', onModuleClick); modal.removeEventListener('click', onBackdropClick); reviewModal.removeEventListener('click', onBackdropClick); document.removeEventListener('click', onDocumentClick); document.removeEventListener('keydown', onKeydown); closeModal(modal); closeModal(reviewModal); if (modal.parentElement === document.body) { modal.remove(); } if (reviewModal.parentElement === document.body) { reviewModal.remove(); } window.__billingManagementCleanup = null; };
+        window.__billingManagementCleanup = cleanup; if (typeof window.__registerAdminEmbeddedCleanup === 'function') { window.__registerAdminEmbeddedCleanup(cleanup); }
+    })();
+</script>

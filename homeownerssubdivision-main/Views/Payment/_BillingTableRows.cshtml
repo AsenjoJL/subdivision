@@ -1,0 +1,93 @@
+@model IReadOnlyList<HOMEOWNER.Models.ViewModels.BillingListItemViewModel>
+
+@if (Model.Any())
+{
+    @foreach (var billing in Model)
+    {
+        var statusClass = billing.Status switch
+        {
+            "Paid" => "is-paid",
+            "Overdue" => "is-overdue",
+            _ => "is-pending"
+        };
+
+        var submissionClass = billing.PaymentSubmissionStatus switch
+        {
+            "Approved" => "is-paid",
+            "Rejected" => "is-rejected",
+            "Submitted" => "is-submitted",
+            _ => "is-pending"
+        };
+
+        var canSubmit = !string.Equals(billing.Status, "Paid", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(billing.PaymentSubmissionStatus, "Submitted", StringComparison.OrdinalIgnoreCase);
+
+        <tr>
+            <td>#@billing.BillingID</td>
+            <td>
+                <div><strong>@billing.Description</strong></div>
+                @if (!string.IsNullOrWhiteSpace(billing.TransactionID))
+                {
+                    <div class="payment-meta">Transaction: @billing.TransactionID</div>
+                }
+            </td>
+            <td>@billing.BillType</td>
+            <td><strong>Php @billing.Amount.ToString("N2")</strong></td>
+            <td>@billing.DueDate.ToLocalTime().ToString("MMM dd, yyyy")</td>
+            <td>
+                <span class="payment-status-chip @statusClass">@billing.Status</span>
+                @if (billing.PaidAt.HasValue)
+                {
+                    <div class="payment-meta">Paid @billing.PaidAt.Value.ToLocalTime().ToString("MMM dd, yyyy hh:mm tt")</div>
+                }
+            </td>
+            <td>
+                @if (string.Equals(billing.PaymentSubmissionStatus, "None", StringComparison.OrdinalIgnoreCase))
+                {
+                    <span class="payment-meta">No submission yet</span>
+                }
+                else
+                {
+                    <span class="payment-status-chip @submissionClass">@billing.PaymentSubmissionStatus</span>
+                    @if (billing.PaymentSubmittedAt.HasValue)
+                    {
+                        <div class="payment-meta">Submitted @billing.PaymentSubmittedAt.Value.ToLocalTime().ToString("MMM dd, yyyy hh:mm tt")</div>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(billing.PaymentReviewNotes))
+                    {
+                        <div class="payment-meta">@billing.PaymentReviewNotes</div>
+                    }
+                }
+            </td>
+            <td>
+                @if (canSubmit)
+                {
+                    <button type="button"
+                            class="payment-button"
+                            data-payment-action="submit"
+                            data-billing-id="@billing.BillingID"
+                            data-billing-description="@billing.Description"
+                            data-billing-amount="@billing.Amount"
+                            data-billing-status="@billing.Status">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>@(string.Equals(billing.PaymentSubmissionStatus, "Rejected", StringComparison.OrdinalIgnoreCase) ? "Resubmit" : "Submit payment")</span>
+                    </button>
+                }
+                else if (string.Equals(billing.Status, "Paid", StringComparison.OrdinalIgnoreCase))
+                {
+                    <span class="payment-meta">Settled</span>
+                }
+                else
+                {
+                    <span class="payment-meta">Awaiting admin review</span>
+                }
+            </td>
+        </tr>
+    }
+}
+else
+{
+    <tr>
+        <td colspan="8" class="payment-empty">You do not have any billing records yet.</td>
+    </tr>
+}

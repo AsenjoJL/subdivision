@@ -1,0 +1,98 @@
+@model IReadOnlyList<HOMEOWNER.Models.Complaint>
+
+@functions {
+    string GetPriorityLabel(int? priority)
+    {
+        return priority switch
+        {
+            4 => "Urgent",
+            3 => "High",
+            2 => "Medium",
+            _ => "Low"
+        };
+    }
+
+    string GetPriorityClass(int? priority)
+    {
+        return priority switch
+        {
+            4 => "is-urgent",
+            3 => "is-high",
+            2 => "is-medium",
+            _ => "is-low"
+        };
+    }
+
+    string GetStatusClass(string? status)
+    {
+        return (status ?? string.Empty).ToLowerInvariant() switch
+        {
+            "submitted" => "is-submitted",
+            "under review" => "is-review",
+            "in progress" => "is-progress",
+            "resolved" => "is-resolved",
+            "closed" => "is-closed",
+            _ => "is-neutral"
+        };
+    }
+}
+
+@if (Model == null || Model.Count == 0)
+{
+    <div class="complaint-empty-state">
+        <i class="fas fa-inbox"></i>
+        <h3>No complaints yet</h3>
+        <p>Submitted complaints will appear here with their latest status and admin response.</p>
+    </div>
+}
+else
+{
+    <div class="complaint-list">
+        @foreach (var complaint in Model)
+        {
+            <article class="complaint-item-card">
+                <div class="complaint-item-top">
+                    <div>
+                        <h3>@complaint.Subject</h3>
+                        <p>@(complaint.Category ?? "General")</p>
+                    </div>
+                    <div class="complaint-chip-stack">
+                        <span class="complaint-chip @GetStatusClass(complaint.Status)">@complaint.Status</span>
+                        <span class="complaint-chip @GetPriorityClass(complaint.Priority)">@GetPriorityLabel(complaint.Priority)</span>
+                    </div>
+                </div>
+
+                <p class="complaint-item-description">@complaint.Description</p>
+
+                <dl class="complaint-meta-grid">
+                    <div>
+                        <dt>Submitted</dt>
+                        <dd>@complaint.SubmittedAt.ToLocalTime().ToString("MMM dd, yyyy hh:mm tt")</dd>
+                    </div>
+                    <div>
+                        <dt>Complaint ID</dt>
+                        <dd>#@complaint.ComplaintID</dd>
+                    </div>
+                    <div>
+                        <dt>Anonymous</dt>
+                        <dd>@(complaint.IsAnonymous ? "Yes" : "No")</dd>
+                    </div>
+                </dl>
+
+                @if (!string.IsNullOrWhiteSpace(complaint.AdminResponse) || !string.IsNullOrWhiteSpace(complaint.ResolutionNotes))
+                {
+                    <div class="complaint-response-box">
+                        @if (!string.IsNullOrWhiteSpace(complaint.AdminResponse))
+                        {
+                            <p><strong>Admin response:</strong> @complaint.AdminResponse</p>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(complaint.ResolutionNotes))
+                        {
+                            <p><strong>Resolution notes:</strong> @complaint.ResolutionNotes</p>
+                        }
+                    </div>
+                }
+            </article>
+        }
+    </div>
+}

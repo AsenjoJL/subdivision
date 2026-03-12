@@ -1,0 +1,95 @@
+@model List<HOMEOWNER.Models.ViewModels.AdminStaffListItemViewModel>
+
+@if (Model == null || !Model.Any())
+{
+    <tr>
+        <td colspan="5" class="people-empty-state">No staff members found.</td>
+    </tr>
+}
+else
+{
+    @foreach (var staff in Model)
+    {
+        var staffName = string.IsNullOrWhiteSpace(staff.FullName) ? "Staff member" : staff.FullName.Trim();
+        var profileImageUrl = string.IsNullOrWhiteSpace(staff.ProfileImageUrl) ? string.Empty : staff.ProfileImageUrl.Trim();
+        var initials = string.Concat(
+            staffName
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Take(2)
+                .Select(part => char.ToUpperInvariant(part[0])));
+
+        if (string.IsNullOrWhiteSpace(initials))
+        {
+            initials = "ST";
+        }
+
+        var positionLabel = string.IsNullOrWhiteSpace(staff.Position) ? "Staff" : staff.Position.Trim();
+        var positionClass = positionLabel.ToLowerInvariant() switch
+        {
+            "security" => "people-chip people-chip--security",
+            "maintenance" => "people-chip people-chip--maintenance",
+            "office" => "people-chip people-chip--office",
+            _ => "people-chip people-chip--staff"
+        };
+
+        <tr>
+            <td>
+                <div class="people-person">
+                    @if (!string.IsNullOrWhiteSpace(profileImageUrl))
+                    {
+                        <span class="people-avatar people-avatar--image">
+                            <img src="@profileImageUrl" alt="@staffName" class="people-avatar-image" onerror="this.closest('.people-avatar--image')?.classList.add('is-broken'); this.remove();">
+                            <span class="people-avatar-fallback">@initials</span>
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="people-avatar">@initials</span>
+                    }
+                    <div class="people-person-copy">
+                        <span class="people-person-name">@staffName</span>
+                        <span class="people-person-meta">@positionLabel team</span>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="people-muted-cell">
+                    <strong>@staff.Email</strong>
+                    <span>Staff email</span>
+                </div>
+            </td>
+            <td>
+                <div class="people-muted-cell">
+                    <strong>@staff.PhoneNumber</strong>
+                    <span>Primary contact</span>
+                </div>
+            </td>
+            <td>
+                <span class="@positionClass">@positionLabel</span>
+            </td>
+            <td>
+                <div class="people-actions">
+                    <button
+                        type="button"
+                        class="staff-action-btn"
+                        data-edit-staff="true"
+                        data-staff-id="@staff.StaffID"
+                        data-edit-url="@Url.Action("EditStaff", "Admin", new { id = staff.StaffID })"
+                        aria-label="Edit staff">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button
+                        type="button"
+                        class="staff-action-btn action-btn--danger"
+                        data-delete-staff="true"
+                        data-staff-id="@staff.StaffID"
+                        data-delete-url="@Url.Action("DeleteStaff", "Admin", new { id = staff.StaffID })"
+                        data-staff-name="@staffName"
+                        aria-label="Delete staff">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    }
+}

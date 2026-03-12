@@ -1,0 +1,16 @@
+@model HOMEOWNER.Models.ViewModels.ForumFeedViewModel
+
+@if (Model.Posts.Count == 0)
+{
+    <article class="forum-post-card">
+        <h4>No posts yet</h4>
+        <p class="forum-note">The first community conversation will appear here once someone publishes a post.</p>
+    </article>
+}
+else
+{
+    @foreach (var post in Model.Posts)
+    {
+        <partial name="_ForumPostCardPartial" model="Tuple.Create(post, Model.CanParticipate)" />
+    }
+}

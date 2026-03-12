@@ -1,0 +1,97 @@
+@model HOMEOWNER.Models.ViewModels.AdminDocumentManagementViewModel
+
+@{
+    ViewData["Title"] = "Manage Documents";
+    var categories = new[] { "Forms", "Guidelines", "Financial Reports", "Meeting Minutes" };
+}
+
+<section class="admin-documents-module" data-admin-documents-module>
+    <div class="admin-documents-shell">
+        <header class="admin-documents-hero">
+            <div>
+                <h2>Manage documents</h2>
+                <p>Upload homeowner forms, guidelines, reports, and meeting references from one simple admin workspace.</p>
+            </div>
+            <div class="admin-documents-meta">
+                <span class="admin-documents-chip">
+                    <i class="fas fa-file-alt"></i>
+                    <span><strong data-doc-admin-visible-count>@Model.TotalDocuments</strong> files</span>
+                </span>
+                <span class="admin-documents-chip">
+                    <i class="fas fa-download"></i>
+                    <span><strong>@Model.TotalDownloads</strong> downloads</span>
+                </span>
+            </div>
+        </header>
+
+        <section class="admin-documents-toolbar">
+            <label class="admin-documents-search">
+                <i class="fas fa-search"></i>
+                <input type="search" placeholder="Search documents, categories, or file types" data-doc-admin-search />
+            </label>
+            <button type="button" class="admin-documents-upload-toggle" data-doc-admin-toggle>
+                <i class="fas fa-upload"></i>
+                <span>Upload document</span>
+            </button>
+        </section>
+
+        <div class="admin-documents-alert is-success admin-documents-hidden" data-doc-admin-success>
+            <i class="fas fa-circle-check"></i>
+            <span>Document uploaded successfully.</span>
+        </div>
+        <div class="admin-documents-alert is-error admin-documents-hidden" data-doc-admin-error>
+            <i class="fas fa-circle-exclamation"></i>
+            <span>Unable to upload document.</span>
+        </div>
+
+        <section class="admin-documents-upload admin-documents-hidden" data-doc-admin-upload-panel hidden>
+            <form class="admin-documents-form" data-doc-admin-form action="@Url.Action("Upload", "Document")">
+                <div class="admin-documents-form-grid">
+                    <div class="admin-documents-field">
+                        <label for="docTitle">Title</label>
+                        <input id="docTitle" name="title" type="text" required />
+                    </div>
+                    <div class="admin-documents-field">
+                        <label for="docCategory">Category</label>
+                        <select id="docCategory" name="category" required>
+                            <option value="">Select category</option>
+                            @foreach (var category in categories)
+                            {
+                                <option value="@category">@category</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="admin-documents-field is-wide">
+                        <label for="docDescription">Description</label>
+                        <textarea id="docDescription" name="description" rows="3" placeholder="Add a short summary for homeowners."></textarea>
+                    </div>
+                    <div class="admin-documents-field is-wide">
+                        <label for="docFile">File</label>
+                        <input id="docFile" name="file" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx" required />
+                    </div>
+                </div>
+
+                <div class="admin-documents-form-actions">
+                    <button type="button" class="admin-documents-cancel" data-doc-admin-cancel>Cancel</button>
+                    <button type="submit" class="admin-documents-submit" data-doc-admin-submit>
+                        <i class="fas fa-cloud-arrow-up"></i>
+                        <span>Upload</span>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <div data-doc-admin-list-host data-load-url="@Url.Action("LoadDocumentCards", "Document")">
+            @await Html.PartialAsync("_AdminDocumentCards", Model.Documents)
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const root = document.currentScript?.closest('[data-admin-documents-module]');
+            if (root && typeof window.initializeAdminDocumentsModule === 'function') {
+                window.initializeAdminDocumentsModule(root);
+            }
+        })();
+    </script>
+</section>

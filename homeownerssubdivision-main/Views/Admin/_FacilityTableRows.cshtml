@@ -1,0 +1,76 @@
+@model List<HOMEOWNER.Models.Facility>
+
+@if (Model == null || !Model.Any())
+{
+    <tr>
+        <td colspan="6" class="reservation-empty-cell">No facilities found.</td>
+    </tr>
+}
+else
+{
+    @foreach (var facility in Model)
+    {
+        <tr>
+            <td>@facility.FacilityName</td>
+            <td>@facility.Description</td>
+            <td>@facility.Capacity</td>
+            <td>
+                <span class="reservation-status-chip @(string.Equals(facility.AvailabilityStatus, "Available", StringComparison.OrdinalIgnoreCase) ? "is-available" : "is-unavailable")">
+                    @facility.AvailabilityStatus
+                </span>
+            </td>
+            <td>
+                @if (!string.IsNullOrWhiteSpace(facility.ImageUrl))
+                {
+                    var firstImage = facility.ImageUrl.Split(',', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+                    if (!string.IsNullOrWhiteSpace(firstImage))
+                    {
+                        <img src="@Url.Content(firstImage)" alt="@facility.FacilityName" class="reservation-facility-thumb" />
+                    }
+                    else
+                    {
+                        <span class="reservation-muted-text">No image</span>
+                    }
+                }
+                else
+                {
+                    <span class="reservation-muted-text">No image</span>
+                }
+            </td>
+            <td>
+                <div class="reservation-action-row">
+                    <button
+                        type="button"
+                        class="reservation-icon-button"
+                        data-view-facility="true"
+                        data-facility-name="@facility.FacilityName"
+                        data-facility-description="@facility.Description"
+                        data-facility-capacity="@facility.Capacity"
+                        data-facility-status="@facility.AvailabilityStatus"
+                        data-facility-image="@(!string.IsNullOrWhiteSpace(facility.ImageUrl) ? facility.ImageUrl.Split(',', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() : string.Empty)"
+                        aria-label="View facility details">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button
+                        type="button"
+                        class="reservation-icon-button"
+                        data-edit-facility="true"
+                        data-facility-id="@facility.FacilityID"
+                        data-edit-url="@Url.Action("GetFacility", "Admin", new { facilityId = facility.FacilityID })"
+                        aria-label="Edit facility">
+                        <i class="fas fa-pen-to-square"></i>
+                    </button>
+                    <button
+                        type="button"
+                        class="reservation-icon-button is-danger"
+                        data-delete-facility="true"
+                        data-facility-id="@facility.FacilityID"
+                        data-facility-name="@facility.FacilityName"
+                        aria-label="Delete facility">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    }
+}

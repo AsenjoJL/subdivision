@@ -1,0 +1,52 @@
+@model List<HOMEOWNER.Models.Announcement>
+
+@if (Model.Count == 0)
+{
+    <div class="admin-announcements-empty" data-announcement-empty>
+        <i class="fas fa-bullhorn"></i>
+        <h3>No announcements yet</h3>
+        <p>Start publishing community updates to keep homeowners informed.</p>
+    </div>
+}
+else
+{
+    <div class="admin-announcements-list" data-announcement-list>
+        @foreach (var announcement in Model)
+        {
+            var searchIndex = $"{announcement.Title} {announcement.Content}".ToLowerInvariant();
+            <article class="admin-announcements-card"
+                     data-announcement-card
+                     data-announcement-id="@announcement.AnnouncementID"
+                     data-announcement-urgent="@(announcement.IsUrgent ? "true" : "false")"
+                     data-search="@searchIndex">
+                <div class="admin-announcements-card-top">
+                    <div>
+                        <div class="admin-announcements-badges">
+                            <span class="admin-announcements-badge@(announcement.IsUrgent ? " is-urgent" : string.Empty)">
+                                @(announcement.IsUrgent ? "Urgent" : "General")
+                            </span>
+                            <span class="admin-announcements-timestamp">@announcement.PostedAt.ToLocalTime().ToString("MMM dd, yyyy · hh:mm tt")</span>
+                        </div>
+                        <h3>@announcement.Title</h3>
+                    </div>
+                    <div class="admin-announcements-card-actions">
+                        <button type="button" class="admin-announcements-card-button is-edit" data-announcement-edit="@announcement.AnnouncementID">
+                            <i class="fas fa-pen"></i>
+                            <span>Edit</span>
+                        </button>
+                        <button type="button" class="admin-announcements-card-button is-delete" data-announcement-delete="@announcement.AnnouncementID">
+                            <i class="fas fa-trash"></i>
+                            <span>Delete</span>
+                        </button>
+                    </div>
+                </div>
+                <p>@announcement.Content</p>
+            </article>
+        }
+    </div>
+    <div class="admin-announcements-empty admin-announcements-hidden" data-announcement-empty>
+        <i class="fas fa-magnifying-glass"></i>
+        <h3>No matching announcements</h3>
+        <p>Try a different search term or filter.</p>
+    </div>
+}

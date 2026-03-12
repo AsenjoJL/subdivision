@@ -1,0 +1,5 @@
+@model List<HOMEOWNER.Models.ViewModels.AdminHomeownerListItemViewModel>
+
+<tbody id="homeownerTableBody">
+    @await Html.PartialAsync("_HomeownersTableRows", Model)
+</tbody>

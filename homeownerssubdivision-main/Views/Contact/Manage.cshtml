@@ -1,0 +1,147 @@
+@model HOMEOWNER.Models.ViewModels.AdminContactManagementViewModel
+
+<section class="admin-contacts-module" data-admin-contacts-module>
+    <div class="admin-contacts-shell">
+        <header class="admin-contacts-hero">
+            <div>
+                <h2>Manage contacts</h2>
+                <p>Maintain the homeowner directory for association officers, security teams, maintenance staff, and emergency contacts.</p>
+            </div>
+            <div class="admin-contacts-meta">
+                <span class="admin-contacts-chip">
+                    <i class="fas fa-address-book"></i>
+                    <span><strong data-contact-admin-visible-count>@Model.TotalContacts</strong> contacts</span>
+                </span>
+                <span class="admin-contacts-chip">
+                    <i class="fas fa-circle-check"></i>
+                    <span><strong>@Model.ActiveContacts</strong> active</span>
+                </span>
+                <span class="admin-contacts-chip is-emergency">
+                    <i class="fas fa-triangle-exclamation"></i>
+                    <span><strong>@Model.EmergencyContacts</strong> emergency</span>
+                </span>
+            </div>
+        </header>
+
+        <section class="admin-contacts-toolbar">
+            <label class="admin-contacts-search">
+                <i class="fas fa-search"></i>
+                <input type="search" placeholder="Search names, categories, phones, or email" data-contact-admin-search />
+            </label>
+            <button type="button" class="admin-contacts-toggle" data-contact-admin-toggle>
+                <i class="fas fa-plus"></i>
+                <span>Add contact</span>
+            </button>
+        </section>
+
+        <div class="admin-contacts-alert is-success admin-contacts-hidden" data-contact-admin-success>
+            <i class="fas fa-circle-check"></i>
+            <span>Contact saved successfully.</span>
+        </div>
+        <div class="admin-contacts-alert is-error admin-contacts-hidden" data-contact-admin-error>
+            <i class="fas fa-circle-exclamation"></i>
+            <span>Unable to save the contact.</span>
+        </div>
+
+        <div class="admin-contacts-modal admin-contacts-hidden"
+             data-contact-admin-panel
+             data-add-url="@Url.Action("Add", "Contact")"
+             data-edit-url="@Url.Action("Edit", "Contact")"
+             data-get-url="@Url.Action("GetContact", "Contact")"
+             hidden>
+            <div class="admin-contacts-modal-backdrop" data-contact-admin-cancel></div>
+            <section class="admin-contacts-form-wrap admin-contacts-modal-card" role="dialog" aria-modal="true" aria-labelledby="adminContactModalTitle">
+                <div class="admin-contacts-modal-header">
+                    <div>
+                        <p class="admin-contacts-modal-eyebrow" data-contact-admin-mode-label>Create</p>
+                        <h3 id="adminContactModalTitle" data-contact-admin-title>Add contact</h3>
+                    </div>
+                    <button type="button" class="admin-contacts-modal-close" data-contact-admin-cancel aria-label="Close contact editor">
+                        <i class="fas fa-xmark"></i>
+                    </button>
+                </div>
+
+                <form class="admin-contacts-form" data-contact-admin-form>
+                    <input type="hidden" name="ContactID" value="0" data-contact-admin-field="ContactID" />
+
+                    <div class="admin-contacts-form-grid">
+                        <label class="admin-contacts-field">
+                            <span>Name</span>
+                            <input type="text" name="Name" data-contact-admin-field="Name" required />
+                        </label>
+                        <label class="admin-contacts-field">
+                            <span>Category</span>
+                            <select name="Category" data-contact-admin-field="Category" required>
+                                <option value="">Select category</option>
+                                @foreach (var category in Model.Categories)
+                                {
+                                    <option value="@category">@category</option>
+                                }
+                            </select>
+                        </label>
+                        <label class="admin-contacts-field">
+                            <span>Position</span>
+                            <input type="text" name="Position" data-contact-admin-field="Position" />
+                        </label>
+                        <label class="admin-contacts-field">
+                            <span>Department</span>
+                            <input type="text" name="Department" data-contact-admin-field="Department" />
+                        </label>
+                        <label class="admin-contacts-field">
+                            <span>Phone number</span>
+                            <input type="text" name="PhoneNumber" data-contact-admin-field="PhoneNumber" />
+                        </label>
+                        <label class="admin-contacts-field">
+                            <span>Mobile number</span>
+                            <input type="text" name="MobileNumber" data-contact-admin-field="MobileNumber" />
+                        </label>
+                        <label class="admin-contacts-field">
+                            <span>Email</span>
+                            <input type="email" name="Email" data-contact-admin-field="Email" />
+                        </label>
+                        <label class="admin-contacts-field">
+                            <span>Display order</span>
+                            <input type="number" name="DisplayOrder" data-contact-admin-field="DisplayOrder" value="0" min="0" />
+                        </label>
+                        <label class="admin-contacts-field is-wide">
+                            <span>Office location</span>
+                            <input type="text" name="OfficeLocation" data-contact-admin-field="OfficeLocation" />
+                        </label>
+                    </div>
+
+                    <div class="admin-contacts-checkboxes">
+                        <label class="admin-contacts-check">
+                            <input type="checkbox" name="IsEmergency" data-contact-admin-field="IsEmergency" />
+                            <span>Emergency contact</span>
+                        </label>
+                        <label class="admin-contacts-check">
+                            <input type="checkbox" name="IsActive" data-contact-admin-field="IsActive" checked />
+                            <span>Active</span>
+                        </label>
+                    </div>
+
+                    <div class="admin-contacts-form-actions">
+                        <button type="button" class="admin-contacts-cancel" data-contact-admin-cancel>Cancel</button>
+                        <button type="submit" class="admin-contacts-submit" data-contact-admin-submit>
+                            <i class="fas fa-floppy-disk"></i>
+                            <span>Save contact</span>
+                        </button>
+                    </div>
+                </form>
+            </section>
+        </div>
+
+        <div data-contact-admin-list-host data-load-url="@Url.Action("LoadContactCards", "Contact")">
+            @await Html.PartialAsync("_AdminContactCards", Model.Contacts)
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const root = document.currentScript?.closest('[data-admin-contacts-module]');
+            if (root && typeof window.initializeAdminContactsModule === 'function') {
+                window.initializeAdminContactsModule(root);
+            }
+        })();
+    </script>
+</section>

@@ -1,0 +1,64 @@
+@model List<HOMEOWNER.Models.ServiceRequest>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="service-request-empty-state">
+        <i class="fas fa-inbox"></i>
+        <h4>No service requests yet</h4>
+        <p>Your submitted requests will appear here once you create one.</p>
+    </div>
+}
+else
+{
+    <div class="service-request-table-wrap">
+        <table class="service-request-table">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Priority</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Submitted</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var request in Model)
+                {
+                    var statusClass = (request.Status ?? "Pending").Trim().ToLowerInvariant().Replace(" ", "-");
+                    <tr>
+                        <td>@request.Category</td>
+                        <td>
+                            <span class="service-request-priority-badge service-request-priority-@((request.Priority ?? "Low").ToLowerInvariant())">
+                                @request.Priority
+                            </span>
+                        </td>
+                        <td class="service-request-description">@request.Description</td>
+                        <td>
+                            <span class="service-request-status service-request-status-@statusClass">
+                                @request.Status
+                            </span>
+                        </td>
+                        <td>@request.CreatedAt.ToLocalTime().ToString("MMM dd, yyyy")</td>
+                        <td>
+                            @if (string.Equals(request.Status, "Pending", StringComparison.OrdinalIgnoreCase))
+                            {
+                                <button type="button"
+                                        class="service-request-cancel"
+                                        data-cancel-request
+                                        data-request-id="@request.RequestID"
+                                        data-cancel-url="@Url.Action("CancelRequest", "Homeowner")">
+                                    Cancel
+                                </button>
+                            }
+                            else
+                            {
+                                <span class="service-request-muted">Locked</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

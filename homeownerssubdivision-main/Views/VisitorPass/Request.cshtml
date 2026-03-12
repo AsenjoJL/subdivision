@@ -1,0 +1,131 @@
+@model HOMEOWNER.Models.ViewModels.HomeownerVisitorPassesViewModel
+
+<section class="visitor-pass-module"
+         data-homeowner-module="visitor-pass"
+         data-cache-url="@Context.Request.Path"
+         data-request-url="@Url.Action("RequestPass", "VisitorPass")"
+         data-load-url="@Url.Action("LoadMyPassCards", "VisitorPass")">
+    <div class="visitor-pass-shell">
+        <header class="visitor-pass-hero">
+            <div>
+                <h2>Visitor passes</h2>
+                <p>Pre-register guests, deliveries, and service providers so gate access stays organized and traceable.</p>
+            </div>
+            <div class="visitor-pass-stats">
+                <span class="visitor-pass-chip">
+                    <strong>@Model.TotalPasses</strong>
+                    <span>Total requests</span>
+                </span>
+                <span class="visitor-pass-chip">
+                    <strong>@Model.PendingPasses</strong>
+                    <span>Pending</span>
+                </span>
+                <span class="visitor-pass-chip">
+                    <strong>@Model.ApprovedPasses</strong>
+                    <span>Approved</span>
+                </span>
+                <span class="visitor-pass-chip">
+                    <strong>@Model.CompletedPasses</strong>
+                    <span>Completed</span>
+                </span>
+            </div>
+        </header>
+
+        <div class="visitor-pass-alert is-success visitor-pass-hidden" data-visitor-pass-success>
+            <i class="fas fa-circle-check"></i>
+            <span>Visitor pass requested successfully.</span>
+        </div>
+        <div class="visitor-pass-alert is-error visitor-pass-hidden" data-visitor-pass-error>
+            <i class="fas fa-circle-exclamation"></i>
+            <span>Unable to submit this request right now.</span>
+        </div>
+
+        <section class="visitor-pass-form-card">
+            <div class="visitor-pass-section-head">
+                <div>
+                    <h3>Request a visitor pass</h3>
+                    <p>Complete the visit details once so the guard team can validate entry faster.</p>
+                </div>
+            </div>
+
+            <form action="@Url.Action("RequestPass", "VisitorPass")" method="post" class="visitor-pass-form" data-visitor-pass-form>
+                <div class="visitor-pass-grid">
+                    <label class="visitor-pass-field">
+                        <span>Visitor name</span>
+                        <input type="text" name="VisitorName" value="@Model.NewPass.VisitorName" maxlength="100" required data-field="VisitorName" />
+                        <small data-validation-for="VisitorName"></small>
+                    </label>
+                    <label class="visitor-pass-field">
+                        <span>Contact number</span>
+                        <input type="text" name="VisitorPhone" value="@Model.NewPass.VisitorPhone" maxlength="20" required data-field="VisitorPhone" />
+                        <small data-validation-for="VisitorPhone"></small>
+                    </label>
+                    <label class="visitor-pass-field">
+                        <span>Visit date</span>
+                        <input type="date" name="VisitDate" value="@Model.NewPass.VisitDate.ToString("yyyy-MM-dd")" required data-field="VisitDate" />
+                        <small data-validation-for="VisitDate"></small>
+                    </label>
+                    <label class="visitor-pass-field">
+                        <span>Expected arrival</span>
+                        <input type="time" name="ExpectedArrivalTime" value="@(Model.NewPass.ExpectedArrivalTime?.ToString(@"hh\:mm"))" required data-field="ExpectedArrivalTime" />
+                        <small data-validation-for="ExpectedArrivalTime"></small>
+                    </label>
+                    <label class="visitor-pass-field">
+                        <span>Purpose</span>
+                        <select name="Purpose" required data-field="Purpose">
+                            <option value="">Select purpose</option>
+                            <option value="Personal">Personal visit</option>
+                            <option value="Delivery">Delivery</option>
+                            <option value="Service">Service or repair</option>
+                            <option value="Event">Event or gathering</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <small data-validation-for="Purpose"></small>
+                    </label>
+                    <label class="visitor-pass-field">
+                        <span>ID number</span>
+                        <input type="text" name="VisitorIDNumber" value="@Model.NewPass.VisitorIDNumber" maxlength="50" data-field="VisitorIDNumber" />
+                        <small data-validation-for="VisitorIDNumber"></small>
+                    </label>
+                    <label class="visitor-pass-field">
+                        <span>Vehicle plate</span>
+                        <input type="text" name="VehiclePlateNumber" value="@Model.NewPass.VehiclePlateNumber" maxlength="100" data-field="VehiclePlateNumber" />
+                        <small data-validation-for="VehiclePlateNumber"></small>
+                    </label>
+                    <label class="visitor-pass-field">
+                        <span>Vehicle type</span>
+                        <select name="VehicleType" data-field="VehicleType">
+                            <option value="">Select type</option>
+                            <option value="Car">Car</option>
+                            <option value="Motorcycle">Motorcycle</option>
+                            <option value="Van">Van</option>
+                            <option value="Truck">Truck</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <small data-validation-for="VehicleType"></small>
+                    </label>
+                </div>
+
+                <div class="visitor-pass-form-actions">
+                    <button type="submit" class="visitor-pass-submit" data-visitor-pass-submit>
+                        <i class="fas fa-id-card"></i>
+                        <span>Submit request</span>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <section class="visitor-pass-history-card">
+            <div class="visitor-pass-section-head">
+                <div>
+                    <h3>My visitor passes</h3>
+                    <p>Track approvals, gate check-ins, and completed visits in one list.</p>
+                </div>
+            </div>
+
+            <div class="visitor-pass-list" data-visitor-pass-list data-load-url="@Url.Action("LoadMyPassCards", "VisitorPass")">
+                @await Html.PartialAsync("_HomeownerVisitorPassCards", Model.Passes)
+            </div>
+        </section>
+    </div>
+</section>

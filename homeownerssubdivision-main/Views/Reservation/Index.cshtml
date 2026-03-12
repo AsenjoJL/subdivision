@@ -1,0 +1,69 @@
+@using System.Text.Json
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment HostEnvironment
+@model HOMEOWNER.Models.ViewModels.ReservationIndexViewModel
+@{
+    var reservationAppPath = System.IO.Path.Combine(HostEnvironment.WebRootPath, "js", "reservation-app.js");
+    var reservationAppVersion = System.IO.File.Exists(reservationAppPath)
+        ? System.IO.File.GetLastWriteTimeUtc(reservationAppPath).Ticks
+        : DateTime.UtcNow.Ticks;
+    var config = new
+    {
+        isEmbedded = Model.IsEmbedded,
+        dashboardUrl = Url.Action("Dashboard", "Homeowner"),
+        sectionUrl = Url.Action("Index", "Reservation"),
+        reserveUrl = Url.Action("ReserveFacility", "Reservation"),
+        reservedSlotsUrl = Url.Action("ReservedSlots", "Reservation"),
+        historyUrl = Url.Action("History", "Reservation"),
+        todayDate = DateTime.Today.ToString("yyyy-MM-dd"),
+        successMessage = Model.SuccessMessage,
+        errorMessage = Model.ErrorMessage,
+        facilities = Model.Facilities.Select(f => new
+        {
+            id = f.FacilityID,
+            name = f.FacilityName,
+            description = f.Description,
+            capacity = f.Capacity,
+            imageUrl = f.ImageUrl,
+            rating = f.Rating,
+            availabilityStatus = f.AvailabilityStatus,
+            reservedSlots = Model.ReservedSlots
+                .Where(slot => slot.FacilityId == f.FacilityID)
+                .Select(slot => new
+                {
+                    date = slot.Date.ToString("yyyy-MM-dd"),
+                    start = slot.Start,
+                    end = slot.End
+                })
+        }),
+        activityCount = Model.ActivityCount
+    };
+}
+
+@if (!Model.IsEmbedded)
+{
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+}
+
+<link rel="stylesheet" href="~/css/reservation-react.css" asp-append-version="true">
+
+<div id="reservation-react-root"
+     data-app-url="@($"{Url.Content("~/js/reservation-app.js")}?v={reservationAppVersion}")"
+     data-config='@Html.Raw(JsonSerializer.Serialize(config))'>
+    <div class="reservation-react-loading">Loading available facilities...</div>
+</div>
+
+@if (Model.IsEmbedded)
+{
+    <script>
+        window.initializeReservationModule?.(document.getElementById('reservation-react-root'));
+    </script>
+}
+
+@if (!Model.IsEmbedded)
+{
+    <script src="~/js/reservation-bootstrap.js" asp-append-version="true"></script>
+    <script>
+        window.initializeReservationModule?.(document);
+    </script>
+}

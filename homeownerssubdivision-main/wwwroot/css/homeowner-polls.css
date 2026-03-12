@@ -1,0 +1,54 @@
+.homeowner-polls-hidden { display: none !important; }
+.homeowner-polls-shell { display: grid; gap: 1.5rem; scroll-behavior: smooth; }
+.homeowner-polls-hero,
+.homeowner-polls-toolbar,
+.homeowner-polls-card,
+.homeowner-polls-empty {
+    background: #fff;
+    border: 1px solid #d7deea;
+    border-radius: 28px;
+    box-shadow: 0 24px 50px rgba(15, 23, 42, 0.06);
+}
+.homeowner-polls-hero,
+.homeowner-polls-toolbar { padding: 1.75rem 1.9rem; }
+.homeowner-polls-hero { display:flex; justify-content:space-between; gap:1.5rem; align-items:flex-start; }
+.homeowner-polls-hero h2 { margin:0 0 .45rem; font-size:2rem; color:#12213f; }
+.homeowner-polls-hero p { margin:0; color:#5b6f91; max-width:42rem; }
+.homeowner-polls-stats { display:flex; gap:.85rem; flex-wrap:wrap; }
+.homeowner-polls-chip { min-width:120px; padding:.9rem 1rem; border-radius:20px; background:#f5f8ff; border:1px solid #dde5f6; display:grid; gap:.2rem; }
+.homeowner-polls-chip strong { font-size:1.35rem; color:#12213f; }
+.homeowner-polls-toolbar { padding:1rem 1.35rem; }
+.homeowner-polls-search { display:flex; align-items:center; gap:.8rem; border:1px solid #d7deea; border-radius:18px; padding:.85rem 1rem; color:#70829f; }
+.homeowner-polls-search input { border:none; outline:none; width:100%; background:transparent; font:inherit; color:#12213f; }
+.homeowner-polls-alert { display:flex; align-items:center; gap:.8rem; padding:1rem 1.2rem; border-radius:20px; font-weight:600; }
+.homeowner-polls-alert.is-success { background:#edf9f2; color:#0d7a43; border:1px solid #bce6cd; }
+.homeowner-polls-alert.is-error { background:#fff1f1; color:#be3a3a; border:1px solid #f4b7b7; }
+.homeowner-polls-grid { display:grid; gap:1.25rem; grid-template-columns:repeat(auto-fit, minmax(290px, 1fr)); }
+.homeowner-polls-card { padding:1.4rem; display:grid; gap:1rem; }
+.homeowner-polls-card-top { display:flex; justify-content:space-between; gap:1rem; }
+.homeowner-polls-card h3 { margin:.45rem 0; color:#12213f; font-size:1.2rem; }
+.homeowner-polls-card p { margin:0; color:#5b6f91; }
+.homeowner-polls-status { display:inline-flex; padding:.45rem .8rem; border-radius:999px; font-weight:700; font-size:.8rem; background:#eef2ff; color:#335eea; }
+.homeowner-polls-status.is-active { background:#e9f7ef; color:#0b8f4d; }
+.homeowner-polls-status.is-draft { background:#fff5e8; color:#c26f12; }
+.homeowner-polls-status.is-closed { background:#eef1f7; color:#5a6f92; }
+.homeowner-polls-votes { min-width:78px; border-radius:18px; background:#f7f9fc; border:1px solid #e1e7f1; padding:.75rem .9rem; text-align:right; }
+.homeowner-polls-votes strong { display:block; font-size:1.4rem; color:#12213f; }
+.homeowner-polls-votes span, .homeowner-polls-meta, .homeowner-polls-option-stats { color:#6f819d; }
+.homeowner-polls-meta { display:flex; flex-wrap:wrap; gap:1rem; font-size:.92rem; }
+.homeowner-polls-meta span { display:inline-flex; align-items:center; gap:.45rem; }
+.homeowner-polls-options { display:grid; gap:.7rem; }
+.homeowner-polls-option { display:block; }
+.homeowner-polls-option input { display:none; }
+.homeowner-polls-option-body { display:flex; justify-content:space-between; gap:.75rem; align-items:center; border:1px solid #d8e0ed; border-radius:18px; padding:.9rem 1rem; transition:.2s ease; }
+.homeowner-polls-option input:checked + .homeowner-polls-option-body { border-color:#335eea; box-shadow:0 0 0 3px rgba(51,94,234,.12); }
+.homeowner-polls-option.is-results .homeowner-polls-option-body { background:#f8faff; }
+.homeowner-polls-option-text { color:#12213f; font-weight:600; }
+.homeowner-polls-actions { padding-top:.2rem; }
+.homeowner-polls-submit { border:none; background:#2d5be3; color:#fff; border-radius:16px; padding:.85rem 1.1rem; font-weight:700; display:inline-flex; align-items:center; gap:.65rem; cursor:pointer; }
+.homeowner-polls-state { display:inline-flex; align-items:center; gap:.6rem; color:#6f819d; font-weight:600; }
+.homeowner-polls-state.is-voted { color:#0d7a43; }
+.homeowner-polls-empty { padding:2.4rem 2rem; text-align:center; color:#5b6f91; }
+.homeowner-polls-empty i { font-size:2.1rem; color:#335eea; margin-bottom:.7rem; }
+.homeowner-polls-empty h3 { color:#12213f; margin:0 0 .4rem; }
+[data-home-polls-list-host].is-loading { opacity:.72; transition:opacity .2s ease; }

@@ -1,0 +1,88 @@
+@model HOMEOWNER.Models.ViewModels.HomeownerAnnouncementsViewModel
+
+<section class="homeowner-announcements-module" data-homeowner-module="announcements" data-page-title="Community announcements">
+    <div class="homeowner-announcements-shell">
+        <header class="homeowner-announcements-hero">
+            <div>
+                <h2>Community announcements</h2>
+                <p>Keep up with community notices, urgent updates, and homeowner reminders in one place.</p>
+            </div>
+            <div class="homeowner-announcements-stats">
+                <span class="homeowner-announcements-chip">
+                    <strong data-home-announcement-total>@Model.TotalAnnouncements</strong>
+                    <span>Total posts</span>
+                </span>
+                <span class="homeowner-announcements-chip">
+                    <strong>@Model.UrgentAnnouncements</strong>
+                    <span>Urgent</span>
+                </span>
+            </div>
+        </header>
+
+        <section class="homeowner-announcements-highlight">
+            <div>
+                <p class="homeowner-announcements-highlight-label">Latest post</p>
+                @if (Model.LatestAnnouncement != null)
+                {
+                    <h3>@Model.LatestAnnouncement.Title</h3>
+                    <p>@Model.LatestAnnouncement.PostedAt.ToLocalTime().ToString("MMM dd, yyyy · hh:mm tt")</p>
+                }
+                else
+                {
+                    <h3>No announcements yet</h3>
+                    <p>Published community updates will appear here as soon as they are posted.</p>
+                }
+            </div>
+        </section>
+
+        <section class="homeowner-announcements-toolbar">
+            <label class="homeowner-announcements-search">
+                <i class="fas fa-search"></i>
+                <input type="search" placeholder="Search titles or announcement content" data-home-announcement-search />
+            </label>
+            <div class="homeowner-announcements-filters">
+                <button type="button" class="homeowner-announcements-filter is-active" data-home-announcement-filter="All">All</button>
+                <button type="button" class="homeowner-announcements-filter" data-home-announcement-filter="Urgent">Urgent</button>
+                <button type="button" class="homeowner-announcements-filter" data-home-announcement-filter="Regular">Regular</button>
+            </div>
+        </section>
+
+        @if (Model.Announcements.Count == 0)
+        {
+            <div class="homeowner-announcements-empty">
+                <i class="fas fa-bullhorn"></i>
+                <h3>No announcements available</h3>
+                <p>Check back later for new subdivision updates.</p>
+            </div>
+        }
+        else
+        {
+            <div class="homeowner-announcements-list" data-home-announcement-list>
+                @foreach (var announcement in Model.Announcements)
+                {
+                    var searchIndex = $"{announcement.Title} {announcement.Content}".ToLowerInvariant();
+                    <article class="homeowner-announcements-card"
+                             data-home-announcement-card
+                             data-home-announcement-urgent="@(announcement.IsUrgent ? "true" : "false")"
+                             data-search="@searchIndex">
+                        <div class="homeowner-announcements-card-top">
+                            <div class="homeowner-announcements-badges">
+                                <span class="homeowner-announcements-badge@(announcement.IsUrgent ? " is-urgent" : string.Empty)">
+                                    @(announcement.IsUrgent ? "Urgent" : "General")
+                                </span>
+                                <span class="homeowner-announcements-timestamp">@announcement.PostedAt.ToLocalTime().ToString("MMM dd, yyyy · hh:mm tt")</span>
+                            </div>
+                            <h3>@announcement.Title</h3>
+                        </div>
+                        <p>@announcement.Content</p>
+                    </article>
+                }
+            </div>
+            <div class="homeowner-announcements-empty homeowner-announcements-hidden" data-home-announcement-empty>
+                <i class="fas fa-magnifying-glass"></i>
+                <h3>No matching announcements</h3>
+                <p>Try a different search term or filter.</p>
+            </div>
+        }
+    </div>
+</section>

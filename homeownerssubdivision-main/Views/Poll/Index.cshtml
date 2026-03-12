@@ -1,0 +1,59 @@
+@model HOMEOWNER.Models.ViewModels.HomeownerPollsViewModel
+
+<section class="homeowner-polls-module"
+         data-homeowner-module="polls"
+         data-home-polls-module
+         data-load-url="@Url.Action("LoadActivePolls", "Poll")"
+         data-vote-url="@Url.Action("Vote", "Poll")">
+    <div class="homeowner-polls-shell">
+        <header class="homeowner-polls-hero">
+            <div>
+                <h2>Polls & surveys</h2>
+                <p>Share your opinion on community decisions from one lightweight dashboard feed.</p>
+            </div>
+            <div class="homeowner-polls-stats">
+                <span class="homeowner-polls-chip">
+                    <strong data-home-polls-total>@Model.ActivePolls</strong>
+                    <span>Active polls</span>
+                </span>
+                <span class="homeowner-polls-chip">
+                    <strong>@Model.TotalVotes</strong>
+                    <span>Total votes</span>
+                </span>
+                <span class="homeowner-polls-chip">
+                    <strong>@Model.ClosingSoon</strong>
+                    <span>Closing soon</span>
+                </span>
+            </div>
+        </header>
+
+        <section class="homeowner-polls-toolbar">
+            <label class="homeowner-polls-search">
+                <i class="fas fa-search"></i>
+                <input type="search" placeholder="Search questions or options" data-home-polls-search />
+            </label>
+        </section>
+
+        <div class="homeowner-polls-alert is-success homeowner-polls-hidden" data-home-polls-success>
+            <i class="fas fa-circle-check"></i>
+            <span>Vote submitted successfully.</span>
+        </div>
+        <div class="homeowner-polls-alert is-error homeowner-polls-hidden" data-home-polls-error>
+            <i class="fas fa-circle-exclamation"></i>
+            <span>Unable to submit your vote.</span>
+        </div>
+
+        <div data-home-polls-list-host>
+            @await Html.PartialAsync("_HomeownerPollCards", Model)
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const root = document.currentScript?.closest('[data-home-polls-module]');
+            if (root && typeof window.initializeHomeownerPollsModule === 'function') {
+                window.initializeHomeownerPollsModule(root);
+            }
+        })();
+    </script>
+</section>

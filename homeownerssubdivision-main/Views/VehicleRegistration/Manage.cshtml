@@ -1,0 +1,134 @@
+@model HOMEOWNER.Models.ViewModels.AdminVehicleRegistrationManagementViewModel
+
+<section class="admin-vehicles-module"
+         data-admin-vehicles
+         data-load-url="@Url.Action("LoadAdminVehicleCards", "VehicleRegistration")"
+         data-details-url="@Url.Action("GetVehicleDetails", "VehicleRegistration")"
+         data-status-url="@Url.Action("UpdateStatus", "VehicleRegistration")"
+         data-delete-url="@Url.Action("Delete", "VehicleRegistration")">
+    <div class="admin-vehicles-shell">
+        <header class="admin-vehicles-hero">
+            <div>
+                <h2>Vehicle registrations</h2>
+                <p>Review resident vehicle records, approve registrations, and keep access credentials current without leaving the dashboard.</p>
+            </div>
+            <div class="admin-vehicles-stats">
+                <span class="admin-vehicles-chip">
+                    <strong>@Model.TotalVehicles</strong>
+                    <span>Total requests</span>
+                </span>
+                <span class="admin-vehicles-chip">
+                    <strong>@Model.PendingVehicles</strong>
+                    <span>Pending</span>
+                </span>
+                <span class="admin-vehicles-chip">
+                    <strong>@Model.ApprovedVehicles</strong>
+                    <span>Approved</span>
+                </span>
+                <span class="admin-vehicles-chip">
+                    <strong>@Model.ExpiredVehicles</strong>
+                    <span>Expired</span>
+                </span>
+            </div>
+        </header>
+
+        <section class="admin-vehicles-toolbar">
+            <label class="admin-vehicles-search">
+                <i class="fas fa-search"></i>
+                <input type="search" placeholder="Search by plate, homeowner, brand, or model" data-admin-vehicle-search />
+            </label>
+            <select class="admin-vehicles-filter" data-admin-vehicle-filter>
+                @foreach (var status in Model.Statuses)
+                {
+                    <option value="@status">@status</option>
+                }
+            </select>
+        </section>
+
+        <div class="admin-vehicles-alert is-success admin-vehicles-hidden" data-admin-vehicle-success>
+            <i class="fas fa-circle-check"></i>
+            <span>Vehicle registration updated successfully.</span>
+        </div>
+        <div class="admin-vehicles-alert is-error admin-vehicles-hidden" data-admin-vehicle-error>
+            <i class="fas fa-circle-exclamation"></i>
+            <span>Unable to update this vehicle registration right now.</span>
+        </div>
+
+        <div data-admin-vehicle-list-host>
+            @await Html.PartialAsync("_AdminVehicleCards", Model.Vehicles)
+        </div>
+    </div>
+
+    <div class="admin-vehicles-modal admin-vehicles-hidden" data-admin-vehicle-details-modal aria-hidden="true">
+        <div class="admin-vehicles-backdrop" data-admin-vehicle-close></div>
+        <div class="admin-vehicles-dialog">
+            <div class="admin-vehicles-modal-header">
+                <div>
+                    <p class="admin-vehicles-kicker">Details</p>
+                    <h3>Vehicle registration details</h3>
+                </div>
+                <button type="button" class="admin-vehicles-close" data-admin-vehicle-close aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <dl class="admin-vehicles-detail-grid">
+                <div><dt>Plate number</dt><dd data-vehicle-detail="plateNumber">-</dd></div>
+                <div><dt>Status</dt><dd data-vehicle-detail="status">-</dd></div>
+                <div><dt>Owner</dt><dd data-vehicle-detail="homeownerName">-</dd></div>
+                <div><dt>Block & lot</dt><dd data-vehicle-detail="homeownerBlockLot">-</dd></div>
+                <div><dt>Type</dt><dd data-vehicle-detail="vehicleType">-</dd></div>
+                <div><dt>Color</dt><dd data-vehicle-detail="color">-</dd></div>
+                <div><dt>Brand</dt><dd data-vehicle-detail="make">-</dd></div>
+                <div><dt>Model</dt><dd data-vehicle-detail="model">-</dd></div>
+                <div><dt>Registered</dt><dd data-vehicle-detail="registeredAt">-</dd></div>
+                <div><dt>Approved</dt><dd data-vehicle-detail="approvedAt">-</dd></div>
+                <div><dt>Expiry</dt><dd data-vehicle-detail="expiryDate">-</dd></div>
+                <div class="is-wide"><dt>Admin notes</dt><dd data-vehicle-detail="adminNotes">-</dd></div>
+            </dl>
+        </div>
+    </div>
+
+    <div class="admin-vehicles-modal admin-vehicles-hidden" data-admin-vehicle-status-modal aria-hidden="true">
+        <div class="admin-vehicles-backdrop" data-admin-vehicle-status-close></div>
+        <div class="admin-vehicles-dialog is-compact">
+            <div class="admin-vehicles-modal-header">
+                <div>
+                    <p class="admin-vehicles-kicker">Action</p>
+                    <h3 data-admin-vehicle-status-title>Update vehicle registration</h3>
+                </div>
+                <button type="button" class="admin-vehicles-close" data-admin-vehicle-status-close aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form class="admin-vehicles-form" data-admin-vehicle-status-form>
+                <input type="hidden" name="id" data-status-field="id" />
+                <input type="hidden" name="status" data-status-field="status" />
+                <label class="admin-vehicles-field" data-admin-vehicle-expiry-field>
+                    <span>Expiry date</span>
+                    <input type="date" name="expiryDate" data-status-field="expiryDate" />
+                </label>
+                <label class="admin-vehicles-field">
+                    <span>Admin notes</span>
+                    <textarea name="notes" rows="4" placeholder="Add context for the homeowner or security team."></textarea>
+                </label>
+                <div class="admin-vehicles-form-actions">
+                    <button type="button" class="admin-vehicles-secondary" data-admin-vehicle-status-close>Cancel</button>
+                    <button type="submit" class="admin-vehicles-primary" data-admin-vehicle-status-submit>
+                        <i class="fas fa-floppy-disk"></i>
+                        <span>Apply update</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const root = document.currentScript?.closest('[data-admin-vehicles]');
+            if (root && typeof window.initializeAdminVehiclesModule === 'function') {
+                window.initializeAdminVehiclesModule(root);
+            }
+        })();
+    </script>
+</section>

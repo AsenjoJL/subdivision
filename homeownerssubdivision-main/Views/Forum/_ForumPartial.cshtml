@@ -1,0 +1,158 @@
+@model HOMEOWNER.Models.ViewModels.ForumViewModel
+@{
+    var forumRootId = $"forum-root-{Guid.NewGuid():N}";
+    var settings = Model.Settings;
+}
+
+<div id="@forumRootId"
+     class="forum-root"
+     data-forum-root
+     data-refresh-url="@Url.Action("Embedded", "Forum")"
+     data-feed-url="@Url.Action("Feed", "Forum")"
+     data-post-card-url-template="@Url.Action("PostCard", "Forum", new { id = "__ID__" })"
+     data-feed-state-url="@Url.Action("FeedState", "Forum")"
+     data-reaction-url="@Url.Action("AddReaction", "Forum")"
+     data-latest-activity-ticks="@Model.LatestActivityTicks"
+     data-page-title="Community forum"
+     style="--forum-background-image:url('@settings.BackgroundImageUrl');">
+    @if (!string.IsNullOrWhiteSpace(settings.CustomCSS))
+    {
+        <style data-forum-custom-css>
+            @Html.Raw(settings.CustomCSS)
+        </style>
+    }
+
+    <div class="forum-wrapper">
+        <div class="forum-surface">
+            @if (Model.ShowBackButton)
+            {
+                <div>
+                    <a href="@Model.BackUrl" class="forum-back-link">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Back to dashboard</span>
+                    </a>
+                </div>
+            }
+
+            <section class="forum-toolbar">
+                <div class="forum-heading">
+                    <h2>Community forum</h2>
+                    <p>Resident conversations, updates, and shared moments in one place.</p>
+                </div>
+                @if (settings.LastUpdated != default)
+                {
+                    <div class="forum-note">Updated @settings.LastUpdated.ToLocalTime().ToString("MMM dd, yyyy h:mm tt")</div>
+                }
+            </section>
+
+            <div class="forum-alert" data-forum-alert></div>
+
+            @if (Model.CanManageSettings)
+            {
+                <section class="forum-grid">
+                    <article class="forum-card">
+                        <h3>Forum appearance</h3>
+                        <p>Update the background image and optional custom CSS for the community board.</p>
+                        <form class="forum-settings-form"
+                              method="post"
+                              enctype="multipart/form-data"
+                              asp-action="UpdateBackground"
+                              asp-controller="Forum"
+                              data-forum-success-message="Forum appearance updated successfully.">
+                            @Html.AntiForgeryToken()
+                            <label>
+                                <span>Background image</span>
+                                <input class="forum-input" type="file" name="backgroundImage" accept="image/*">
+                            </label>
+                            <label>
+                                <span>Custom CSS</span>
+                                <textarea class="forum-textarea" name="customCSS" placeholder="Optional styling overrides">@settings.CustomCSS</textarea>
+                            </label>
+                            <div class="forum-actions">
+                                <button type="submit" class="forum-button" data-forum-submit-label="Save forum appearance">Save forum appearance</button>
+                            </div>
+                        </form>
+                    </article>
+
+                    <article class="forum-card">
+                        <h3>Featured music</h3>
+                        <p>Upload a background audio track for the forum landing experience.</p>
+                        <form class="forum-settings-form"
+                              method="post"
+                              enctype="multipart/form-data"
+                              asp-action="SetFeaturedMusic"
+                              asp-controller="Forum"
+                              data-forum-success-message="Featured music updated successfully.">
+                            @Html.AntiForgeryToken()
+                            <label>
+                                <span>Audio file</span>
+                                <input class="forum-input" type="file" name="musicFile" accept="audio/*">
+                            </label>
+                            <div class="forum-actions">
+                                <button type="submit" class="forum-button" data-forum-submit-label="Save featured music">Save featured music</button>
+                            </div>
+                        </form>
+                        @if (!string.IsNullOrWhiteSpace(settings.FeaturedMusicUrl))
+                        {
+                            <div class="forum-audio">
+                                <audio controls preload="none" src="@settings.FeaturedMusicUrl"></audio>
+                            </div>
+                        }
+                    </article>
+                </section>
+            }
+            else if (!Model.CanParticipate)
+            {
+                <div class="forum-readonly-note">
+                    Admin and staff accounts can review the community forum here, but only homeowner accounts can publish posts, react, and comment.
+                </div>
+            }
+
+            @if (Model.CanParticipate)
+            {
+                <article class="forum-card">
+                    <h3>Create a new post</h3>
+                    <form class="forum-form"
+                          method="post"
+                          enctype="multipart/form-data"
+                          asp-action="CreatePost"
+                          asp-controller="Forum"
+                          data-forum-success-message="Post published successfully.">
+                        <label>
+                            <span>Title</span>
+                            <input class="forum-input" type="text" name="title" placeholder="Enter a short title" />
+                        </label>
+                        <label>
+                            <span>Content</span>
+                            <textarea class="forum-textarea" name="content" placeholder="Share an update with your community." required></textarea>
+                        </label>
+                        <label>
+                            <span>Image or video</span>
+                            <input class="forum-input" type="file" name="mediaFile" accept="image/*,video/*" />
+                            <div class="forum-file-note">Optional. Supports image and video uploads up to 20MB.</div>
+                        </label>
+                        <label>
+                            <span>Optional music attachment</span>
+                            <input class="forum-input" type="file" name="musicFile" accept="audio/*" />
+                            <div class="forum-file-note">Optional. Music uploads are limited to 10MB.</div>
+                        </label>
+                        <div class="forum-actions">
+                            <button type="submit" class="forum-button" data-forum-submit-label="Post to community">Post to community</button>
+                        </div>
+                    </form>
+                </article>
+            }
+
+            <section class="forum-post-list is-loading" data-forum-feed-host>
+                <article class="forum-post-card forum-feed-loading-card">
+                    <h4>Loading community conversations...</h4>
+                    <p class="forum-note">The forum feed is loading from the live discussion board.</p>
+                </article>
+            </section>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.initializeForumModule?.(document.getElementById("@forumRootId"));
+</script>

@@ -1,0 +1,104 @@
+@model HOMEOWNER.Models.ViewModels.HomeownerPollsViewModel
+
+@if (Model.Polls.Count == 0)
+{
+    <div class="homeowner-polls-empty" data-home-polls-empty>
+        <i class="fas fa-poll"></i>
+        <h3>No active polls right now</h3>
+        <p>Check back later for new surveys from the homeowners association.</p>
+    </div>
+}
+else
+{
+    <div class="homeowner-polls-grid" data-home-polls-grid>
+        @foreach (var poll in Model.Polls)
+        {
+            var hasVoted = Model.VotedPollIds.Contains(poll.PollID);
+            var searchIndex = $"{poll.Question} {poll.Description} {poll.Status} {string.Join(" ", poll.Options.Select(option => option.OptionText))}".ToLowerInvariant();
+            var canVote = !hasVoted
+                && string.Equals(poll.Status, "Active", StringComparison.OrdinalIgnoreCase)
+                && (!poll.StartDate.HasValue || poll.StartDate.Value <= DateTime.UtcNow)
+                && (!poll.EndDate.HasValue || poll.EndDate.Value >= DateTime.UtcNow);
+
+            <article class="homeowner-polls-card"
+                     data-home-poll-card
+                     data-search="@searchIndex"
+                     data-status="@poll.Status">
+                <div class="homeowner-polls-card-top">
+                    <div>
+                        <span class="homeowner-polls-status is-@poll.Status.ToLowerInvariant()">@poll.Status</span>
+                        <h3>@poll.Question</h3>
+                        @if (!string.IsNullOrWhiteSpace(poll.Description))
+                        {
+                            <p>@poll.Description</p>
+                        }
+                    </div>
+                    <div class="homeowner-polls-votes">
+                        <strong>@poll.TotalVotes</strong>
+                        <span>Votes</span>
+                    </div>
+                </div>
+
+                <div class="homeowner-polls-meta">
+                    <span>
+                        <i class="fas fa-calendar-days"></i>
+                        @(poll.EndDate.HasValue ? $"Closes {poll.EndDate.Value.ToLocalTime():MMM dd, yyyy h:mm tt}" : "No closing date")
+                    </span>
+                    <span>
+                        <i class="fas fa-list-check"></i>
+                        @poll.Options.Count options
+                    </span>
+                </div>
+
+                <div class="homeowner-polls-options">
+                    @foreach (var option in poll.Options.OrderBy(option => option.DisplayOrder))
+                    {
+                        var percentage = poll.TotalVotes > 0 ? Math.Round((decimal)option.VoteCount * 100 / poll.TotalVotes, 1) : 0;
+                        <label class="homeowner-polls-option@(hasVoted ? " is-results" : string.Empty)">
+                            <input type="radio"
+                                   name="poll_@poll.PollID"
+                                   value="@option.OptionID"
+                                   data-home-poll-option="@poll.PollID"
+                                   @(canVote ? null : "disabled")
+                                   @(hasVoted ? "disabled" : null) />
+                            <span class="homeowner-polls-option-body">
+                                <span class="homeowner-polls-option-text">@option.OptionText</span>
+                                @if (hasVoted)
+                                {
+                                    <span class="homeowner-polls-option-stats">@option.VoteCount votes · @percentage%</span>
+                                }
+                            </span>
+                        </label>
+                    }
+                </div>
+
+                <div class="homeowner-polls-actions">
+                    @if (canVote)
+                    {
+                        <button type="button"
+                                class="homeowner-polls-submit"
+                                data-home-poll-vote
+                                data-poll-id="@poll.PollID">
+                            <i class="fas fa-paper-plane"></i>
+                            <span>Submit vote</span>
+                        </button>
+                    }
+                    else if (hasVoted)
+                    {
+                        <span class="homeowner-polls-state is-voted">
+                            <i class="fas fa-circle-check"></i>
+                            You already voted
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="homeowner-polls-state">
+                            <i class="fas fa-lock"></i>
+                            Poll is not open for voting
+                        </span>
+                    }
+                </div>
+            </article>
+        }
+    </div>
+}

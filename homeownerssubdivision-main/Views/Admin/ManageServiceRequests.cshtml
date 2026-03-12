@@ -1,0 +1,432 @@
+@model HOMEOWNER.Models.ViewModels.AdminServiceRequestsViewModel
+
+<style>
+    .service-admin-module{color:#18263d}.service-admin-hidden{display:none!important}.service-admin-token-form{display:none}
+    .service-admin-stack{display:flex;flex-direction:column;gap:1.5rem}.service-admin-summary-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1rem}
+    .service-admin-summary-card,.service-admin-panel{background:#fff;border:1px solid rgba(18,35,60,.08);border-radius:22px;box-shadow:0 14px 32px rgba(18,35,60,.06)}
+    .service-admin-summary-card{padding:1.2rem 1.25rem}.service-admin-summary-label{margin:0;font-size:.83rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#64748b}
+    .service-admin-summary-value{margin:.5rem 0 0;font-size:1.95rem;font-weight:800;letter-spacing:-.04em;color:#18263d}.service-admin-summary-caption{margin-top:.35rem;color:#64748b;font-size:.88rem}
+    .service-admin-panel-header{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;padding:1.3rem 1.5rem 1rem;border-bottom:1px solid rgba(18,35,60,.08)}
+    .service-admin-panel-title{margin:0;font-size:1.4rem;font-weight:800;display:flex;align-items:center;gap:.7rem}.service-admin-panel-title i{color:#4361ee}
+    .service-admin-panel-caption{margin:.35rem 0 0;color:#64748b;font-size:.92rem}.service-admin-panel-actions{display:flex;gap:.75rem;align-items:center;flex-wrap:wrap}
+    .service-admin-search,.service-admin-select,.service-admin-form-control{border:1px solid rgba(18,35,60,.12);background:#fff;color:#18263d}
+    .service-admin-search,.service-admin-select{height:44px;padding:0 .95rem;border-radius:12px}.service-admin-search{min-width:300px}
+    .service-admin-search:focus,.service-admin-select:focus,.service-admin-form-control:focus{outline:none;border-color:#4361ee;box-shadow:0 0 0 .2rem rgba(67,97,238,.12)}
+    .service-admin-panel-body{padding:1.2rem 1.5rem 1.5rem}.service-admin-section-alert,.service-admin-modal-alert{padding:.9rem 1rem;border-radius:12px;font-weight:600}
+    .service-admin-section-alert{margin-bottom:1rem}.service-admin-section-alert.is-success,.service-admin-modal-alert.is-success{background:rgba(21,127,97,.08);color:#157f61;border:1px solid rgba(21,127,97,.16)}
+    .service-admin-section-alert.is-error,.service-admin-modal-alert.is-error{background:rgba(180,35,24,.08);color:#b42318;border:1px solid rgba(180,35,24,.16)}
+    .service-admin-table-shell{overflow-x:auto}.service-admin-table{width:100%;border-collapse:separate;border-spacing:0}.service-admin-table th{padding:.95rem 1rem;background:#4361ee;color:#fff;text-align:left;font-weight:700}
+    .service-admin-table th:first-child{border-top-left-radius:12px}.service-admin-table th:last-child{border-top-right-radius:12px}.service-admin-table td{padding:1rem;border-bottom:1px solid rgba(18,35,60,.08);color:#30425d;vertical-align:middle}
+    .service-admin-cell-primary{font-weight:700;color:#18263d}.service-admin-cell-secondary{color:#64748b;font-size:.86rem}.service-admin-empty-cell{text-align:center;color:#64748b;padding:1.4rem 0}
+    .service-admin-description{min-width:240px;max-width:320px}.service-admin-priority{display:inline-flex;align-items:center;border-radius:999px;padding:.4rem .72rem;font-size:.82rem;font-weight:700}
+    .priority-high{background:rgba(180,35,24,.12);color:#b42318}.priority-medium{background:rgba(169,106,0,.12);color:#a96a00}.priority-low{background:rgba(21,127,97,.12);color:#157f61}
+    .service-admin-status{display:inline-flex;align-items:center;justify-content:center;min-width:92px;padding:.42rem .72rem;border-radius:999px;font-size:.82rem;font-weight:700}
+    .service-admin-status.is-pending{background:rgba(169,106,0,.12);color:#a96a00}.service-admin-status.is-progress{background:rgba(67,97,238,.12);color:#3051bf}.service-admin-status.is-completed{background:rgba(21,127,97,.12);color:#157f61}.service-admin-status.is-cancelled{background:rgba(180,35,24,.12);color:#b42318}
+    .service-admin-action-row{display:flex;gap:.45rem;align-items:center}.service-admin-icon-button{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;border:1px solid rgba(18,35,60,.08);background:#fff;cursor:pointer;color:#4361ee}
+    .service-admin-modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(10,17,30,.45);backdrop-filter:blur(5px);z-index:1200}
+    .service-admin-modal.is-open{display:flex}.service-admin-modal-dialog{width:min(100%,680px)}.service-admin-modal-panel{background:#fff;border-radius:20px;overflow:hidden;display:flex;flex-direction:column;max-height:min(88vh,760px);box-shadow:0 30px 80px rgba(4,10,20,.3)}
+    .service-admin-modal-header{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.2rem 1.4rem;background:#4361ee;color:#fff}.service-admin-modal-title{margin:0;font-size:1.05rem;font-weight:800;display:flex;align-items:center;gap:.7rem}
+    .service-admin-modal-close{border:none;background:transparent;color:#fff;font-size:1.1rem;cursor:pointer}.service-admin-modal-body{padding:1.35rem 1.4rem;overflow-y:auto}.service-admin-modal-footer{display:flex;justify-content:flex-end;gap:.75rem;padding:1rem 1.4rem 1.2rem;border-top:1px solid rgba(18,35,60,.08)}
+    .service-admin-button{display:inline-flex;align-items:center;gap:.5rem;height:42px;padding:0 1rem;border-radius:10px;border:1px solid transparent;background:#4361ee;color:#fff;font-weight:700;cursor:pointer}
+    .service-admin-button-secondary{background:#fff;border-color:rgba(18,35,60,.14);color:#18263d}.service-admin-form-group{margin-bottom:1rem}.service-admin-form-label{display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem;font-weight:700;color:#18263d}
+    .service-admin-form-label i{color:#4361ee}.service-admin-form-control{width:100%;min-height:44px;padding:10px 12px;border-radius:10px}
+    .service-admin-details-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.service-admin-detail-card{padding:1rem 1.05rem;border-radius:16px;background:#f8fafc;border:1px solid rgba(18,35,60,.08)}
+    .service-admin-detail-label{margin:0 0 .2rem;font-size:.78rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.06em}.service-admin-detail-value{margin:0;color:#18263d;word-break:break-word}
+    @@media (max-width:960px){.service-admin-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@@media (max-width:720px){.service-admin-panel-header{flex-direction:column}.service-admin-panel-actions{width:100%;flex-direction:column;align-items:stretch}.service-admin-search,.service-admin-select,.service-admin-button{width:100%}.service-admin-summary-grid,.service-admin-details-grid{grid-template-columns:1fr}}
+</style>
+
+<div id="serviceRequestsAdminModule"
+     class="service-admin-module"
+     data-summary-url="@Url.Action("ServiceRequestsSummary", "Admin")"
+     data-list-url="@Url.Action("LoadServiceRequestsList", "Admin")"
+     data-details-url="@Url.Action("GetServiceRequestDetails", "Admin")"
+     data-update-url="@Url.Action("UpdateServiceRequestAdmin", "Admin")">
+    <form id="serviceRequestsAdminTokenForm" class="service-admin-token-form">@Html.AntiForgeryToken()</form>
+
+    <div class="service-admin-stack">
+        <div class="service-admin-summary-grid">
+            <article class="service-admin-summary-card"><p class="service-admin-summary-label">Total requests</p><p class="service-admin-summary-value" id="serviceSummaryTotal">@Model.TotalRequests</p><div class="service-admin-summary-caption">Across all homeowners</div></article>
+            <article class="service-admin-summary-card"><p class="service-admin-summary-label">Pending</p><p class="service-admin-summary-value" id="serviceSummaryPending">@Model.PendingCount</p><div class="service-admin-summary-caption">Awaiting assignment or review</div></article>
+            <article class="service-admin-summary-card"><p class="service-admin-summary-label">In progress</p><p class="service-admin-summary-value" id="serviceSummaryProgress">@Model.InProgressCount</p><div class="service-admin-summary-caption">Currently assigned</div></article>
+            <article class="service-admin-summary-card"><p class="service-admin-summary-label">Completed</p><p class="service-admin-summary-value" id="serviceSummaryCompleted">@Model.CompletedCount</p><div class="service-admin-summary-caption">Resolved requests</div></article>
+            <article class="service-admin-summary-card"><p class="service-admin-summary-label">Top category</p><p class="service-admin-summary-value" id="serviceSummaryCategory">@Model.BusiestCategory</p><div class="service-admin-summary-caption"><span id="serviceSummaryCategoryCount">@Model.BusiestCategoryCount</span> requests</div></article>
+        </div>
+
+        <section class="service-admin-panel">
+            <div class="service-admin-panel-header">
+                <div>
+                    <h2 class="service-admin-panel-title"><i class="fas fa-tools"></i>Service requests</h2>
+                    <p class="service-admin-panel-caption">Review homeowner issues, assign staff, and update progress from one organized workspace.</p>
+                </div>
+                <div class="service-admin-panel-actions">
+                    <select id="serviceRequestStatusFilter" class="service-admin-select">
+                        <option value="All">All statuses</option>
+                        <option value="Pending">Pending</option>
+                        <option value="In Progress">In progress</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                    <input type="search" id="serviceRequestSearchInput" class="service-admin-search" placeholder="Search by category, homeowner, priority, staff, or status">
+                </div>
+            </div>
+            <div class="service-admin-panel-body">
+                <div id="serviceRequestsSectionAlert" class="service-admin-section-alert @(Model.HasLoadError ? "is-error" : "service-admin-hidden")">
+                    @(Model.HasLoadError ? Model.LoadErrorMessage : string.Empty)
+                </div>
+                <div class="service-admin-table-shell">
+                    <table class="service-admin-table">
+                        <thead>
+                            <tr>
+                                <th>Request</th>
+                                <th>Homeowner</th>
+                                <th>Priority</th>
+                                <th>Assigned staff</th>
+                                <th>Status</th>
+                                <th>Submitted</th>
+                                <th>Description</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="serviceRequestsTableBody">
+                            @await Html.PartialAsync("_ServiceRequestTableRows", Model.Requests)
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<div class="service-admin-modal" id="serviceRequestDetailsModal" aria-hidden="true" role="dialog">
+    <div class="service-admin-modal-dialog">
+        <div class="service-admin-modal-panel">
+            <div class="service-admin-modal-header">
+                <h3 class="service-admin-modal-title"><i class="fas fa-circle-info"></i>Service request details</h3>
+                <button type="button" class="service-admin-modal-close" data-service-admin-close="serviceRequestDetailsModal" aria-label="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="service-admin-modal-body">
+                <div class="service-admin-details-grid">
+                    <div class="service-admin-detail-card"><p class="service-admin-detail-label">Category</p><p class="service-admin-detail-value" id="serviceDetailCategory">-</p></div>
+                    <div class="service-admin-detail-card"><p class="service-admin-detail-label">Priority</p><p class="service-admin-detail-value" id="serviceDetailPriority">-</p></div>
+                    <div class="service-admin-detail-card"><p class="service-admin-detail-label">Homeowner</p><p class="service-admin-detail-value" id="serviceDetailHomeowner">-</p></div>
+                    <div class="service-admin-detail-card"><p class="service-admin-detail-label">Assigned staff</p><p class="service-admin-detail-value" id="serviceDetailAssignedStaff">-</p></div>
+                    <div class="service-admin-detail-card"><p class="service-admin-detail-label">Status</p><p class="service-admin-detail-value" id="serviceDetailStatus">-</p></div>
+                    <div class="service-admin-detail-card"><p class="service-admin-detail-label">Created at</p><p class="service-admin-detail-value" id="serviceDetailCreatedAt">-</p></div>
+                    <div class="service-admin-detail-card" style="grid-column:1/-1"><p class="service-admin-detail-label">Description</p><p class="service-admin-detail-value" id="serviceDetailDescription">-</p></div>
+                </div>
+            </div>
+            <div class="service-admin-modal-footer">
+                <button type="button" class="service-admin-button service-admin-button-secondary" data-service-admin-close="serviceRequestDetailsModal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="service-admin-modal" id="serviceRequestManageModal" aria-hidden="true" role="dialog">
+    <div class="service-admin-modal-dialog">
+        <div class="service-admin-modal-panel">
+            <div class="service-admin-modal-header">
+                <h3 class="service-admin-modal-title"><i class="fas fa-clipboard-check"></i>Manage service request</h3>
+                <button type="button" class="service-admin-modal-close" data-service-admin-close="serviceRequestManageModal" aria-label="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="service-admin-modal-body">
+                <div id="serviceRequestManageAlert" class="service-admin-modal-alert service-admin-hidden"></div>
+                <form id="serviceRequestManageForm">
+                    <input type="hidden" name="RequestId" data-service-admin-input="RequestId">
+                    <div class="service-admin-form-group">
+                        <label class="service-admin-form-label"><i class="fas fa-user-tie"></i>Assign staff</label>
+                        <select class="service-admin-form-control" name="AssignedStaffId" data-service-admin-input="AssignedStaffId">
+                            <option value="">Unassigned</option>
+                            @foreach (var staff in Model.StaffList)
+                            {
+                                <option value="@staff.StaffID">@staff.FullName (@staff.Position)</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="service-admin-form-group">
+                        <label class="service-admin-form-label"><i class="fas fa-flag"></i>Status</label>
+                        <select class="service-admin-form-control" name="Status" data-service-admin-input="Status">
+                            <option value="Pending">Pending</option>
+                            <option value="In Progress">In progress</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="service-admin-modal-footer">
+                <button type="button" class="service-admin-button service-admin-button-secondary" data-service-admin-close="serviceRequestManageModal">Cancel</button>
+                <button type="button" class="service-admin-button" id="submitServiceRequestManage"><i class="fas fa-save"></i><span>Save changes</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        if (window.__serviceRequestsAdminCleanup) { window.__serviceRequestsAdminCleanup(); }
+        const root = document.getElementById('serviceRequestsAdminModule'); if (!root) { return; }
+        const token = document.querySelector('#serviceRequestsAdminTokenForm input[name="__RequestVerificationToken"]')?.value || '';
+        const tableBody = document.getElementById('serviceRequestsTableBody');
+        const searchInput = document.getElementById('serviceRequestSearchInput');
+        const statusFilter = document.getElementById('serviceRequestStatusFilter');
+        const sectionAlert = document.getElementById('serviceRequestsSectionAlert');
+        const detailsModal = document.getElementById('serviceRequestDetailsModal');
+        const manageModal = document.getElementById('serviceRequestManageModal');
+        const manageAlert = document.getElementById('serviceRequestManageAlert');
+        const manageForm = document.getElementById('serviceRequestManageForm');
+        const saveManageButton = document.getElementById('submitServiceRequestManage');
+        if (!tableBody || !searchInput || !statusFilter || !detailsModal || !manageModal || !manageForm || !saveManageButton) { return; }
+        Array.from(document.querySelectorAll('[id="' + detailsModal.id + '"]')).filter(x => x !== detailsModal).forEach(x => x.remove());
+        Array.from(document.querySelectorAll('[id="' + manageModal.id + '"]')).filter(x => x !== manageModal).forEach(x => x.remove());
+        if (detailsModal.parentElement !== document.body) { document.body.appendChild(detailsModal); }
+        if (manageModal.parentElement !== document.body) { document.body.appendChild(manageModal); }
+
+        const totalValue = document.getElementById('serviceSummaryTotal');
+        const pendingValue = document.getElementById('serviceSummaryPending');
+        const progressValue = document.getElementById('serviceSummaryProgress');
+        const completedValue = document.getElementById('serviceSummaryCompleted');
+        const categoryValue = document.getElementById('serviceSummaryCategory');
+        const categoryCountValue = document.getElementById('serviceSummaryCategoryCount');
+
+        function setSectionAlert(type, message) {
+            sectionAlert.className = 'service-admin-section-alert ' + (type === 'success' ? 'is-success' : 'is-error');
+            sectionAlert.textContent = message;
+            sectionAlert.classList.remove('service-admin-hidden');
+        }
+
+        function clearSectionAlert() {
+            sectionAlert.className = 'service-admin-section-alert service-admin-hidden';
+            sectionAlert.textContent = '';
+        }
+
+        function setManageAlert(type, message) {
+            manageAlert.className = 'service-admin-modal-alert ' + (type === 'success' ? 'is-success' : 'is-error');
+            manageAlert.textContent = message;
+            manageAlert.classList.remove('service-admin-hidden');
+        }
+
+        function clearManageAlert() {
+            manageAlert.className = 'service-admin-modal-alert service-admin-hidden';
+            manageAlert.textContent = '';
+        }
+
+        function showModal(modal) {
+            modal.classList.add('is-open');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(modal) {
+            modal.classList.remove('is-open');
+            modal.setAttribute('aria-hidden', 'true');
+            if (!detailsModal.classList.contains('is-open') && !manageModal.classList.contains('is-open')) {
+                document.body.style.overflow = '';
+            }
+        }
+
+        function applySearch() {
+            const query = searchInput.value.trim().toLowerCase();
+            tableBody.querySelectorAll('tr[data-service-request-row="true"]').forEach(row => {
+                row.style.display = row.textContent.toLowerCase().includes(query) ? '' : 'none';
+            });
+        }
+
+        async function refreshSummary() {
+            const response = await fetch(root.dataset.summaryUrl, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                credentials: 'same-origin'
+            });
+            if (!response.ok) { throw new Error('Unable to refresh service request summary.'); }
+            const payload = await response.json();
+            totalValue.textContent = payload.totalRequests ?? 0;
+            pendingValue.textContent = payload.pendingCount ?? 0;
+            progressValue.textContent = payload.inProgressCount ?? 0;
+            completedValue.textContent = payload.completedCount ?? 0;
+            categoryValue.textContent = payload.busiestCategory ?? 'No data';
+            categoryCountValue.textContent = payload.busiestCategoryCount ?? 0;
+            if (payload.hasLoadError && payload.loadErrorMessage) {
+                setSectionAlert('error', payload.loadErrorMessage);
+            }
+        }
+
+        async function refreshTable() {
+            const url = root.dataset.listUrl + '?statusFilter=' + encodeURIComponent(statusFilter.value || 'All');
+            const response = await fetch(url, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                credentials: 'same-origin'
+            });
+            if (!response.ok) { throw new Error('Unable to refresh service request list.'); }
+            tableBody.innerHTML = await response.text();
+            applySearch();
+        }
+
+        async function refreshModule() {
+            const results = await Promise.allSettled([refreshSummary(), refreshTable()]);
+            const failed = results.find(result => result.status === 'rejected');
+            if (failed) {
+                console.error(failed.reason);
+                setSectionAlert('error', 'Some service request data could not be refreshed. The module is showing the latest data it could load.');
+            }
+        }
+
+        function fillDetails(payload) {
+            document.getElementById('serviceDetailCategory').textContent = payload.category || '-';
+            document.getElementById('serviceDetailPriority').textContent = payload.priority || '-';
+            document.getElementById('serviceDetailHomeowner').textContent = payload.homeowner || '-';
+            document.getElementById('serviceDetailAssignedStaff').textContent = payload.assignedStaff || 'Unassigned';
+            document.getElementById('serviceDetailStatus').textContent = payload.status || '-';
+            document.getElementById('serviceDetailCreatedAt').textContent = payload.createdAt || '-';
+            document.getElementById('serviceDetailDescription').textContent = payload.description || '-';
+        }
+
+        function fillManageForm(payload) {
+            manageForm.querySelector('[data-service-admin-input="RequestId"]').value = payload.requestID || '';
+            manageForm.querySelector('[data-service-admin-input="AssignedStaffId"]').value = payload.assignedStaffID ?? '';
+            manageForm.querySelector('[data-service-admin-input="Status"]').value = payload.status || 'Pending';
+        }
+
+        async function fetchDetails(detailsUrl) {
+            const response = await fetch(detailsUrl, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                credentials: 'same-origin'
+            });
+            const payload = await response.json();
+            if (!response.ok || !payload || payload.success === false || !payload.request) {
+                throw new Error(payload?.message || 'Unable to load the selected service request.');
+            }
+            return payload.request;
+        }
+
+        async function submitManage() {
+            if (manageForm.dataset.submitting === 'true') { return; }
+            manageForm.dataset.submitting = 'true';
+            saveManageButton.disabled = true;
+            clearManageAlert();
+            clearSectionAlert();
+            const originalMarkup = saveManageButton.innerHTML;
+            saveManageButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Saving...</span>';
+
+            try {
+                const formData = new URLSearchParams(new FormData(manageForm));
+                formData.append('__RequestVerificationToken', token);
+                const response = await fetch(root.dataset.updateUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    credentials: 'same-origin',
+                    body: formData.toString()
+                });
+                const payload = await response.json();
+                if (!response.ok || !payload || payload.success === false) {
+                    setManageAlert('error', payload?.message || 'Unable to update the service request.');
+                    return;
+                }
+                closeModal(manageModal);
+                await refreshModule();
+                setSectionAlert('success', payload.message || 'Service request updated successfully.');
+            } catch (error) {
+                console.error(error);
+                setManageAlert('error', 'Unable to update the service request.');
+            } finally {
+                delete manageForm.dataset.submitting;
+                saveManageButton.disabled = false;
+                saveManageButton.innerHTML = originalMarkup;
+            }
+        }
+
+        async function handleModuleClick(event) {
+            const detailsButton = event.target.closest('[data-service-details="true"]');
+            if (detailsButton) {
+                clearSectionAlert();
+                try {
+                    const payload = await fetchDetails(detailsButton.getAttribute('data-details-url'));
+                    fillDetails(payload);
+                    showModal(detailsModal);
+                } catch (error) {
+                    console.error(error);
+                    setSectionAlert('error', error.message || 'Unable to load the selected service request.');
+                }
+                return;
+            }
+
+            const manageButton = event.target.closest('[data-service-manage="true"]');
+            if (manageButton) {
+                clearSectionAlert();
+                clearManageAlert();
+                try {
+                    const payload = await fetchDetails(manageButton.getAttribute('data-details-url'));
+                    fillManageForm(payload);
+                    showModal(manageModal);
+                } catch (error) {
+                    console.error(error);
+                    setSectionAlert('error', error.message || 'Unable to load the selected service request.');
+                }
+            }
+        }
+
+        const handleBackdropClick = event => {
+            if (event.target.classList.contains('service-admin-modal')) {
+                closeModal(event.target);
+            }
+        };
+
+        const handleDocumentClick = event => {
+            const closeButton = event.target.closest('[data-service-admin-close]');
+            if (!closeButton) { return; }
+            const targetId = closeButton.getAttribute('data-service-admin-close');
+            const modal = document.getElementById(targetId);
+            if (modal) {
+                event.preventDefault();
+                closeModal(modal);
+            }
+        };
+
+        const handleKeydown = event => {
+            if (event.key === 'Escape') {
+                [detailsModal, manageModal].forEach(closeModal);
+            }
+        };
+
+        const handleFilterChange = () => {
+            clearSectionAlert();
+            refreshTable().catch(error => {
+                console.error(error);
+                setSectionAlert('error', 'Unable to refresh service requests for the selected status.');
+            });
+        };
+        const handleRootClick = event => { handleModuleClick(event); };
+
+        searchInput.addEventListener('input', applySearch);
+        statusFilter.addEventListener('change', handleFilterChange);
+        saveManageButton.addEventListener('click', submitManage);
+        root.addEventListener('click', handleRootClick);
+        document.addEventListener('click', handleDocumentClick);
+        document.addEventListener('keydown', handleKeydown);
+        [detailsModal, manageModal].forEach(modal => modal.addEventListener('click', handleBackdropClick));
+
+        requestAnimationFrame(() => { refreshModule(); });
+
+        const serviceRequestsAdminCleanup = function () {
+            searchInput.removeEventListener('input', applySearch);
+            statusFilter.removeEventListener('change', handleFilterChange);
+            saveManageButton.removeEventListener('click', submitManage);
+            root.removeEventListener('click', handleRootClick);
+            document.removeEventListener('click', handleDocumentClick);
+            document.removeEventListener('keydown', handleKeydown);
+            [detailsModal, manageModal].forEach(modal => {
+                modal.removeEventListener('click', handleBackdropClick);
+                closeModal(modal);
+                if (modal.parentElement === document.body) { modal.remove(); }
+            });
+            window.__serviceRequestsAdminCleanup = null;
+        };
+
+        window.__serviceRequestsAdminCleanup = serviceRequestsAdminCleanup;
+        if (typeof window.__registerAdminEmbeddedCleanup === 'function') {
+            window.__registerAdminEmbeddedCleanup(serviceRequestsAdminCleanup);
+        }
+    })();
+</script>

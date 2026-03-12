@@ -1,0 +1,191 @@
+.homeowner-announcements-shell {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.homeowner-announcements-hero,
+.homeowner-announcements-highlight,
+.homeowner-announcements-toolbar,
+.homeowner-announcements-card,
+.homeowner-announcements-empty {
+    background: #fff;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 1.5rem;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.06);
+}
+
+.homeowner-announcements-hero,
+.homeowner-announcements-highlight,
+.homeowner-announcements-toolbar {
+    padding: 1.6rem 1.75rem;
+}
+
+.homeowner-announcements-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.homeowner-announcements-hero h2 {
+    margin: 0 0 0.35rem;
+    font-size: 2rem;
+}
+
+.homeowner-announcements-hero p,
+.homeowner-announcements-highlight p,
+.homeowner-announcements-card p,
+.homeowner-announcements-empty p {
+    margin: 0;
+    color: #627593;
+    line-height: 1.6;
+}
+
+.homeowner-announcements-stats {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.homeowner-announcements-chip {
+    min-width: 120px;
+    padding: 0.75rem 1rem;
+    border-radius: 1rem;
+    background: #f5f8ff;
+    color: #365590;
+    display: grid;
+    gap: 0.25rem;
+}
+
+.homeowner-announcements-chip strong {
+    font-size: 1.35rem;
+    color: #152445;
+}
+
+.homeowner-announcements-highlight {
+    background: linear-gradient(135deg, rgba(47, 107, 242, 0.08), rgba(87, 104, 221, 0.12));
+}
+
+.homeowner-announcements-highlight-label {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.8rem;
+    color: #6177a3;
+    margin-bottom: 0.35rem !important;
+}
+
+.homeowner-announcements-highlight h3 {
+    margin: 0 0 0.35rem;
+    font-size: 1.5rem;
+    color: #162542;
+}
+
+.homeowner-announcements-toolbar {
+    display: grid;
+    gap: 1rem;
+}
+
+.homeowner-announcements-search {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 3.4rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(15, 23, 42, 0.1);
+    background: #f9fbff;
+    padding: 0 1rem;
+    color: #7182a1;
+}
+
+.homeowner-announcements-search input {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    outline: none;
+    color: #18233d;
+    font: inherit;
+}
+
+.homeowner-announcements-filters {
+    display: flex;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+}
+
+.homeowner-announcements-filter {
+    border: 1px solid rgba(47, 107, 242, 0.14);
+    background: #fff;
+    color: #31559a;
+    border-radius: 999px;
+    padding: 0.7rem 1rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.homeowner-announcements-filter.is-active {
+    background: #2f6bf2;
+    color: #fff;
+    border-color: #2f6bf2;
+}
+
+.homeowner-announcements-list {
+    display: grid;
+    gap: 1rem;
+}
+
+.homeowner-announcements-card {
+    padding: 1.25rem;
+}
+
+.homeowner-announcements-card-top {
+    margin-bottom: 0.75rem;
+}
+
+.homeowner-announcements-card-top h3,
+.homeowner-announcements-empty h3 {
+    margin: 0.45rem 0 0;
+    color: #152445;
+    font-size: 1.2rem;
+}
+
+.homeowner-announcements-badges {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.homeowner-announcements-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.42rem 0.8rem;
+    border-radius: 999px;
+    background: #edf4ff;
+    color: #2f6bf2;
+    font-weight: 700;
+}
+
+.homeowner-announcements-badge.is-urgent {
+    background: #fff2f2;
+    color: #c64040;
+}
+
+.homeowner-announcements-timestamp {
+    color: #7a8aa5;
+    font-size: 0.92rem;
+}
+
+.homeowner-announcements-empty {
+    padding: 2.25rem;
+    text-align: center;
+}
+
+.homeowner-announcements-empty i {
+    font-size: 2rem;
+    color: #8aa0d1;
+    margin-bottom: 0.75rem;
+}
+
+.homeowner-announcements-hidden {
+    display: none !important;
+}

@@ -1,0 +1,95 @@
+@using System.Text.Json
+@{
+    Layout = null;
+    var adminName = User.Identity?.Name ?? "Admin profile";
+    var workspaceName = ViewBag.AdminWorkspaceName as string ?? "Admin workspace";
+    var defaultLandingSection = ViewBag.AdminDefaultLandingSection as string ?? "dashboard";
+    var useCompactTables = ViewBag.AdminUseCompactTables as bool? ?? false;
+    var enableSectionPrefetch = ViewBag.AdminEnableSectionPrefetch as bool? ?? true;
+    var dashboardConfig = new
+    {
+        adminName,
+        workspace = new
+        {
+            workspaceName,
+            defaultLandingSection,
+            useCompactTables,
+            enableSectionPrefetch
+        },
+        links = new
+        {
+            dashboard = Url.Action("Dashboard", "Admin"),
+            dashboardStats = Url.Action("DashboardStats", "Admin"),
+            dashboardOverview = Url.Action("DashboardOverviewData", "Admin"),
+            adminProfile = Url.Action("AdminProfile", "Admin"),
+            workspaceSettings = Url.Action("WorkspaceSettings", "Admin"),
+            manageOwners = Url.Action("ManageOwners", "Admin"),
+            manageStaff = Url.Action("ManageStaff", "Admin"),
+            manageServiceRequests = Url.Action("ManageServiceRequests", "Admin"),
+            reservationManagement = Url.Action("ReservationManagement", "Admin"),
+            complaints = Url.Action("Manage", "Complaint"),
+            announcements = Url.Action("AnnouncementList", "Admin"),
+            events = Url.Action("EventCalendar", "Admin"),
+            forum = Url.Action("Embedded", "Forum"),
+            documents = Url.Action("Manage", "Document"),
+            polls = Url.Action("Manage", "Poll"),
+            contacts = Url.Action("Manage", "Contact"),
+            visitorPasses = Url.Action("Manage", "VisitorPass"),
+            vehicleRegistration = Url.Action("Manage", "VehicleRegistration"),
+            gateAccessLogs = Url.Action("Index", "GateAccessLog"),
+            billing = Url.Action("CreateBilling", "Admin"),
+            analytics = Url.Action("Analytics", "Admin"),
+            logout = Url.Action("Logout", "Account")
+        }
+    };
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Admin Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="~/css/admin-dashboard-react.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/admin-people-management.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/admin-homeowners.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/admin-staff-management.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/admin-documents.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/admin-contacts.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/admin-complaints.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/admin-events.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/admin-announcements.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/admin-polls.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/admin-visitor-passes.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/admin-vehicles.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/admin-gate-access-logs.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/admin-analytics.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/admin-account-settings.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/forum.css" asp-append-version="true">
+</head>
+<body>
+    <div id="adminDashboardRoot"></div>
+
+    <script>
+        window.adminDashboardConfig = @Html.Raw(JsonSerializer.Serialize(dashboardConfig));
+    </script>
+    <script src="~/js/admin-documents.js" asp-append-version="true"></script>
+    <script src="~/js/admin-contacts.js" asp-append-version="true"></script>
+    <script src="~/js/admin-complaints.js" asp-append-version="true"></script>
+    <script src="~/js/admin-events.js" asp-append-version="true"></script>
+    <script src="~/js/admin-announcements.js" asp-append-version="true"></script>
+    <script src="~/js/admin-polls.js" asp-append-version="true"></script>
+    <script src="~/js/admin-visitor-passes.js" asp-append-version="true"></script>
+    <script src="~/js/admin-vehicles.js" asp-append-version="true"></script>
+    <script src="~/js/admin-gate-access-logs.js" asp-append-version="true"></script>
+    <script src="~/js/admin-analytics.js" asp-append-version="true"></script>
+    <script src="~/js/admin-account-settings.js" asp-append-version="true"></script>
+    <script src="~/js/forum.js" asp-append-version="true"></script>
+    <script type="module" src="~/js/admin-dashboard-app.js" asp-append-version="true"></script>
+</body>
+</html>
