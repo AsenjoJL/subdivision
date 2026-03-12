@@ -7,14 +7,14 @@ EXPOSE 80
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy .csproj file and restore
-COPY ["HOMEOWNER.csproj", "./"]
-RUN dotnet restore "HOMEOWNER.csproj"
+# Copy .csproj file and restore (project lives in subfolder homeownerssubdivision-main)
+COPY homeownerssubdivision-main/HOMEOWNER.csproj ./
+RUN dotnet restore HOMEOWNER.csproj
 
-# Copy everything else
-COPY . .
+# Copy everything else from subfolder
+COPY homeownerssubdivision-main/. ./
 
-RUN dotnet publish "HOMEOWNER.csproj" -c Release -o /app/publish
+RUN dotnet publish HOMEOWNER.csproj -c Release -o /app/publish
 
 # Final runtime image
 FROM base AS final
