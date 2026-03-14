@@ -12,6 +12,7 @@ Use this checklist before going live.
 ## Required production settings
 
 - `GOOGLE_APPLICATION_CREDENTIALS`
+- `DATA_PROTECTION_KEYS_DIR` (recommended on container hosts to persist auth cookies across restarts)
 - `FirebaseAuthentication__WebApiKey`
 - `DB_CONNECTION_STRING` if SQL-backed infrastructure is still used
 - `SupabaseStorage__ProjectUrl` or `SUPABASE_URL`
@@ -27,6 +28,7 @@ Use this checklist before going live.
 - Firebase credentials must not live inside the published application directory
 - Supabase Storage must be configured because local profile-image fallback is disabled in production
 - HTTPS termination and forwarded headers must be configured correctly on the host or reverse proxy
+- Persist DataProtection keys on the host (for example, `DATA_PROTECTION_KEYS_DIR=/var/data/dp-keys` with a mounted disk)
 
 ## Release validation
 

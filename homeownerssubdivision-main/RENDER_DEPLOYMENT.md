@@ -19,6 +19,7 @@ This project runs as a single ASP.NET Core web service. No SQL database is requ
 6. Environment variables (Render dashboard):
    - `ASPNETCORE_ENVIRONMENT=Production`
    - `GOOGLE_APPLICATION_CREDENTIALS=/etc/secrets/firebase.json`
+   - `DATA_PROTECTION_KEYS_DIR=/var/data/dp-keys` (recommended, see "Persist auth across restarts" below)
    - `FirebaseAuthentication__WebApiKey=<your firebase web api key>`
    - `SupabaseStorage__ProjectUrl=<https://...supabase.co>`
    - `SupabaseStorage__ServiceRoleKey=<key>`
@@ -41,6 +42,15 @@ This project runs as a single ASP.NET Core web service. No SQL database is requ
    - `Email__EnableSsl=true`
    - Leave `DB_CONNECTION_STRING` unset (Firebase is the primary data store).
 
+## Persist auth across restarts (recommended)
+Render containers can restart or redeploy at any time. If DataProtection keys are not persisted, cookies can become invalid and users may be logged out unexpectedly.
+
+1. Render service → Disks → Add Disk
+2. Mount path: `/var/data`
+3. Size: 1GB is enough
+4. Environment variable:
+   - `DATA_PROTECTION_KEYS_DIR=/var/data/dp-keys`
+
 ## Deploy
 1. Click “Deploy”. Render will run the publish + start commands.
 2. Once live, open the Render URL (or add a custom domain in Settings).
@@ -53,4 +63,10 @@ This project runs as a single ASP.NET Core web service. No SQL database is requ
   - Profile image upload goes to Supabase and renders in the UI.
 
 ## Optional: Docker on Render
-If you prefer Docker, a Dockerfile is already present. Set service type to “Docker”; no build/start commands needed. Ensure `ASPNETCORE_URLS` matches the Dockerfile (8080). Environment variables remain the same.
+If you prefer Docker, a Dockerfile is already present.
+
+1. Create the service as type "Docker".
+2. Root Directory: `homeownerssubdivision-main`
+3. Dockerfile Path: `Dockerfile`
+4. Docker Build Context Directory: `.`
+5. No build/start commands needed. Environment variables remain the same.
