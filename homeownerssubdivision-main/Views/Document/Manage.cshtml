@@ -46,6 +46,7 @@
 
         <section class="admin-documents-upload admin-documents-hidden" data-doc-admin-upload-panel hidden>
             <form class="admin-documents-form" data-doc-admin-form action="@Url.Action("Upload", "Document")">
+                @Html.AntiForgeryToken()
                 <div class="admin-documents-form-grid">
                     <div class="admin-documents-field">
                         <label for="docTitle">Title</label>

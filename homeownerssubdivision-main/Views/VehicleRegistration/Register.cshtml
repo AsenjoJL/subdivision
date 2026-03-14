@@ -49,6 +49,7 @@
             </div>
 
             <form action="@Url.Action("Register", "VehicleRegistration")" method="post" class="vehicle-form" data-vehicle-form>
+                @Html.AntiForgeryToken()
                 <div class="vehicle-grid">
                     <label class="vehicle-field">
                         <span>Plate number</span>

@@ -49,6 +49,7 @@
             </div>
 
             <form action="@Url.Action("RequestPass", "VisitorPass")" method="post" class="visitor-pass-form" data-visitor-pass-form>
+                @Html.AntiForgeryToken()
                 <div class="visitor-pass-grid">
                     <label class="visitor-pass-field">
                         <span>Visitor name</span>

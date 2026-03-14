@@ -83,6 +83,7 @@
             </div>
             <div class="admin-complaints-modal-body">
                 <form data-admin-complaint-update-form action="@Url.Action("UpdateStatus", "Complaint")">
+                    @Html.AntiForgeryToken()
                     <input type="hidden" name="Id" data-update-field="Id" />
                     <div class="admin-complaints-field">
                         <label for="adminComplaintStatus">Status</label>

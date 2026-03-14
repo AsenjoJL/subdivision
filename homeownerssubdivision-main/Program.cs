@@ -4,12 +4,16 @@ using HOMEOWNER.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
 builder.Configuration.AddEnvironmentVariables();
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+});
 
 var firebaseProjectId = builder.Configuration["Firebase:ProjectId"] ?? "homeowner-c355d";
 var isDevelopment = builder.Environment.IsDevelopment();
@@ -49,6 +53,22 @@ builder.Services.AddSingleton<FirebaseService>();
 builder.Services.AddSingleton<IDataService>(sp => sp.GetRequiredService<FirebaseService>());
 builder.Services.AddScoped<ICommunityNotificationService, CommunityNotificationService>();
 builder.Services.AddHostedService<AdminBootstrapHostedService>();
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+    {
+        var key = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+        return RateLimitPartition.GetFixedWindowLimiter(key, _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = 100,
+            Window = TimeSpan.FromMinutes(1),
+            QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+            QueueLimit = 0
+        });
+    });
+});
 
 var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
 if (!string.IsNullOrEmpty(connectionString))
@@ -96,6 +116,24 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+// Security headers + minimal CSP
+app.Use(async (ctx, next) =>
+{
+    ctx.Response.Headers["X-Content-Type-Options"] = "nosniff";
+    ctx.Response.Headers["X-Frame-Options"] = "DENY";
+    ctx.Response.Headers["X-XSS-Protection"] = "0";
+    ctx.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
+    ctx.Response.Headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()";
+    ctx.Response.Headers["Content-Security-Policy"] =
+        "default-src 'self'; " +
+        "img-src 'self' data: https://*.supabase.co; " +
+        "script-src 'self'; style-src 'self' 'unsafe-inline'; " +
+        "font-src 'self' data:; " +
+        "connect-src 'self' https://*.firebaseio.com https://identitytoolkit.googleapis.com https://*.supabase.co https://www.iprogsms.com; " +
+        "frame-ancestors 'none';";
+    await next();
+});
 
 var credentialPath = Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS");
 if (!isDevelopment)
@@ -150,6 +188,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseRateLimiter();
 app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();

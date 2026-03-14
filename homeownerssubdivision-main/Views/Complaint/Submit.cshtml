@@ -36,6 +36,7 @@
                 </div>
 
                 <form class="homeowner-complaints-form" data-complaint-form action="@Url.Action("Submit", "Complaint")">
+                    @Html.AntiForgeryToken()
                     <div class="homeowner-complaints-field">
                         <label for="complaintCategory">Category</label>
                         <select id="complaintCategory" name="Category" data-field="Category" required>
