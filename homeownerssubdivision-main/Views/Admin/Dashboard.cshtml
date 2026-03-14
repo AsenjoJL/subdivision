@@ -50,6 +50,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    @using Microsoft.AspNetCore.Antiforgery
+    @inject IAntiforgery Antiforgery
+    @{
+        var csrfToken = Antiforgery.GetAndStoreTokens(Context).RequestToken;
+    }
+    <meta name="csrf-token" content="@csrfToken" />
     <title>Admin Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -71,6 +77,7 @@
     <link rel="stylesheet" href="~/css/admin-analytics.css" asp-append-version="true">
     <link rel="stylesheet" href="~/css/admin-account-settings.css" asp-append-version="true">
     <link rel="stylesheet" href="~/css/forum.css" asp-append-version="true">
+    <script src="~/js/antiforgery.js" asp-append-version="true"></script>
 </head>
 <body>
     <div id="adminDashboardRoot"></div>

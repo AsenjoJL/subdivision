@@ -3,6 +3,7 @@ using HOMEOWNER.Data;
 using HOMEOWNER.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.RateLimiting;
 
@@ -125,13 +126,22 @@ app.Use(async (ctx, next) =>
     ctx.Response.Headers["X-XSS-Protection"] = "0";
     ctx.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
     ctx.Response.Headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()";
-    ctx.Response.Headers["Content-Security-Policy"] =
-        "default-src 'self'; " +
-        "img-src 'self' data: https://*.supabase.co; " +
-        "script-src 'self'; style-src 'self' 'unsafe-inline'; " +
-        "font-src 'self' data:; " +
-        "connect-src 'self' https://*.firebaseio.com https://identitytoolkit.googleapis.com https://*.supabase.co https://www.iprogsms.com; " +
-        "frame-ancestors 'none';";
+    // NOTE: This CSP is intentionally permissive enough to support the current app UI
+    // (inline scripts in some Razor views + external CDNs). Tighten later by removing
+    // inline scripts and pinning to a smaller allowlist (or use nonces).
+    ctx.Response.Headers["Content-Security-Policy"] = string.Join(" ", new[]
+    {
+        "default-src 'self';",
+        "base-uri 'self';",
+        "object-src 'none';",
+        "frame-ancestors 'none';",
+        "form-action 'self';",
+        "img-src 'self' data: https://*.supabase.co;",
+        "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://fonts.googleapis.com;",
+        "font-src 'self' data: https://cdnjs.cloudflare.com https://fonts.gstatic.com;",
+        "script-src 'self' 'unsafe-inline' https://code.jquery.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://esm.sh;",
+        "connect-src 'self' https://*.firebaseio.com https://identitytoolkit.googleapis.com https://*.supabase.co https://www.iprogsms.com;"
+    });
     await next();
 });
 
