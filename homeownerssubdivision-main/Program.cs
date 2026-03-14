@@ -2,6 +2,7 @@ using HOMEOWNER.Configuration;
 using HOMEOWNER.Data;
 using HOMEOWNER.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -89,6 +90,35 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
     options.KnownNetworks.Clear();
     options.KnownProxies.Clear();
 });
+
+// Render terminates TLS at the edge and forwards requests to the container over HTTP.
+// Set the HTTPS port explicitly to avoid "Failed to determine the https port for redirect." warnings.
+builder.Services.AddHttpsRedirection(options =>
+{
+    options.HttpsPort = 443;
+});
+
+// Persist DataProtection keys so auth/session cookies remain valid across container restarts.
+// On Render, mount a persistent disk and set DATA_PROTECTION_KEYS_DIR (recommended):
+//   DATA_PROTECTION_KEYS_DIR=/var/data/dp-keys
+// If not set, we fall back to a writable directory; best-effort only.
+var dataProtectionKeysDir =
+    Environment.GetEnvironmentVariable("DATA_PROTECTION_KEYS_DIR")
+    ?? (builder.Environment.IsProduction()
+        ? "/var/data/dp-keys"
+        : Path.Combine(builder.Environment.ContentRootPath, ".dp-keys"));
+
+try
+{
+    Directory.CreateDirectory(dataProtectionKeysDir);
+    builder.Services.AddDataProtection()
+        .SetApplicationName("RestNestHome")
+        .PersistKeysToFileSystem(new DirectoryInfo(dataProtectionKeysDir));
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"WARNING: Unable to configure DataProtection key persistence at '{dataProtectionKeysDir}'. {ex.Message}");
+}
 
 builder.Services.AddSession(options =>
 {
