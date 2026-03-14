@@ -163,4 +163,13 @@
     .staff-management-header {
         flex-direction: column;
     }
+    .staff-quick-actions {
+        grid-template-columns: 1fr;
+    }
+    .staff-task-table-wrap {
+        overflow-x: auto;
+    }
+    .staff-task-table {
+        min-width: 640px;
+    }
 }

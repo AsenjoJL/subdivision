@@ -627,3 +627,18 @@ body {
 .animate-pulse {
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+
+/* Mobile responsiveness for all dashboard tables */
+@media (max-width: 768px) {
+    .table-wrapper,
+    .table-wrap,
+    .table-shell,
+    .table-container,
+    .data-table-container,
+    .table-responsive {
+        overflow-x: auto;
+    }
+    table {
+        min-width: 640px;
+    }
+}

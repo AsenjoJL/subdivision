@@ -724,6 +724,19 @@ a {
     }
 }
 
+@media (max-width: 768px) {
+    .stat-grid {
+        grid-template-columns: 1fr;
+    }
+    .table-wrapper,
+    .admin-table-wrapper {
+        overflow-x: auto;
+    }
+    .admin-table {
+        min-width: 640px;
+    }
+}
+
 @media (max-width: 640px) {
     .stat-grid {
         grid-template-columns: 1fr;

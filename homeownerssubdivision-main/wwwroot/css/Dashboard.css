@@ -1161,3 +1161,18 @@ html {
 .sidebar-menu * {
     pointer-events: auto !important;
 }
+
+/* Global mobile table handling */
+@media (max-width: 768px) {
+    .table-wrapper,
+    .table-wrap,
+    .table-shell,
+    .table-container,
+    .data-table-container,
+    .table-responsive {
+        overflow-x: auto;
+    }
+    table {
+        min-width: 640px;
+    }
+}
