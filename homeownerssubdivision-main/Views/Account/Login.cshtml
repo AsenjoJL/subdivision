@@ -18,6 +18,7 @@
         var csrfToken = Antiforgery.GetAndStoreTokens(Context).RequestToken;
     }
     <meta name="csrf-token" content="@csrfToken" />
+    @await Html.PartialAsync("_Favicon")
     <script src="~/js/antiforgery.js" asp-append-version="true"></script>
     
     <!-- Fonts -->
