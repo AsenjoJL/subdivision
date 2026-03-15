@@ -173,7 +173,7 @@ app.Use(async (ctx, next) =>
         "font-src 'self' data: https://cdnjs.cloudflare.com https://fonts.gstatic.com;",
         "script-src 'self' 'unsafe-inline' https://code.jquery.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://esm.sh;",
         // Allow jsDelivr connections for optional source-map fetches (for example bootstrap *.map in DevTools).
-        "connect-src 'self' https://*.firebaseio.com https://identitytoolkit.googleapis.com https://*.supabase.co https://www.iprogsms.com https://cdn.jsdelivr.net;"
+        "connect-src 'self' https://*.firebaseio.com https://identitytoolkit.googleapis.com https://*.supabase.co https://www.iprogsms.com https://cdn.jsdelivr.net https://esm.sh;"
     });
     await next();
 });
